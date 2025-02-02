@@ -39,7 +39,7 @@ trait HasConfirm
      */
     public function getConfirm($parameters = [], $typed = []): ?Confirm
     {
-        if (!empty($parameters) || !empty($typed)) {
+        if (! empty($parameters) || ! empty($typed)) {
             $this->confirm?->resolve($parameters, $typed);
         }
 

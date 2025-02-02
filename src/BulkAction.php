@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Illuminate\Support\Traits\ForwardsCalls;
-
 class BulkAction extends Action
 {
     use Concerns\HasBulkActions;
@@ -33,5 +31,4 @@ class BulkAction extends Action
 
         return parent::resolve($parameters, $typed);
     }
-
 }

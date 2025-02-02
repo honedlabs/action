@@ -30,12 +30,12 @@ it('resolves', function () {
     $product = product();
 
     expect(PageAction::make('test')
-            ->to(fn (Product $product) => route('products.show', $product))
-            ->resolve($product)
-        )->toBeInstanceOf(PageAction::class)
+        ->to(fn (Product $product) => route('products.show', $product))
+        ->resolve($product)
+    )->toBeInstanceOf(PageAction::class)
         ->getLabel()->toBe('Test')
         ->getDestination()->scoped(fn ($destination) => $destination
-            ->get()->toBe(route('products.show', $product))
-            ->getMethod()->toBe('GET')
-            ->getTab()->toBeFalse());
+    ->get()->toBe(route('products.show', $product))
+    ->getMethod()->toBe('GET')
+    ->getTab()->toBeFalse());
 });

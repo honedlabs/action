@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Data;
 
 use Honed\Action\Creator;
-use Honed\Action\Http\Requests\ActionRequest;
 
 final class ActionData
 {

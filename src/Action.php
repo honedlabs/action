@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Core\Primitive;
-use Honed\Core\Concerns\HasIcon;
-use Honed\Core\Concerns\HasName;
-use Honed\Core\Concerns\HasType;
-use Honed\Core\Concerns\HasLabel;
-use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\Allowable;
+use Honed\Core\Concerns\HasIcon;
+use Honed\Core\Concerns\HasLabel;
+use Honed\Core\Concerns\HasName;
+use Honed\Core\Concerns\HasRoute;
+use Honed\Core\Concerns\HasType;
 use Honed\Core\Contracts\ResolvesClosures;
+use Honed\Core\Primitive;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
@@ -20,13 +20,13 @@ use Illuminate\Support\Traits\ForwardsCalls;
 abstract class Action extends Primitive implements ResolvesClosures
 {
     use Allowable;
+    use Concerns\HasAction;
+    use ForwardsCalls;
     use HasIcon;
     use HasLabel;
     use HasName;
-    use HasType;
     use HasRoute;
-    use ForwardsCalls;
-    use Concerns\HasAction;
+    use HasType;
 
     public function __construct(?string $name = null, string|\Closure|null $label = null)
     {
@@ -48,18 +48,17 @@ abstract class Action extends Primitive implements ResolvesClosures
             'label' => $this->getLabel(),
             'type' => $this->getType(),
             ...($this->hasIcon() ? ['icon' => $this->getIcon()] : []),
-            ...($this->hasRoute() 
+            ...($this->hasRoute()
                 ? [
                     'href' => $this->getRoute(),
                     'method' => $this->getMethod(),
-                ] : [])
+                ] : []),
         ];
     }
 
     /**
      * @param  array<string,mixed>|\Illuminate\Database\Eloquent\Model  $parameters
      * @param  array<string,mixed>  $typed
-     * 
      * @return $this
      */
     public function resolve($parameters = [], $typed = []): static
