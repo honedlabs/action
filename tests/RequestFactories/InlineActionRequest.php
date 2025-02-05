@@ -14,7 +14,7 @@ class InlineActionRequest extends RequestFactory
         return [
             'name' => 'update',
             'type' => Creator::Inline,
-            'id' => 1
+            'id' => 1,
         ];
     }
 }

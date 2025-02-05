@@ -6,7 +6,6 @@ namespace Honed\Action;
 
 use Honed\Core\Concerns\HasDescription;
 use Honed\Core\Concerns\HasName;
-use Honed\Core\Contracts\ResolvesClosures;
 use Honed\Core\Primitive;
 
 /**
@@ -18,7 +17,9 @@ class Confirm extends Primitive
     use HasName;
 
     const Constructive = 'constructive';
+
     const Destructive = 'destructive';
+
     const Informative = 'informative';
 
     /**
@@ -78,7 +79,6 @@ class Confirm extends Primitive
     /**
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
-     * 
      * @return $this
      */
     public function resolve(array $parameters = [], array $typed = []): static

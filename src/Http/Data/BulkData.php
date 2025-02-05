@@ -17,7 +17,7 @@ class BulkData implements TransferObject
         public readonly array $only,
         public readonly array $except,
         public readonly bool $all,
-    ) { }
+    ) {}
 
     /**
      * Create a new bulk data transfer object.

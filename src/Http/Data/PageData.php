@@ -10,7 +10,7 @@ class PageData implements TransferObject
 {
     public function __construct(
         public readonly string $name,
-    ) { }
+    ) {}
 
     /**
      * Create a new inline data transfer object.
