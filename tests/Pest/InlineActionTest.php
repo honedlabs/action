@@ -67,7 +67,7 @@ describe('executes', function () {
 
         expect($action)
             ->getName()->toBe('destroy')
-            ->getLabel($this->product)->toBe('Destroy '.$this->product->name)
+            ->resolveLabel($this->product)->toBe('Destroy '.$this->product->name)
             ->getType()->toBe(Creator::Inline)
             ->hasAction()->toBeTrue();
 

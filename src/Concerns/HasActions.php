@@ -58,7 +58,7 @@ trait HasActions
     public function bulkActions(): Collection
     {
         return $this->getActions()
-            ->filter(static fn ($action) => $action instanceof BulkAction && $action->allows())
+            ->filter(static fn ($action) => $action instanceof BulkAction && $action->isAllowed())
             ->values();
     }
 
@@ -70,7 +70,7 @@ trait HasActions
     public function pageActions(): Collection
     {
         return $this->getActions()
-            ->filter(static fn ($action) => $action instanceof PageAction && $action->allows())
+            ->filter(static fn ($action) => $action instanceof PageAction && $action->isAllowed())
             ->values();
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Illuminate\Support\Traits\ForwardsCalls;
+
 class BulkAction extends Action
 {
     use Concerns\HasBulkActions;
@@ -19,16 +21,5 @@ class BulkAction extends Action
             'keepSelected' => $this->keepsSelected(),
             'confirm' => $this->getConfirm(),
         ]);
-    }
-
-    /**
-     * @param  array<string,mixed>|\Illuminate\Database\Eloquent\Model  $parameters
-     * @param  array<string,mixed>  $typed
-     */
-    public function resolve($parameters = [], $typed = []): static
-    {
-        // $this->resolveConfirm($parameters, $typed);
-
-        return parent::resolve($parameters, $typed);
     }
 }

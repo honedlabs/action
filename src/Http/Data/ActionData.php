@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Data;
 
 use Honed\Action\Creator;
+use Honed\Action\Http\Requests\ActionRequest;
 
 final class ActionData
 {
@@ -15,7 +16,10 @@ final class ActionData
      */
     public static function from($request): InlineData|BulkData|PageData
     {
-        $type = $request->input('type');
+        /**
+         * @var string
+         */
+        $type = $request->validated('type');
 
         return match ($type) {
             Creator::Inline => InlineData::from($request),

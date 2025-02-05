@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Core\Concerns\HasDescription;
-use Honed\Core\Concerns\HasTitle;
+use Honed\Core\Concerns\HasName;
 use Honed\Core\Contracts\ResolvesClosures;
 use Honed\Core\Primitive;
 
 /**
  * @extends Primitive<string,mixed>
  */
-class Confirm extends Primitive implements ResolvesClosures
+class Confirm extends Primitive
 {
     use HasDescription;
-    use HasTitle;
+    use HasName;
 
     const Constructive = 'constructive';
-
     const Destructive = 'destructive';
-
     const Informative = 'informative';
 
     /**
@@ -39,14 +37,14 @@ class Confirm extends Primitive implements ResolvesClosures
     protected $intent;
 
     public function __construct(
-        string|\Closure|null $title = null,
+        string|\Closure|null $name = null,
         string|\Closure|null $description = null,
         string $dismiss = 'Cancel',
         string $submit = 'Confirm',
         ?string $intent = null
     ) {
         parent::__construct();
-        $this->title($title);
+        $this->name($name);
         $this->description($description);
         $this->dismiss($dismiss);
         $this->submit($submit);
@@ -57,19 +55,19 @@ class Confirm extends Primitive implements ResolvesClosures
      * Make a new confirm instance.
      */
     public static function make(
-        string|\Closure|null $title = null,
+        string|\Closure|null $name = null,
         string|\Closure|null $description = null,
         string $dismiss = 'Cancel',
         string $submit = 'Confirm',
         ?string $intent = null
     ): static {
-        return resolve(static::class, \compact('title', 'description', 'dismiss', 'submit', 'intent'));
+        return resolve(static::class, \compact('name', 'description', 'dismiss', 'submit', 'intent'));
     }
 
     public function toArray()
     {
         return [
-            'title' => $this->getTitle(),
+            'name' => $this->getName(),
             'description' => $this->getDescription(),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),
@@ -78,13 +76,15 @@ class Confirm extends Primitive implements ResolvesClosures
     }
 
     /**
-     * @param  array<string,mixed>|\Illuminate\Database\Eloquent\Model  $parameters
+     * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
+     * 
+     * @return $this
      */
-    public function resolve($parameters = [], $typed = []): static
+    public function resolve(array $parameters = [], array $typed = []): static
     {
-        $this->getTitle($parameters, $typed);
-        $this->getDescription($parameters, $typed);
+        $this->resolveName($parameters, $typed);
+        $this->resolveDescription($parameters, $typed);
 
         return $this;
     }

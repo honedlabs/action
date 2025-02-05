@@ -16,34 +16,40 @@ trait HasConfirm
     /**
      * Set the confirm for the instance.
      *
-     * @param  \Honed\Action\Confirm|\Closure|string|null  $confirm
      * @return $this
      */
-    public function confirm($confirm, ?string $description = null): static
+    public function confirm(Confirm|\Closure|string|null $confirm, ?string $description = null): static
     {
-        match (true) {
-            \is_null($confirm) => null,
-            $confirm instanceof Confirm => $this->confirm = $confirm,
-            $this->callsConfirm($confirm) => \call_user_func($confirm, $this->newConfirm()), // @phpstan-ignore-line
-            default => $this->newConfirm()->title($confirm)->description($description)
-        };
+        if (! \is_null($confirm)) {
+            match (true) {
+                $confirm instanceof Confirm => $this->confirm = $confirm,
+                $confirm instanceof \Closure => $this->evaluate($confirm),
+                default => $this->confirmInstance()->name($confirm)->description($description)
+            };
+        }
 
         return $this;
     }
 
     /**
      * Get the confirm for this instance.
-     *
-     * @param  array<string,mixed>|\Illuminate\Database\Eloquent\Model  $parameters
-     * @param  array<string,mixed>  $typed
      */
-    public function getConfirm($parameters = [], $typed = []): ?Confirm
+    public function getConfirm(): ?Confirm
     {
-        if (! empty($parameters) || ! empty($typed)) {
-            $this->confirm?->resolve($parameters, $typed);
-        }
-
         return $this->confirm;
+    }
+
+    /**
+     * @param  array<string,mixed>  $parameters
+     * @param  array<string,mixed>  $typed
+     * 
+     * @return $this
+     */
+    public function resolveConfirm(array $parameters = [], array $typed = []): static
+    {
+        $this->confirm?->resolve($parameters, $typed);
+
+        return $this;
     }
 
     /**
@@ -57,25 +63,8 @@ trait HasConfirm
     /**
      * Access the confirm for this instance.
      */
-    private function newConfirm(): Confirm
+    protected function confirmInstance(): Confirm
     {
         return $this->confirm ??= Confirm::make();
-    }
-
-    /**
-     * Determine if the confirm is a closure that modifies the confirm on the instance.
-     */
-    private function callsConfirm(mixed $confirm): bool
-    {
-        if (! $confirm instanceof \Closure) {
-            return false;
-        }
-
-        $parameter = collect((new \ReflectionFunction($confirm))->getParameters())->first();
-
-        $type = $parameter?->getType();
-
-        return ($type instanceof \ReflectionNamedType && $type->getName() === Confirm::class)
-            || ($parameter?->getName() === 'confirm');
     }
 }
