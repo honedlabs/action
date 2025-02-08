@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Illuminate\Support\Traits\ForwardsCalls;
-
 class BulkAction extends Action
 {
     use Concerns\HasBulkActions;

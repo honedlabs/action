@@ -34,9 +34,9 @@ it('sets with self-call', function () {
     )->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getTitle()->toBe('title')
-            ->getDescription()->toBe('description')
-            ->getSubmit()->toBe('Accept')
+        ->getTitle()->toBe('title')
+        ->getDescription()->toBe('description')
+        ->getSubmit()->toBe('Accept')
         );
 });
 
@@ -61,9 +61,9 @@ it('resolves', function () {
     ))->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm($product)->scoped(fn ($confirm) => $confirm
-            ->getTitle()->toBe(\sprintf('Delete %s', $product->name))
-            ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name))
-            ->getSubmit()->toBe('Delete')
-            ->getIntent()->toBe(Confirm::Destructive)
+        ->getTitle()->toBe(\sprintf('Delete %s', $product->name))
+        ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name))
+        ->getSubmit()->toBe('Delete')
+        ->getIntent()->toBe(Confirm::Destructive)
         );
 });

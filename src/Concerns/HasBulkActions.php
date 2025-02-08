@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Illuminate\Support\Collection;
 use Honed\Action\Contracts\HasHandler;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
-    use HasAction;
     use ChunksBuilder;
+    use HasAction;
 
     /**
      * Execute the action handler using the provided data.
      *
      * @template TModel of \Illuminate\Database\Eloquent\Model
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder<TModel>  $builder
      * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|bool|void
      */
@@ -37,8 +37,8 @@ trait HasBulkActions
          */
         $callback = $handler ? [$this, 'handle'] : $this->getAction(); // @phpstan-ignore-line
 
-        $parameters = $handler 
-            ? $this->getHandleParameters() 
+        $parameters = $handler
+            ? $this->getHandleParameters()
             : (new \ReflectionFunction($callback))->getParameters(); // @phpstan-ignore-line
 
         $retrieveRecords = $this->isCollectionCallback($parameters, $plural);
@@ -67,9 +67,9 @@ trait HasBulkActions
 
     /**
      * Evaluate the action handler with retrieved records.
-     * 
+     *
      * @template TModel of \Illuminate\Database\Eloquent\Model
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder<TModel>  $builder
      */
     private function evaluateCallbackWithRecords(Builder $builder, \Closure $callback, string $plural): mixed
@@ -124,5 +124,4 @@ trait HasBulkActions
                     || \in_array($parameter->getName(), ['model', 'record', $singular])
             );
     }
-
 }
