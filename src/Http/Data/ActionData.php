@@ -4,27 +4,24 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Data;
 
-use Honed\Action\Creator;
+use Honed\Core\Contracts\TransferObject;
 
-final class ActionData
+class ActionData implements TransferObject
 {
+    public function __construct(public readonly string $name,
+    ) {
+        //
+    }
+
     /**
-     * Create a new action data transfer object.
+     * Create a new inline data transfer object.
      *
      * @param  \Honed\Action\Http\Requests\ActionRequest  $request
      */
-    public static function from($request): InlineData|BulkData|PageData
+    public static function from($request): static
     {
-        /**
-         * @var string
-         */
-        $type = $request->validated('type');
-
-        return match ($type) {
-            Creator::Inline => InlineData::from($request),
-            Creator::Bulk => BulkData::from($request),
-            Creator::Page => PageData::from($request),
-            default => throw new \InvalidArgumentException(\sprintf('The action type [%s] is not supported.', $type)),
-        };
+        return resolve(static::class, [
+            'name' => $request->input('name'),
+        ]);
     }
 }

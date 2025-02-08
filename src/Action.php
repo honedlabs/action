@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Core\Primitive;
+use Honed\Core\Concerns\HasIcon;
+use Honed\Core\Concerns\HasName;
+use Honed\Core\Concerns\HasType;
+use Honed\Core\Concerns\HasLabel;
+use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\HasExtra;
-use Honed\Core\Concerns\HasIcon;
-use Honed\Core\Concerns\HasLabel;
-use Honed\Core\Concerns\HasName;
-use Honed\Core\Concerns\HasRoute;
-use Honed\Core\Concerns\HasType;
-use Honed\Core\Primitive;
+use Honed\Core\Contracts\ResolvesClosures;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
@@ -20,27 +21,21 @@ use Illuminate\Support\Traits\ForwardsCalls;
 abstract class Action extends Primitive
 {
     use Allowable;
-    use Concerns\HasAction;
-    use Concerns\HasConfirm;
-    use ForwardsCalls;
-    use HasExtra;
     use HasIcon;
     use HasLabel;
     use HasName;
-    use HasRoute;
     use HasType;
+    use HasRoute;
+    use ForwardsCalls;
+    use HasExtra;
+    use Concerns\HasAction;
+    use Concerns\HasConfirm;
 
-    public function __construct(?string $name = null, string|\Closure|null $label = null)
+    public static function make(string $name, string|\Closure $label = null): static
     {
-        parent::__construct();
-
-        $this->name($name);
-        $this->label($label ?? $this->makeLabel($name));
-    }
-
-    public static function make(?string $name = null, string|\Closure|null $label = null): static
-    {
-        return resolve(static::class, \compact('name', 'label'));
+        return resolve(static::class)
+            ->name($name)
+            ->label($label ?? static::makeLabel($name));
     }
 
     public function toArray(): array
@@ -50,19 +45,34 @@ abstract class Action extends Primitive
             'label' => $this->getLabel(),
             'type' => $this->getType(),
             'icon' => $this->getIcon(),
+            'extra' => $this->getExtra(),
+            'action' => $this->hasAction(),
             'confirm' => $this->getConfirm()?->toArray(),
-            ...($this->hasExtra() ? ['extra' => $this->getExtra()] : []),
-            ...($this->hasRoute()
-                ? [
-                    'href' => $this->getRoute(),
-                    'method' => $this->getMethod(),
-                ] : []),
+            ...$this->routeToArray(),
         ];
     }
 
     /**
+     * @return array<string,mixed>
+     */
+    protected function routeToArray(): array
+    {
+        if (! $this->hasRoute()) {
+            return [];
+        }
+
+        return [
+            'href' => $this->getRoute(),
+            'method' => $this->getMethod(),
+        ];
+    }
+
+    /**
+     * Resolve the action.
+     * 
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
+     * 
      * @return $this
      */
     public function resolve($parameters = [], $typed = []): static

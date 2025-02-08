@@ -12,12 +12,14 @@ class InlineAction extends Action
 {
     use IsDefault;
 
-    protected $type = Creator::Inline;
+    public function setUp(): void
+    {
+        $this->type(Creator::Inline);
+    }
 
     public function toArray(): array
     {
         return \array_merge(parent::toArray(), [
-            'action' => $this->hasAction(),
             'default' => $this->isDefault(),
         ]);
     }
@@ -26,6 +28,7 @@ class InlineAction extends Action
      * Execute the action handler using the provided data.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
      * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
      */
     public function execute($record)
@@ -34,17 +37,41 @@ class InlineAction extends Action
             return;
         }
 
-        [$model, $singular] = $this->getActionParameterNames($record);
-
         return $this instanceof HasHandler
-            ? \call_user_func([$this, 'handle'], $record)
-            : $this->evaluate($this->getAction(), [
-                'model' => $model,
-                'record' => $record,
-                $singular => $record,
-            ], [
-                Model::class => $record,
-                $model::class => $record,
-            ]);
+            ? $this->callHandler($record)
+            : $this->callAction($record);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
+     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
+     */
+    protected function callHandler($record)
+    {
+        return \call_user_func([$this, 'handle'], $record);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
+     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
+     */
+    protected function callAction($record)
+    {
+        [$model, $singular] = $this->getParameterNames($record);
+
+        $named = [
+            'model' => $model,
+            'record' => $record,
+            $singular => $record,
+        ];
+
+        $typed = [
+            Model::class => $record,
+            $model::class => $record,
+        ];
+
+        return $this->evaluate($this->getAction(), $named, $typed);
     }
 }

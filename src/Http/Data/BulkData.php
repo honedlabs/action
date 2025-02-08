@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Data;
 
-use Honed\Core\Contracts\TransferObject;
-
-class BulkData implements TransferObject
+class BulkData extends ActionData
 {
     /**
      * @param  array<int,string|int>  $only
@@ -17,7 +15,9 @@ class BulkData implements TransferObject
         public readonly array $only,
         public readonly array $except,
         public readonly bool $all,
-    ) {}
+    ) {
+        //
+    }
 
     /**
      * Create a new bulk data transfer object.
@@ -26,7 +26,7 @@ class BulkData implements TransferObject
      */
     public static function from($request): static
     {
-        return resolve(BulkData::class, [
+        return resolve(static::class, [
             'name' => $request->input('name'),
             'except' => $request->input('except'),
             'only' => $request->input('only'),

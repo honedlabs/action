@@ -30,12 +30,12 @@ it('sets', function () {
 });
 
 it('get parameters', function () {
-    expect($this->test->getActionParameterNames(Product::query()))
+    expect($this->test->getParameterNames(Product::query()))
         ->{0}->toBeInstanceOf(Product::class)
         ->{1}->toBe('product')
         ->{2}->toBe('products');
 
-    expect($this->test->getActionParameterNames(product()))
+    expect($this->test->getParameterNames(product()))
         ->{0}->toBeInstanceOf(Product::class)
         ->{1}->toBe('product')
         ->{2}->toBe('products');

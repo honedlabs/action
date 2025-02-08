@@ -42,6 +42,7 @@ trait HasConfirm
     /**
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
+     * 
      * @return $this
      */
     public function resolveConfirm(array $parameters = [], array $typed = []): static

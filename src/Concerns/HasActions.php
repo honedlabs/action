@@ -19,15 +19,15 @@ trait HasActions
     /**
      * Get the actions for the instance.
      *
-     * @return \Illuminate\Support\Collection<int,\Honed\Action\Action>
+     * @return array<int,\Honed\Action\Action>
      */
-    public function getActions()
+    public function getActions(): array
     {
-        return collect(match (true) {
+        return match (true) {
             \property_exists($this, 'actions') && ! \is_null($this->actions) => $this->actions,
             \method_exists($this, 'actions') => $this->actions(),
             default => [],
-        });
+        };
     }
 
     /**
@@ -35,42 +35,53 @@ trait HasActions
      */
     public function hasActions(): bool
     {
-        return $this->getActions()->isNotEmpty();
+        return \count($this->getActions()) > 0;
     }
 
     /**
      * Get the inline actions for the instance.
      *
-     * @return \Illuminate\Support\Collection<int,\Honed\Action\InlineAction>
+     * @return array<int,\Honed\Action\InlineAction>
      */
-    public function inlineActions(): Collection
+    public function inlineActions(): array
     {
-        return $this->getActions()
-            ->filter(static fn ($action) => $action instanceof InlineAction)
-            ->values();
+        return \array_filter($this->getActions(), static fn ($action) => $action instanceof InlineAction);
     }
 
     /**
      * Get the bulk actions for the instance.
      *
-     * @return \Illuminate\Support\Collection<int,\Honed\Action\BulkAction>
+     * @return array<int,\Honed\Action\BulkAction>
      */
-    public function bulkActions(): Collection
+    public function bulkActions(): array
     {
-        return $this->getActions()
-            ->filter(static fn ($action) => $action instanceof BulkAction && $action->isAllowed())
-            ->values();
+        return \array_values(
+            \array_filter($this->getActions(), static fn ($action) => $action instanceof BulkAction && $action->isAllowed())
+        );
     }
 
     /**
      * Get the page actions for the instance.
      *
-     * @return \Illuminate\Support\Collection<int,\Honed\Action\PageAction>
+     * @return array<int,\Honed\Action\PageAction>
      */
-    public function pageActions(): Collection
+    public function pageActions(): array
     {
-        return $this->getActions()
-            ->filter(static fn ($action) => $action instanceof PageAction && $action->isAllowed())
-            ->values();
+        return \array_values(
+            \array_filter($this->getActions(), static fn ($action) => $action instanceof PageAction && $action->isAllowed())
+        );
+    }
+
+    /**
+     * Convert the independent actions to an array.
+     * 
+     * @return array<string,array<int,\Honed\Action\Action>>
+     */
+    public function actionsToArray(): array
+    {
+        return [
+            'bulk' => $this->bulkActions(),
+            'page' => $this->pageActions(),
+        ];
     }
 }

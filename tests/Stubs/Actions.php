@@ -6,11 +6,10 @@ namespace Honed\Action\Tests\Stubs;
 
 use Honed\Action\BulkAction;
 use Honed\Action\Concerns\HasActions;
-use Honed\Action\Contracts\DefinesActions;
 use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
 
-class Actions implements DefinesActions
+class Actions
 {
     use HasActions;
 

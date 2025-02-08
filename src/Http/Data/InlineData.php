@@ -6,12 +6,12 @@ namespace Honed\Action\Http\Data;
 
 use Honed\Core\Contracts\TransferObject;
 
-class InlineData implements TransferObject
+class InlineData extends ActionData
 {
     public function __construct(
         public readonly string $name,
         public readonly int|string $id,
-    ) {}
+    ) { }
 
     /**
      * Create a new inline data transfer object.
@@ -20,7 +20,7 @@ class InlineData implements TransferObject
      */
     public static function from($request): static
     {
-        return resolve(InlineData::class, [
+        return resolve(static::class, [
             'name' => $request->input('name'),
             'id' => $request->input('id'),
         ]);

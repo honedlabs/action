@@ -8,12 +8,8 @@ class PageAction extends Action
 {
     use Concerns\HasBulkActions;
 
-    protected $type = Creator::Page;
-
-    public function toArray(): array
+    public function setUp(): void
     {
-        return \array_merge(parent::toArray(), [
-            'action' => $this->hasAction(),
-        ]);
+        $this->type(Creator::Page);
     }
 }
