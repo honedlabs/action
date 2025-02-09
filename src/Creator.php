@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Exceptions\InvalidActionTypeException;
-
 class Creator
 {
     const Bulk = 'bulk';

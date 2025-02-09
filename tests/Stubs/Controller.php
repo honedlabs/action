@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Honed\Action\Tests\Stubs;
 
-use Honed\Action\Handler;
 use Honed\Action\BulkAction;
-use Honed\Action\PageAction;
-use Honed\Action\InlineAction;
+use Honed\Action\Handler;
 use Honed\Action\Http\Requests\ActionRequest;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use Honed\Action\InlineAction;
+use Honed\Action\PageAction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {

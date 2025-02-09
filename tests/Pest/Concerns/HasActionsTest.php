@@ -35,15 +35,15 @@ it('has actions', function () {
     expect($this->test)
         ->hasActions()->toBeFalse()
         ->getActions()->scoped(fn ($actions) => $actions
-            ->toBeArray()
-            ->toBeEmpty()
+        ->toBeArray()
+        ->toBeEmpty()
         );
 
     expect($this->method)
         ->hasActions()->toBeTrue()
         ->getActions()->scoped(fn ($actions) => $actions
-            ->toBeArray()
-            ->toHaveCount(5)
+        ->toBeArray()
+        ->toHaveCount(5)
         );
 });
 

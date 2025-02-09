@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Pest\Expectation;
-use Honed\Action\Creator;
 use Honed\Action\BulkAction;
-use Illuminate\Support\Collection;
+use Honed\Action\Creator;
 use Honed\Action\Tests\Stubs\Product;
+use Illuminate\Support\Collection;
+use Pest\Expectation;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');

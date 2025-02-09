@@ -12,7 +12,7 @@ class DestroyAction extends InlineAction implements HasHandler
     public function setUp(): void
     {
         parent::setUp();
-        
+
         $this->name('destroy');
         $this->label(fn (Product $product) => 'Destroy '.$product->name);
     }

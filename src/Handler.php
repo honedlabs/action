@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\ActionData;
+use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Honed\Core\Concerns\HasBuilderInstance;
-use Illuminate\Contracts\Support\Responsable;
-use Honed\Action\Exceptions\InvalidActionException;
 use Honed\Core\Contracts\Makeable;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Handler implements Makeable
 {
-    use HasBuilderInstance;
     use Concerns\HasParameterNames;
+    use HasBuilderInstance;
 
     /**
      * @var array<int,\Honed\Action\Action>
@@ -34,7 +33,7 @@ class Handler implements Makeable
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      */
-    public function __construct(Builder $builder, array $actions, string $key = null)
+    public function __construct(Builder $builder, array $actions, ?string $key = null)
     {
         $this->builder = $builder;
         $this->actions = $actions;
@@ -43,11 +42,11 @@ class Handler implements Makeable
 
     /**
      * Make a new handler instance.
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      */
-    public static function make(Builder $builder, array $actions, string $key = null): static
+    public static function make(Builder $builder, array $actions, ?string $key = null): static
     {
         return resolve(static::class, \compact('builder', 'actions', 'key'));
     }
@@ -69,7 +68,7 @@ class Handler implements Makeable
             Creator::Page => ActionData::from($request),
             default => abort(400),
         };
-        
+
         [$action, $query] = $this->resolveAction($type, $data);
 
         abort_if(\is_null($action), 400);
@@ -90,7 +89,7 @@ class Handler implements Makeable
 
     /**
      * Retrieve the action and query based on the type and data.
-     * 
+     *
      * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null}
      */
     protected function resolveAction(string $type, ActionData $data): array
@@ -105,7 +104,7 @@ class Handler implements Makeable
 
     /**
      * Get the actions for the handler.
-     * 
+     *
      * @return array<int,\Honed\Action\Action>
      */
     protected function getActions(): array
@@ -115,8 +114,8 @@ class Handler implements Makeable
 
     /**
      * Get the key to use for selecting records.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $builder
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      */
     protected function getKey(Builder $builder): string
     {
@@ -142,14 +141,14 @@ class Handler implements Makeable
     protected function resolveBulkAction(BulkData $data): array
     {
         $builder = $this->getBuilder();
-        
+
         $key = $this->getKey($builder);
 
         return [
             collect($this->getActions())
                 ->first(fn (Action $action) => $action instanceof BulkAction && $action->getName() === $data->name),
-            $data->all 
-                ? $builder->whereNotIn($key, $data->except) 
+            $data->all
+                ? $builder->whereNotIn($key, $data->except)
                 : $builder->whereIn($key, $data->only),
         ];
     }
@@ -168,8 +167,8 @@ class Handler implements Makeable
 
     /**
      * Check whether the action is valid and the current user can execute it.
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model $query
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model  $query
      */
     protected function checkValidity(Action $action, $query): void
     {

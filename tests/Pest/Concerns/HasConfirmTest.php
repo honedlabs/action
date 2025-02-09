@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\HasConfirm;
 use Honed\Action\Confirm;
 use Honed\Action\InlineAction;
 use Honed\Action\Tests\Stubs\Product;
-
 
 beforeEach(function () {
     $this->test = InlineAction::make('test');
@@ -17,9 +15,9 @@ it('sets with instance', function () {
         ->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getName()->toBe('name')
-            ->getDescription()->toBe('description')
-            ->getIntent()->toBe(Confirm::Constructive)
+        ->getName()->toBe('name')
+        ->getDescription()->toBe('description')
+        ->getIntent()->toBe(Confirm::Constructive)
         );
 });
 
@@ -31,9 +29,9 @@ it('sets with self-call', function () {
     )->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getName()->toBe('name')
-            ->getDescription()->toBe('description')
-            ->getSubmit()->toBe('Accept')
+        ->getName()->toBe('name')
+        ->getDescription()->toBe('description')
+        ->getSubmit()->toBe('Accept')
         );
 });
 
@@ -42,8 +40,8 @@ it('sets with strings', function () {
         ->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getName()->toBe('name')
-            ->getDescription()->toBe('description')
+        ->getName()->toBe('name')
+        ->getDescription()->toBe('description')
         );
 });
 
@@ -60,9 +58,9 @@ it('resolves', function () {
         ->hasConfirm()->toBeTrue()
         ->resolveConfirm(...params($product))->toBeInstanceOf(InlineAction::class)
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getName()->toBe(\sprintf('Delete %s', $product->name))
-            ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name))
-            ->getSubmit()->toBe('Delete')
-            ->getIntent()->toBe(Confirm::Destructive)
+        ->getName()->toBe(\sprintf('Delete %s', $product->name))
+        ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name))
+        ->getSubmit()->toBe('Delete')
+        ->getIntent()->toBe(Confirm::Destructive)
         );
 });

@@ -126,7 +126,7 @@ describe('bulk', function () {
             ->each(fn ($product) => $product
                 ->name->toBe('test')
             );
-        
+
         expect(Product::query()
             ->whereIn('id', $this->ids)
             ->get())

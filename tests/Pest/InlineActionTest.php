@@ -47,7 +47,7 @@ it('has array representation with route', function () {
             'default' => false,
             'action' => false,
             'href' => route('products.index'),
-            'method' => Request::METHOD_GET
+            'method' => Request::METHOD_GET,
         ]);
 });
 
@@ -62,7 +62,7 @@ it('resolves', function () {
         Product::class => $product,
     ];
 
-    expect((new DestroyAction())->resolve($named, $typed))
+    expect((new DestroyAction)->resolve($named, $typed))
         ->toBeInstanceOf(DestroyAction::class)
         ->getLabel()->toBe('Destroy '.$product->name);
 });
@@ -94,7 +94,7 @@ describe('executes', function () {
     });
 
     test('with handler', function () {
-        $action = new DestroyAction();
+        $action = new DestroyAction;
 
         $named = [
             'product' => $this->product,

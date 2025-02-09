@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Core\Primitive;
-use Honed\Core\Concerns\HasIcon;
-use Honed\Core\Concerns\HasName;
-use Honed\Core\Concerns\HasType;
-use Honed\Core\Concerns\HasLabel;
-use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\HasExtra;
+use Honed\Core\Concerns\HasIcon;
+use Honed\Core\Concerns\HasLabel;
+use Honed\Core\Concerns\HasName;
+use Honed\Core\Concerns\HasRoute;
+use Honed\Core\Concerns\HasType;
+use Honed\Core\Primitive;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
@@ -20,17 +20,17 @@ use Illuminate\Support\Traits\ForwardsCalls;
 abstract class Action extends Primitive
 {
     use Allowable;
+    use Concerns\HasAction;
+    use Concerns\HasConfirm;
+    use ForwardsCalls;
+    use HasExtra;
     use HasIcon;
     use HasLabel;
     use HasName;
-    use HasType;
     use HasRoute;
-    use ForwardsCalls;
-    use HasExtra;
-    use Concerns\HasAction;
-    use Concerns\HasConfirm;
+    use HasType;
 
-    public static function make(string $name, string|\Closure $label = null): static
+    public static function make(string $name, string|\Closure|null $label = null): static
     {
         return resolve(static::class)
             ->name($name)
@@ -68,10 +68,9 @@ abstract class Action extends Primitive
 
     /**
      * Resolve the action's properties.
-     * 
+     *
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
-     * 
      * @return $this
      */
     public function resolve(array $parameters = [], array $typed = []): static

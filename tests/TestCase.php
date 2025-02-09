@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action\Tests;
 
 use Honed\Action\ActionServiceProvider;
-use Honed\Action\Http\Requests\ActionRequest;
 use Honed\Action\Tests\Stubs\Controller;
 use Honed\Action\Tests\Stubs\Status;
 use Illuminate\Database\Schema\Blueprint;

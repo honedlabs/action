@@ -52,12 +52,12 @@ it('resolves', function () {
     $product = product();
 
     expect(PageAction::make('test')
-            ->route(fn (Product $product) => route('products.show', $product))
-            ->resolve(...params($product))
-        )->toBeInstanceOf(PageAction::class)
+        ->route(fn (Product $product) => route('products.show', $product))
+        ->resolve(...params($product))
+    )->toBeInstanceOf(PageAction::class)
         ->getLabel()->toBe('Test')
         ->routeToArray()->toEqual([
-            'href' => route('products.show', $product),
-            'method' => Request::METHOD_GET,
-        ]);
+        'href' => route('products.show', $product),
+        'method' => Request::METHOD_GET,
+    ]);
 });
