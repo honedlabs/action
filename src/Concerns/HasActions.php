@@ -7,6 +7,7 @@ namespace Honed\Action\Concerns;
 use Honed\Action\BulkAction;
 use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
+use Illuminate\Support\Collection;
 
 trait HasActions
 {
@@ -73,12 +74,13 @@ trait HasActions
 
     /**
      * Convert the independent actions to an array.
-     *
-     * @return array<string,array<int,\Honed\Action\Action>>
+     * 
+     * @return array<string,array<int,\Honed\Action\Action>|bool>
      */
     public function actionsToArray(): array
     {
         return [
+            'actions' => \count($this->inlineActions()) > 0,
             'bulk' => $this->bulkActions(),
             'page' => $this->pageActions(),
         ];

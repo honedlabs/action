@@ -18,19 +18,4 @@ class BulkData extends ActionData
     ) {
         //
     }
-
-    /**
-     * Create a new bulk data transfer object.
-     *
-     * @param  \Honed\Action\Http\Requests\ActionRequest  $request
-     */
-    public static function from($request): static
-    {
-        return resolve(static::class, [
-            'name' => $request->input('name'),
-            'except' => $request->input('except'),
-            'only' => $request->input('only'),
-            'all' => $request->input('all'),
-        ]);
-    }
 }

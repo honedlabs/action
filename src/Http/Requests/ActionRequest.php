@@ -17,20 +17,21 @@ class ActionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $isInline = Rule::excludeIf(fn ($request) => $request->input('type') === Creator::Inline);
-        $isBulk = Rule::excludeIf(fn ($request) => $request->input('type') === Creator::Bulk);
+        $bulk = Rule::excludeIf(\in_array($this->input('type'), [Creator::Inline, Creator::Page]));
+        $inline = Rule::excludeIf(\in_array($this->input('type'), [Creator::Bulk, Creator::Page]));
+        $regex = 'regex:/^[\w-]*$/';
 
         return [
             'name' => ['required', 'string'],
             'type' => ['required', Rule::in([Creator::Inline, Creator::Bulk, Creator::Page])],
 
-            'only' => [$isInline, 'sometimes', 'array'],
-            'except' => [$isInline, 'sometimes', 'array'],
-            'all' => [$isInline, 'required', 'boolean'],
-            'only.*' => [$isInline, 'sometimes', 'string', 'integer'],
-            'except.*' => [$isInline, 'sometimes', 'string', 'integer'],
+            'only' => [$bulk, 'sometimes', 'array'],
+            'except' => [$bulk, 'sometimes', 'array'],
+            'all' => [$bulk, 'required', 'boolean'],
+            'only.*' => [$bulk, 'sometimes', $regex],
+            'except.*' => [$bulk, 'sometimes', $regex],
 
-            'id' => [$isBulk, 'required', 'string', 'integer'],
+            'id' => [$inline, 'required', $regex],
         ];
     }
 }

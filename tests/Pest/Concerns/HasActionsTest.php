@@ -22,7 +22,6 @@ class HasActionsMethod extends HasActionsTest
             BulkAction::make('restore.products')->allow(false),
             PageAction::make('create.product'),
             PageAction::make('show.product')->allow(false),
-
         ];
     }
 }
@@ -36,44 +35,54 @@ it('has actions', function () {
     expect($this->test)
         ->hasActions()->toBeFalse()
         ->getActions()->scoped(fn ($actions) => $actions
-        ->toBeCollection()
-        ->toBeEmpty()
+            ->toBeArray()
+            ->toBeEmpty()
         );
 
     expect($this->method)
         ->hasActions()->toBeTrue()
         ->getActions()->scoped(fn ($actions) => $actions
-        ->toBeCollection()
-        ->toHaveCount(5)
+            ->toBeArray()
+            ->toHaveCount(5)
         );
 });
 
 it('has inline actions', function () {
     expect($this->test)
-        ->inlineActions()->toBeCollection()
+        ->inlineActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->inlineActions()->toBeCollection()
+        ->inlineActions()->toBeArray()
         ->toHaveCount(1);
 });
 
 it('has bulk actions', function () {
     expect($this->test)
-        ->bulkActions()->toBeCollection()
+        ->bulkActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->bulkActions()->toBeCollection()
+        ->bulkActions()->toBeArray()
         ->toHaveCount(1);
 });
 
 it('has page actions', function () {
     expect($this->test)
-        ->pageActions()->toBeCollection()
+        ->pageActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->pageActions()->toBeCollection()
+        ->pageActions()->toBeArray()
         ->toHaveCount(1);
+});
+
+it('has array representation', function () {
+    expect($this->test->actionsToArray())
+        ->toBeArray()
+        ->toEqual([
+            'actions' => false,
+            'bulk' => [],
+            'page' => [],
+        ]);
 });

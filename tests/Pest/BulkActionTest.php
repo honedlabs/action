@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use Honed\Action\BulkAction;
-use Honed\Action\Tests\Stubs\Product;
-use Illuminate\Support\Collection;
 use Pest\Expectation;
+use Honed\Action\Creator;
+use Honed\Action\BulkAction;
+use Illuminate\Support\Collection;
+use Honed\Action\Tests\Stubs\Product;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');
@@ -23,7 +24,17 @@ it('makes', function () {
 it('has array representation', function () {
     expect($this->action->toArray())
         ->toBeArray()
-        ->toHaveKeys(['name', 'label', 'type', 'icon', 'extra', 'action']);
+        ->toEqual([
+            'name' => 'test',
+            'label' => 'Test',
+            'type' => Creator::Bulk,
+            'icon' => null,
+            'extra' => [],
+            'action' => false,
+            'confirm' => null,
+            'action' => false,
+            'keepSelected' => false,
+        ]);
 });
 
 describe('executes', function () {

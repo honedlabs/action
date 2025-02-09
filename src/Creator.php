@@ -23,7 +23,7 @@ class Creator
             self::Bulk => $this->bulk($name, $label),
             self::Inline => $this->inline($name, $label),
             self::Page => $this->page($name, $label),
-            default => throw new InvalidActionTypeException($type)
+            default => static::throwInvalidArgumentException($type),
         };
     }
 
@@ -49,5 +49,15 @@ class Creator
     public function page(string $name, string|\Closure|null $label = null): PageAction
     {
         return PageAction::make($name, $label);
+    }
+
+    /**
+     * Throw an invalid argument exception.
+     */
+    protected static function throwInvalidArgumentException(string $type): never
+    {
+        throw new \InvalidArgumentException(\sprintf(
+            'Action type [%s] is invalid.', $type
+        ));
     }
 }

@@ -16,9 +16,9 @@ it('makes', function () {
 it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
-        ->toHaveKeys(['title', 'description', 'dismiss', 'submit', 'intent'])
+        ->toHaveKeys(['name', 'description', 'dismiss', 'submit', 'intent'])
         ->toEqual([
-            'title' => null,
+            'name' => null,
             'description' => null,
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
@@ -28,12 +28,13 @@ it('has array representation', function () {
 
 it('resolves', function () {
     $product = product();
+
     expect(Confirm::make(
         fn (Product $p) => $p->name,
         fn (Product $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
-    )->resolve($product))
+    )->resolve(...params($product)))
         ->toBeInstanceOf(Confirm::class)
-        ->getTitle()->toBe($product->name)
+        ->getName()->toBe($product->name)
         ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name));
 });
 

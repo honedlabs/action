@@ -28,3 +28,19 @@ function populate(int $count = 1000): void
         product();
     }
 }
+
+/**
+ * @return array{array<string,mixed>,array<string,mixed>}
+ */
+function params(Product $product): array
+{
+    $named = [
+        'product' => $product,
+    ];
+
+    $typed = [
+        Product::class => $product,
+    ];
+
+    return [$named, $typed];
+}

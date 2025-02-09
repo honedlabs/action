@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Honed\Action\Creator;
 use Honed\Action\PageAction;
 use Honed\Action\Tests\Stubs\Product;
+use Symfony\Component\HttpFoundation\Request;
 
 beforeEach(function () {
     $this->test = PageAction::make('test');
@@ -17,25 +19,45 @@ it('makes', function () {
 it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
-        ->toHaveKeys(['name', 'label', 'type', 'icon', 'extra']);
+        ->toEqual([
+            'name' => 'test',
+            'label' => 'Test',
+            'type' => Creator::Page,
+            'icon' => null,
+            'extra' => [],
+            'action' => false,
+            'confirm' => null,
+            'action' => false,
+        ]);
 });
 
-it('has array representation with destination', function () {
-    expect($this->test->to('test')->toArray())
+it('has array representation with route', function () {
+    expect($this->test->route('products.index')->toArray())
         ->toBeArray()
-        ->toHaveKeys(['name', 'label', 'type', 'icon', 'extra', 'href', 'method', 'tab']);
+        ->toEqual([
+            'name' => 'test',
+            'label' => 'Test',
+            'type' => Creator::Page,
+            'icon' => null,
+            'extra' => [],
+            'action' => false,
+            'confirm' => null,
+            'action' => false,
+            'href' => route('products.index'),
+            'method' => Request::METHOD_GET,
+        ]);
 });
 
 it('resolves', function () {
     $product = product();
 
     expect(PageAction::make('test')
-        ->to(fn (Product $product) => route('products.show', $product))
-        ->resolve($product)
-    )->toBeInstanceOf(PageAction::class)
+            ->route(fn (Product $product) => route('products.show', $product))
+            ->resolve(...params($product))
+        )->toBeInstanceOf(PageAction::class)
         ->getLabel()->toBe('Test')
-        ->getDestination()->scoped(fn ($destination) => $destination
-    ->get()->toBe(route('products.show', $product))
-    ->getMethod()->toBe('GET')
-    ->getTab()->toBeFalse());
+        ->routeToArray()->toEqual([
+            'href' => route('products.show', $product),
+            'method' => Request::METHOD_GET,
+        ]);
 });

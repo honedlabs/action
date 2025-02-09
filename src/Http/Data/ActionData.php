@@ -8,20 +8,18 @@ use Honed\Core\Contracts\TransferObject;
 
 class ActionData implements TransferObject
 {
-    public function __construct(public readonly string $name,
-    ) {
+    public function __construct(public readonly string $name) 
+    {
         //
     }
 
     /**
-     * Create a new inline data transfer object.
+     * Create a new data transfer object from a request.
      *
      * @param  \Honed\Action\Http\Requests\ActionRequest  $request
      */
     public static function from($request): static
     {
-        return resolve(static::class, [
-            'name' => $request->input('name'),
-        ]);
+        return resolve(static::class, $request->validated());
     }
 }

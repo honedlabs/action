@@ -28,6 +28,7 @@ class InlineAction extends Action
      * Execute the action handler using the provided data.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
      * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
      */
     public function execute($record)
@@ -43,15 +44,17 @@ class InlineAction extends Action
 
     /**
      * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
      * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
      */
     protected function callHandler($record)
     {
-        return \call_user_func([$this, 'handle'], $record);
+        return \call_user_func([$this, 'handle'], $record); // @phpstan-ignore-line
     }
 
     /**
      * @param  \Illuminate\Database\Eloquent\Model  $record
+     * 
      * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
      */
     protected function callAction($record)

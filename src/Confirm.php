@@ -6,6 +6,7 @@ namespace Honed\Action;
 
 use Honed\Core\Concerns\HasDescription;
 use Honed\Core\Concerns\HasName;
+use Honed\Core\Contracts\ResolvesClosures;
 use Honed\Core\Primitive;
 
 /**
@@ -17,9 +18,7 @@ class Confirm extends Primitive
     use HasName;
 
     const Constructive = 'constructive';
-
     const Destructive = 'destructive';
-
     const Informative = 'informative';
 
     /**
@@ -37,35 +36,19 @@ class Confirm extends Primitive
      */
     protected $intent;
 
-    public function __construct(
-        string|\Closure|null $name = null,
-        string|\Closure|null $description = null,
-        string $dismiss = 'Cancel',
-        string $submit = 'Confirm',
-        ?string $intent = null
-    ) {
-        parent::__construct();
-        $this->name($name);
-        $this->description($description);
-        $this->dismiss($dismiss);
-        $this->submit($submit);
-        $this->intent($intent);
-    }
-
     /**
      * Make a new confirm instance.
      */
-    public static function make(
-        string|\Closure|null $name = null,
-        string|\Closure|null $description = null,
-        string $dismiss = 'Cancel',
-        string $submit = 'Confirm',
-        ?string $intent = null
-    ): static {
-        return resolve(static::class, \compact('name', 'description', 'dismiss', 'submit', 'intent'));
+    public static function make(string|\Closure|null $name = null, string|\Closure|null $description = null, string $dismiss = 'Cancel', string $submit = 'Confirm', ?string $intent = null): static {
+        return resolve(static::class)
+            ->name($name)
+            ->description($description)
+            ->dismiss($dismiss)
+            ->submit($submit)
+            ->intent($intent);
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'name' => $this->getName(),
@@ -77,8 +60,11 @@ class Confirm extends Primitive
     }
 
     /**
+     * Resolve the confirm's properties.
+     * 
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
+     * 
      * @return $this
      */
     public function resolve(array $parameters = [], array $typed = []): static
