@@ -24,7 +24,7 @@ class ActionServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                ActionMakeCommand::class
+                ActionMakeCommand::class,
             ]);
         }
 
@@ -39,13 +39,13 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Get the services provided by the provider.
-     * 
+     *
      * @return array<int, class-string>
      */
     public function provides(): array
     {
         return [
-            ActionMakeCommand::class
+            ActionMakeCommand::class,
         ];
     }
 }

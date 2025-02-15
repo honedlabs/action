@@ -13,7 +13,7 @@ trait HasActions
 {
     /**
      * List of the actions.
-     * 
+     *
      * @var array<int,\Honed\Action\Action>|null
      */
     public $actions;
@@ -49,8 +49,8 @@ trait HasActions
     {
         return \array_values(
             \array_filter(
-                $this->getActions(), 
-                static fn (Action $action) =>  $action instanceof InlineAction
+                $this->getActions(),
+                static fn (Action $action) => $action instanceof InlineAction
             )
         );
     }
@@ -64,9 +64,8 @@ trait HasActions
     {
         return \array_values(
             \array_filter(
-                $this->getActions(), 
-                static fn (Action $action) => 
-                    $action instanceof BulkAction && $action->isAllowed()
+                $this->getActions(),
+                static fn (Action $action) => $action instanceof BulkAction && $action->isAllowed()
             )
         );
     }
@@ -80,13 +79,11 @@ trait HasActions
     {
         return \array_values(
             \array_filter(
-                $this->getActions(), 
-                static fn (Action $action) => 
-                    $action instanceof PageAction && $action->isAllowed()
+                $this->getActions(),
+                static fn (Action $action) => $action instanceof PageAction && $action->isAllowed()
             )
         );
     }
-
 
     /**
      * Get the actions as an array.
@@ -123,9 +120,8 @@ trait HasActions
     public function pageActionsToArray(): array
     {
         return \array_map(
-            static fn (PageAction $action) => $action->toArray(), 
+            static fn (PageAction $action) => $action->toArray(),
             $this->getPageActions()
         );
     }
-
 }
