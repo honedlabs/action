@@ -1,0 +1,83 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Honed\Action\Console\Commands;
+
+use Illuminate\Support\Str;
+use Illuminate\Console\GeneratorCommand;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+#[AsCommand(name: 'make:action')]
+class ActionMakeCommand extends GeneratorCommand
+{
+    /**
+     * The console command name.
+     *
+     * @var string
+     */
+    protected $name = 'make:action';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Create a new atomic action class';
+
+    /**
+     * The type of class being generated.
+     *
+     * @var string
+     */
+    protected $type = 'Action';
+
+    /**
+     * Get the stub file for the generator.
+     * 
+     * @return string
+     */
+    protected function getStub()
+    {
+        return $this->resolveStubPath('/stubs/action.stub');
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     * 
+     * @param  string  $stub
+     * @return string
+     */
+    protected function resolveStubPath($stub)
+    {
+        return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
+            ? $customPath
+            : __DIR__.'/../../..'.$stub;
+    }
+
+    /**
+     * Get the default namespace for the class.
+     * 
+     * @param  string  $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace.'\Actions';
+    }
+
+    /**
+     * Get the console command options.
+     * 
+     * @return array<int, array<int, mixed>>
+     */
+    protected function getOptions()
+    {
+        return [
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the action already exists'],
+        ];
+    }
+}

@@ -50,6 +50,6 @@ trait HasAction
      */
     public function hasAction()
     {
-        return ! \is_null($this->action) || $this instanceof HasHandler;
+        return isset($this->action) || $this instanceof HasHandler;
     }
 }

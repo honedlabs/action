@@ -79,6 +79,7 @@ abstract class Action extends Primitive
         $this->resolveLabel($parameters, $typed);
         $this->resolveIcon($parameters, $typed);
         $this->resolveRoute($parameters, $typed);
+        $this->resolveConfirm($parameters, $typed);
 
         return $this;
     }

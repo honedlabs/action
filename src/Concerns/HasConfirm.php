@@ -16,23 +16,25 @@ trait HasConfirm
     /**
      * Set the confirm for the instance.
      *
+     * @param  \Honed\Action\Confirm|\Closure|string|null  $confirm
      * @return $this
      */
-    public function confirm(Confirm|\Closure|string|null $confirm, ?string $description = null): static
+    public function confirm(mixed $confirm, ?string $description = null): static
     {
-        if (! \is_null($confirm)) {
-            match (true) {
-                $confirm instanceof Confirm => $this->confirm = $confirm,
-                $confirm instanceof \Closure => $this->evaluate($confirm),
-                default => $this->confirmInstance()->name($confirm)->description($description)
-            };
-        }
+        match (true) {
+            \is_null($confirm) => null,
+            $confirm instanceof Confirm => $this->confirm = $confirm,
+            $confirm instanceof \Closure => $this->evaluate($confirm),
+            default => $this->confirmInstance()
+                ->name($confirm)
+                ->description($description)
+        };
 
         return $this;
     }
 
     /**
-     * Get the confirm for this instance.
+     * Retrieve the confirm for the instabce.
      */
     public function getConfirm(): ?Confirm
     {
@@ -40,6 +42,8 @@ trait HasConfirm
     }
 
     /**
+     * Resolve the confirm using named and typed parameters.
+     * 
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
      * @return $this
@@ -56,7 +60,7 @@ trait HasConfirm
      */
     public function hasConfirm(): bool
     {
-        return ! \is_null($this->confirm);
+        return isset($this->confirm);
     }
 
     /**
