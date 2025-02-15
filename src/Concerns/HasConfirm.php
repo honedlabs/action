@@ -43,7 +43,7 @@ trait HasConfirm
 
     /**
      * Resolve the confirm using named and typed parameters.
-     * 
+     *
      * @param  array<string,mixed>  $parameters
      * @param  array<string,mixed>  $typed
      * @return $this

@@ -7,7 +7,9 @@ namespace Honed\Action;
 class Creator
 {
     const Bulk = 'bulk';
+
     const Inline = 'inline';
+
     const Page = 'page';
 
     /**
