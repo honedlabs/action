@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Honed\Action\Contracts\HasHandler;
+use Honed\Action\Contracts\Handles;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -30,7 +30,7 @@ trait HasBulkActions
 
         [$model, $singular, $plural] = $this->getParameterNames($builder);
 
-        $handler = $this instanceof HasHandler;
+        $handler = $this instanceof Handles;
 
         /**
          * @phpstan-var callable|\Closure

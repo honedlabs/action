@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Honed\Action\Tests\Stubs;
 
-use Honed\Action\Contracts\HasHandler;
+use Honed\Action\Contracts\Handles;
 use Honed\Action\InlineAction;
 
-class DestroyAction extends InlineAction implements HasHandler
+class DestroyAction extends InlineAction implements Handles
 {
     public function setUp(): void
     {

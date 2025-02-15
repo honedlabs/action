@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Honed\Action\Contracts\HasHandler;
+use Honed\Action\Contracts\Handles;
 
 trait HasAction
 {
@@ -50,6 +50,6 @@ trait HasAction
      */
     public function hasAction()
     {
-        return isset($this->action) || $this instanceof HasHandler;
+        return isset($this->action) || $this instanceof Handles;
     }
 }

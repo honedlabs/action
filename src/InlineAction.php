@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Contracts\HasHandler;
+use Honed\Action\Contracts\Handles;
 use Honed\Core\Concerns\IsDefault;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,7 +36,7 @@ class InlineAction extends Action
             return;
         }
 
-        return $this instanceof HasHandler
+        return $this instanceof Handles
             ? $this->callHandler($record)
             : $this->callAction($record);
     }

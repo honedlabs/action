@@ -7,7 +7,7 @@ namespace Honed\Action\Contracts;
 /**
  * @method handle(mixed ...$parameters)
  */
-interface Action
+interface Actionable
 {
     //
 }
