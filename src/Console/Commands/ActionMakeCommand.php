@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Action\Console\Commands;
 
+use Illuminate\Support\Str;
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'make:action')]
 class ActionMakeCommand extends GeneratorCommand
@@ -34,7 +37,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     /**
      * Get the stub file for the generator.
-     *
+     * 
      * @return string
      */
     protected function getStub()
@@ -44,7 +47,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     /**
      * Resolve the fully-qualified path to the stub.
-     *
+     * 
      * @param  string  $stub
      * @return string
      */
@@ -57,7 +60,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     /**
      * Get the default namespace for the class.
-     *
+     * 
      * @param  string  $rootNamespace
      * @return string
      */
@@ -68,7 +71,7 @@ class ActionMakeCommand extends GeneratorCommand
 
     /**
      * Get the console command options.
-     *
+     * 
      * @return array<int, array<int, mixed>>
      */
     protected function getOptions()
