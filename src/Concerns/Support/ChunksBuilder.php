@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Concerns;
+namespace Honed\Action\Concerns\Support;
 
 use Honed\Action\Contracts\ShouldChunk;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,20 +10,13 @@ use Illuminate\Support\Collection;
 
 trait ChunksBuilder
 {
+    use CanChunkById;
+    use HasChunkSize;
+
     /**
      * @var bool|null
      */
     protected $chunk;
-
-    /**
-     * @var int|null
-     */
-    protected $chunkSize;
-
-    /**
-     * @var bool|null
-     */
-    protected $chunkById;
 
     /**
      * Set the action to chunk the records.
@@ -33,8 +26,8 @@ trait ChunksBuilder
     public function chunk(int $size = 1000, bool $chunkById = true): static
     {
         $this->chunk = true;
-        $this->chunkSize = $size;
-        $this->chunkById = $chunkById;
+        $this->chunkSize($size);
+        $this->chunkById($chunkById);
 
         return $this;
     }
@@ -45,22 +38,6 @@ trait ChunksBuilder
     public function chunks(): bool
     {
         return $this instanceof ShouldChunk || (bool) $this->chunk;
-    }
-
-    /**
-     * Get the chunk size.
-     */
-    public function getChunkSize(): int
-    {
-        return $this->chunkSize ?? 1000;
-    }
-
-    /**
-     * Determine if the action should chunk by id.
-     */
-    public function chunksById(): bool
-    {
-        return $this->chunkById ?? true;
     }
 
     /**

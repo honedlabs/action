@@ -11,8 +11,8 @@ use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
-    use ChunksBuilder;
     use HasAction;
+    use Support\ChunksBuilder;
 
     /**
      * Execute the action handler using the provided data.

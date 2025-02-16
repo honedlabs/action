@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\ChunksBuilder;
+use Honed\Action\Concerns\Support\ChunksBuilder;
 use Honed\Action\Tests\Stubs\Product;
 
 class ChunksBuilderTest

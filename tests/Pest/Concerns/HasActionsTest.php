@@ -49,31 +49,31 @@ it('has actions', function () {
 
 it('has inline actions', function () {
     expect($this->test)
-        ->inlineActions()->toBeArray()
+        ->getInlineActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->inlineActions()->toBeArray()
+        ->getInlineActions()->toBeArray()
         ->toHaveCount(1);
 });
 
 it('has bulk actions', function () {
     expect($this->test)
-        ->bulkActions()->toBeArray()
+        ->getBulkActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->bulkActions()->toBeArray()
+        ->getBulkActions()->toBeArray()
         ->toHaveCount(1);
 });
 
 it('has page actions', function () {
     expect($this->test)
-        ->pageActions()->toBeArray()
+        ->getPageActions()->toBeArray()
         ->toBeEmpty();
 
     expect($this->method)
-        ->pageActions()->toBeArray()
+        ->getPageActions()->toBeArray()
         ->toHaveCount(1);
 });
 

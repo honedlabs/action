@@ -46,6 +46,8 @@ trait HasAction
     }
 
     /**
+     * Determine if the instance has an action handler.
+     *
      * @return bool
      */
     public function hasAction()
