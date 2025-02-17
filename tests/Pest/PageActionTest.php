@@ -57,7 +57,7 @@ it('resolves', function () {
     )->toBeInstanceOf(PageAction::class)
         ->getLabel()->toBe('Test')
         ->routeToArray()->toEqual([
-        'href' => route('products.show', $product),
-        'method' => Request::METHOD_GET,
-    ]);
+            'href' => route('products.show', $product),
+            'method' => Request::METHOD_GET,
+        ]);
 });
