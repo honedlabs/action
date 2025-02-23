@@ -23,12 +23,13 @@ trait HasParameterNames
             ? $parameter->getModel()
             : $parameter;
 
-        $table = $model->getTable();
+        /** @var \Illuminate\Support\Stringable $strTable */
+        $strTable = str($model->getTable());
 
         return [
             $model,
-            str($table)->singular()->camel()->toString(),
-            str($table)->camel()->toString(),
+            $strTable->singular()->camel()->toString(),
+            $strTable->camel()->toString(),
         ];
     }
 
@@ -44,14 +45,10 @@ trait HasParameterNames
     {
         [$model, $singular, $plural] = static::getParameterNames($query);
 
-        $named = [
-            'model' => $query,
-            'record' => $query,
-            'query' => $query,
-            'builder' => $query,
-            $singular => $query,
-            $plural => $query,
-        ];
+        $named = \array_fill_keys(
+            ['model', 'record', 'query', 'builder', $singular, $plural],
+            $query
+        );
 
         $typed = [
             Model::class => $query,

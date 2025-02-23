@@ -11,13 +11,15 @@ use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\HasType;
+use Honed\Core\Contracts\Resolves;
 use Honed\Core\Primitive;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
  * @extends \Honed\Core\Primitive<string,mixed>
  */
-abstract class Action extends Primitive
+abstract class Action extends Primitive implements Resolves
 {
     use Allowable;
     use Concerns\HasAction;
@@ -30,6 +32,9 @@ abstract class Action extends Primitive
     use HasRoute;
     use HasType;
 
+    /**
+     * Create a new action instance.
+     */
     public static function make(string $name, string|\Closure|null $label = null): static
     {
         return resolve(static::class)
@@ -37,6 +42,9 @@ abstract class Action extends Primitive
             ->label($label ?? static::makeLabel($name));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toArray(): array
     {
         return [
@@ -52,6 +60,8 @@ abstract class Action extends Primitive
     }
 
     /**
+     * Get the array representation of the action's route if applicable.
+     *
      * @return array<string,mixed>
      */
     public function routeToArray(): array
@@ -67,17 +77,13 @@ abstract class Action extends Primitive
     }
 
     /**
-     * Resolve the action's properties.
-     *
-     * @param  array<string,mixed>  $parameters
-     * @param  array<string,mixed>  $typed
-     * @return $this
+     * {@inheritdoc}
      */
     public function resolve(array $parameters = [], array $typed = []): static
     {
-        $this->resolveName($parameters, $typed);
         $this->resolveLabel($parameters, $typed);
         $this->resolveIcon($parameters, $typed);
+        $this->resolveExtra($parameters, $typed);
         $this->resolveRoute($parameters, $typed);
         $this->resolveConfirm($parameters, $typed);
 
@@ -85,7 +91,7 @@ abstract class Action extends Primitive
     }
 
     /**
-     * @return array<int,mixed>
+     * {@inheritdoc}
      */
     public function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
@@ -96,13 +102,13 @@ abstract class Action extends Primitive
     }
 
     /**
-     * @return array<int,mixed>
+     * {@inheritdoc}
      */
     public function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
         return match ($parameterType) {
             Confirm::class => [$this->confirmInstance()],
-            default => [],
+            default => [App::make($parameterType)], // Dependency injection
         };
     }
 }

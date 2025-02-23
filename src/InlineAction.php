@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Contracts\Handles;
 use Honed\Core\Concerns\IsDefault;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,11 +11,17 @@ class InlineAction extends Action
 {
     use IsDefault;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp(): void
     {
         $this->type(Creator::Inline);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toArray(): array
     {
         return \array_merge(parent::toArray(), [
@@ -25,41 +30,36 @@ class InlineAction extends Action
     }
 
     /**
-     * Execute the action handler using the provided data.
+     * Execute the inline action on the given record.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
-     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
+     * @return mixed
      */
     public function execute($record)
     {
-        if (! $this->hasAction()) {
+        $handler = $this->getHandler();
+
+        if (! $handler) {
             return;
         }
 
-        return $this instanceof Handles
-            ? $this->callHandler($record)
-            : $this->callAction($record);
+        [$named, $typed] = $this->getEvaluationParameters($record);
+
+        return $this->evaluate($handler, $named, $typed);
     }
 
     /**
+     * Get the named and typed parameters to use for callable evaluation.
+     *
      * @param  \Illuminate\Database\Eloquent\Model  $record
-     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
+     * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function callHandler($record)
-    {
-        return \call_user_func([$this, 'handle'], $record); // @phpstan-ignore-line
-    }
-
-    /**
-     * @param  \Illuminate\Database\Eloquent\Model  $record
-     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
-     */
-    protected function callAction($record)
+    protected function getEvaluationParameters($record): array
     {
         [$model, $singular] = $this->getParameterNames($record);
 
         $named = [
-            'model' => $model,
+            'model' => $record,
             'record' => $record,
             $singular => $record,
         ];
@@ -69,6 +69,6 @@ class InlineAction extends Action
             $model::class => $record,
         ];
 
-        return $this->evaluate($this->getAction(), $named, $typed);
+        return [$named, $typed];
     }
 }

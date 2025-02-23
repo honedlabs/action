@@ -16,9 +16,11 @@ trait CanChunkById
      *
      * @return $this
      */
-    public function chunkById(bool $chunkById = true): static
+    public function chunkById(?bool $chunkById = true): static
     {
-        $this->chunkById = $chunkById;
+        if (! \is_null($chunkById)) {
+            $this->chunkById = $chunkById;
+        }
 
         return $this;
     }
@@ -28,6 +30,7 @@ trait CanChunkById
      */
     public function chunksById(): bool
     {
-        return $this->chunkById ?? (bool) config('action.chunk_by_id', true);
+        return $this->chunkById
+            ?? (bool) config('action.chunk_by_id', true);
     }
 }

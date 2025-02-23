@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Honed\Action\BulkAction;
 use Honed\Action\Creator;
 use Honed\Action\Tests\Stubs\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Pest\Expectation;
 
@@ -37,24 +38,15 @@ it('has array representation', function () {
         ]);
 });
 
-describe('executes', function () {
-    beforeEach(function () {
-        $this->builder = Product::query();
-    });
+it('executes', function () {
+    $product = product();
 
-    test('not without action', function () {
-        expect($this->action->execute(Product::query()))
-            ->toBeNull();
-    });
+    $fn = fn (Builder $q) => $q->update(['name' => 'test']);
 
-    test('with collection callback', function () {
-        $this->action->action(fn (Collection $collection) => $collection
-            ->each(fn (Product $product) => $product->update(['name' => 'Updated']))
-        )->execute($this->builder);
-
-        expect(Product::query()->get())
-            ->each(function (Expectation $product) {
-                expect($product->value->name)->toBe('Updated');
-            });
-    });
+    $this->action->action($fn)->execute(Product::query());
+    
+    $this->assertDatabaseHas('products', [
+        'id' => $product->id,
+        'name' => 'test',
+    ]); 
 });

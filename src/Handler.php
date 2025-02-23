@@ -11,6 +11,7 @@ use Honed\Core\Concerns\HasBuilderInstance;
 use Honed\Core\Contracts\Makeable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Handler implements Makeable
@@ -54,7 +55,7 @@ class Handler implements Makeable
      * Handle the incoming action request using the actions from the source, and the resource provided.
      *
      * @param  \Honed\Action\Http\Requests\ActionRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Illuminate\Http\RedirectResponse|void
+     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function handle($request)
     {
@@ -118,7 +119,8 @@ class Handler implements Makeable
      */
     protected function getKey(Builder $builder): string
     {
-        return $builder->qualifyColumn($this->key ??= $builder->getModel()->getKeyName());
+        return $builder->qualifyColumn($this->key
+            ??= $builder->getModel()->getKeyName());
     }
 
     /**
@@ -127,10 +129,10 @@ class Handler implements Makeable
     protected function resolveInlineAction(InlineData $data): array
     {
         return [
-            collect($this->getActions())
-                ->first(fn (Action $action) => $action instanceof InlineAction && $action->getName() === $data->name),
+            $this->getAction($data->name, InlineAction::class),
             $this->getBuilder()
-                ->where($this->getKey($this->getBuilder()), $data->id)->first(),
+                ->where($this->getKey($this->getBuilder()), $data->id)
+                ->first(),
         ];
     }
 
@@ -144,8 +146,7 @@ class Handler implements Makeable
         $key = $this->getKey($builder);
 
         return [
-            collect($this->getActions())
-                ->first(fn (Action $action) => $action instanceof BulkAction && $action->getName() === $data->name),
+            $this->getAction($data->name, BulkAction::class),
             $data->all
                 ? $builder->whereNotIn($key, $data->except)
                 : $builder->whereIn($key, $data->only),
@@ -158,8 +159,7 @@ class Handler implements Makeable
     protected function resolvePageAction(ActionData $data): array
     {
         return [
-            collect($this->getActions())
-                ->first(fn (Action $action) => $action instanceof PageAction && $action->getName() === $data->name),
+            $this->getAction($data->name, PageAction::class),
             $this->getBuilder(),
         ];
     }
@@ -172,5 +172,19 @@ class Handler implements Makeable
         throw new \InvalidArgumentException(\sprintf(
             'Action type [%s] is invalid.', $type
         ));
+    }
+
+    /**
+     * Find the action by name and type.
+     *
+     * @param  class-string<\Honed\Action\Action>  $type
+     */
+    protected function getAction(string $name, string $type): ?Action
+    {
+        return Arr::first(
+            $this->getActions(),
+            fn (Action $action) => $action instanceof $type
+                && $action->getName() === $name
+        );
     }
 }

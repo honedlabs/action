@@ -11,9 +11,11 @@ trait HasChunkSize
      */
     protected $chunkSize;
 
-    public function chunkSize(int $size): static
+    public function chunkSize(?int $size): static
     {
-        $this->chunkSize = $size;
+        if (! \is_null($size)) {
+            $this->chunkSize = $size;
+        }
 
         return $this;
     }

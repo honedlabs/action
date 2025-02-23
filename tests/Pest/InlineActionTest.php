@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 use Honed\Action\Creator;
 use Honed\Action\InlineAction;
-use Honed\Action\Tests\Stubs\DestroyAction;
+use Honed\Action\Tests\Fixtures\DestroyAction;
 use Honed\Action\Tests\Stubs\Product;
 use Symfony\Component\HttpFoundation\Request;
+use Honed\Action\Tests\Fixtures\DestroyProduct;
+use Illuminate\Http\RedirectResponse;
 
 beforeEach(function () {
     $this->test = InlineAction::make('test');
-});
-
-it('makes', function () {
-    expect($this->test)
-        ->toBeInstanceOf(InlineAction::class);
 });
 
 it('has array representation', function () {
@@ -53,14 +50,8 @@ it('has array representation with route', function () {
 
 it('resolves', function () {
     $product = product();
-
-    $named = [
-        'record' => $product,
-    ];
-
-    $typed = [
-        Product::class => $product,
-    ];
+    $named = ['record' => $product];
+    $typed = [Product::class => $product];
 
     expect((new DestroyAction)->resolve($named, $typed))
         ->toBeInstanceOf(DestroyAction::class)
@@ -75,9 +66,13 @@ describe('executes', function () {
     test('not without action', function () {
         expect($this->test->execute(product()))
             ->toBeNull();
+
+        $this->assertDatabaseHas('products', [
+            'id' => $this->product->id,
+        ]);
     });
 
-    test('with action callback', function () {
+    test('with callback', function () {
         $this->test->action(function (Product $product) {
             $product->update(['name' => 'test']);
 
@@ -89,20 +84,18 @@ describe('executes', function () {
         expect($this->test->execute($this->product))
             ->toBeInstanceOf(\Inertia\Response::class);
 
-        expect($this->product->name)
-            ->toBe('test');
+        $this->assertDatabaseHas('products', [
+            'id' => $this->product->id,
+            'name' => 'test',
+        ]);
     });
 
     test('with handler', function () {
         $action = new DestroyAction;
 
-        $named = [
-            'product' => $this->product,
-        ];
+        $named = ['product' => $this->product];
 
-        $typed = [
-            Product::class => $this->product,
-        ];
+        $typed = [Product::class => $this->product];
 
         expect($action)
             ->getName()->toBe('destroy')
@@ -110,10 +103,20 @@ describe('executes', function () {
             ->getType()->toBe(Creator::Inline)
             ->hasAction()->toBeTrue();
 
-        expect($action->execute($this->product))
-            ->toBeNull();
+        $action->execute($this->product);
 
-        expect(Product::find($this->product->id))
-            ->toBeNull();
+        $this->assertDatabaseMissing('products', [
+            'id' => $this->product->id,
+        ]);
+    });
+
+    test('with class-string action', function () {
+        expect($this->test->action(DestroyProduct::class))
+            ->execute($this->product)
+            ->toBeInstanceOf(RedirectResponse::class);
+
+        $this->assertDatabaseMissing('products', [
+            'id' => $this->product->id,
+        ]);
     });
 });

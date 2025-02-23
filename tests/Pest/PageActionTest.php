@@ -11,11 +11,6 @@ beforeEach(function () {
     $this->test = PageAction::make('test');
 });
 
-it('makes', function () {
-    expect($this->test)
-        ->toBeInstanceOf(PageAction::class);
-});
-
 it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
@@ -57,7 +52,20 @@ it('resolves', function () {
     )->toBeInstanceOf(PageAction::class)
         ->getLabel()->toBe('Test')
         ->routeToArray()->toEqual([
-            'href' => route('products.show', $product),
-            'method' => Request::METHOD_GET,
-        ]);
+        'href' => route('products.show', $product),
+        'method' => Request::METHOD_GET,
+    ]);
+});
+
+it('executes', function () {
+    $product = product();
+
+    $this->test
+        ->action(fn (Product $product) => $product->update(['name' => 'test']))
+        ->execute($product);
+    
+    $this->assertDatabaseHas('products', [
+        'id' => $product->id,
+        'name' => 'test',
+    ]);
 });

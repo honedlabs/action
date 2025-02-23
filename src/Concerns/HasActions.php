@@ -8,6 +8,7 @@ use Honed\Action\Action;
 use Honed\Action\BulkAction;
 use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
+use Illuminate\Support\Collection;
 
 trait HasActions
 {
@@ -30,6 +31,38 @@ trait HasActions
             \method_exists($this, 'actions') => $this->actions(),
             default => [],
         };
+    }
+
+    /**
+     * Add a list of actions to the instance.
+     *
+     * @param  iterable<\Honed\Action\Action>  $actions
+     * @return $this
+     */
+    public function addActions(iterable $actions): static
+    {
+        if ($actions instanceof Collection) {
+            $actions = $actions->all();
+        }
+
+        /**
+         * @var array<int, \Honed\Action\Action> $actions
+         */
+        $this->actions = \array_merge($this->actions ?? [], $actions);
+
+        return $this;
+    }
+
+    /**
+     * Add a single action to the instance.
+     *
+     * @return $this
+     */
+    public function addAction(Action $action): static
+    {
+        $this->actions[] = $action;
+
+        return $this;
     }
 
     /**
@@ -88,7 +121,7 @@ trait HasActions
     /**
      * Get the actions as an array.
      *
-     * @return array<string,array<int,\Honed\Action\Action>|bool>
+     * @return array<string,mixed>
      */
     public function actionsToArray(): array
     {

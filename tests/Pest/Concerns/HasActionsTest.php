@@ -3,47 +3,30 @@
 declare(strict_types=1);
 
 use Honed\Action\BulkAction;
-use Honed\Action\Concerns\HasActions;
-use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
-
-class HasActionsTest
-{
-    use HasActions;
-}
-
-class HasActionsMethod extends HasActionsTest
-{
-    public function actions()
-    {
-        return [
-            InlineAction::make('edit.product'),
-            BulkAction::make('delete.products'),
-            BulkAction::make('restore.products')->allow(false),
-            PageAction::make('create.product'),
-            PageAction::make('show.product')->allow(false),
-        ];
-    }
-}
+use Honed\Action\InlineAction;
+use Honed\Action\Concerns\HasActions;
+use Honed\Action\Tests\Fixtures\BlankActions;
+use Honed\Action\Tests\Fixtures\FilledActions;
 
 beforeEach(function () {
-    $this->test = new HasActionsTest;
-    $this->method = new HasActionsMethod;
+    $this->test = new BlankActions;
+    $this->method = new FilledActions;
 });
 
 it('has actions', function () {
     expect($this->test)
         ->hasActions()->toBeFalse()
         ->getActions()->scoped(fn ($actions) => $actions
-        ->toBeArray()
-        ->toBeEmpty()
+            ->toBeArray()
+            ->toBeEmpty()
         );
 
     expect($this->method)
         ->hasActions()->toBeTrue()
         ->getActions()->scoped(fn ($actions) => $actions
-        ->toBeArray()
-        ->toHaveCount(5)
+            ->toBeArray()
+            ->toHaveCount(5)
         );
 });
 
@@ -85,4 +68,20 @@ it('has array representation', function () {
             'bulk' => [],
             'page' => [],
         ]);
+});
+
+it('adds actions', function () {
+    $action = InlineAction::make('edit.product');
+
+    expect($this->test)
+        ->addAction($action)->toBe($this->test)
+        ->getActions()->toHaveCount(1);
+
+    expect($this->test->addActions([$action]))
+        ->toBe($this->test)
+        ->getActions()->toHaveCount(2);
+
+    expect($this->test->addActions(collect([InlineAction::make('edit.product')])))
+        ->toBe($this->test)
+        ->getActions()->toHaveCount(3);
 });

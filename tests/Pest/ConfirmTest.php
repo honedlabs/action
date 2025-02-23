@@ -9,14 +9,9 @@ beforeEach(function () {
     $this->test = Confirm::make();
 });
 
-it('makes', function () {
-    expect($this->test)->toBeInstanceOf(Confirm::class);
-});
-
 it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
-        ->toHaveKeys(['name', 'description', 'dismiss', 'submit', 'intent'])
         ->toEqual([
             'name' => null,
             'description' => null,

@@ -8,6 +8,9 @@ class PageAction extends Action
 {
     use Concerns\HasBulkActions;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp(): void
     {
         $this->type(Creator::Page);
