@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Tests\RequestFactories\BulkActionRequest;
-use Honed\Action\Tests\RequestFactories\InlineActionRequest;
-use Honed\Action\Tests\RequestFactories\PageActionRequest;
 use Honed\Action\Tests\Stubs\Product;
+use Illuminate\Support\Arr;
+use Honed\Action\Creator;
 
+use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\post;
 
@@ -14,37 +14,41 @@ describe('inline', function () {
     beforeEach(function () {
         $this->product = product();
 
-        $this->fn = fn (array $data = []) => InlineActionRequest::new($data)
-            ->state($data)
-            ->getFactoryData()
-            ->getRequestedData();
+        $this->base = [
+            'name' => 'update',
+            'type' => Creator::Inline,
+            'id' => 1,
+        ];
     });
 
     it('returns 400 for no name match', function () {
-        $data = \call_user_func($this->fn, ['name' => 'missing']);
+        Arr::set($this->base, 'name', 'missing');
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(400);
     });
 
     it('returns 404 if no model is found', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.name', 'id' => 0]);
+        Arr::set($this->base, 'name', 'update.name');
+        Arr::set($this->base, 'id', 0);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(404);
     });
 
     it('returns 403 if the action is not allowed', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.description', 'id' => $this->product->id]);
+        Arr::set($this->base, 'name', 'update.description');
+        Arr::set($this->base, 'id', $this->product->id);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(403);
     });
 
     it('executes', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.name', 'id' => $this->product->id]);
+        Arr::set($this->base, 'name', 'update.name');
+        Arr::set($this->base, 'id', $this->product->id);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertRedirect();
 
         assertDatabaseHas('products', [
@@ -60,30 +64,35 @@ describe('bulk', function () {
 
         $this->ids = \range(1, 10);
 
-        $this->fn = fn (array $data = []) => BulkActionRequest::new($data)
-            ->state($data)
-            ->getFactoryData()
-            ->getRequestedData();
+        $this->base = [
+            'name' => 'update',
+            'type' => Creator::Bulk,
+            'all' => false,
+            'except' => [],
+            'only' => [],
+        ];
     });
 
     it('returns 400 for no name match', function () {
-        $data = \call_user_func($this->fn, ['name' => 'missing']);
+        Arr::set($this->base, 'name', 'missing');
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(400);
     });
 
     it('returns 403 if the action is not allowed', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.description', 'only' => $this->ids]);
+        Arr::set($this->base, 'name', 'update.description');
+        Arr::set($this->base, 'only', $this->ids);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(403);
     });
 
     it('executes for only', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.name', 'only' => $this->ids]);
+        Arr::set($this->base, 'name', 'update.name');
+        Arr::set($this->base, 'only', $this->ids);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertRedirect();
 
         expect(Product::query()
@@ -102,9 +111,10 @@ describe('bulk', function () {
     });
 
     it('executes for except', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.name', 'except' => $this->ids]);
+        Arr::set($this->base, 'name', 'update.name');
+        Arr::set($this->base, 'except', $this->ids);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertRedirect();
 
         // Will execute for all
@@ -115,9 +125,11 @@ describe('bulk', function () {
     });
 
     it('executes for all with except', function () {
-        $data = \call_user_func($this->fn, ['name' => 'update.name', 'all' => true, 'except' => $this->ids]);
+        Arr::set($this->base, 'name', 'update.name');
+        Arr::set($this->base, 'all', true);
+        Arr::set($this->base, 'except', $this->ids);
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertRedirect();
 
         expect(Product::query()
@@ -138,39 +150,36 @@ describe('bulk', function () {
 
 describe('page', function () {
     beforeEach(function () {
-        $this->fn = fn (array $data = []) => PageActionRequest::new($data)
-            ->state($data)
-            ->getFactoryData()
-            ->getRequestedData();
+        $this->base = [
+            'name' => 'update',
+            'type' => Creator::Page,
+        ];
     });
 
     it('returns 400 for no name match', function () {
-        $data = \call_user_func($this->fn, ['name' => 'missing']);
+        Arr::set($this->base, 'name', 'missing');
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(400);
 
-        // dd(Product::all());
+        assertDatabaseCount('products', 0);
     });
 
     it('returns 403 if the action is not allowed', function () {
-        $data = \call_user_func($this->fn, ['name' => 'create.product.description']);
+        Arr::set($this->base, 'name', 'create.product.description');
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertStatus(403);
 
-        // assertDatabaseMissing('products', [
-        //     'name' => 'description',
-        //     'description' => 'description',
-        // ]);
+        assertDatabaseCount('products', 0);
     });
 
     it('executes', function () {
-        $data = \call_user_func($this->fn, ['name' => 'create.product.name']);
+        Arr::set($this->base, 'name', 'create.product.name');
 
-        post(route('actions'), $data)
+        post(route('actions'), $this->base)
             ->assertRedirect();
 
-        // dd(Product::all());
+        assertDatabaseCount('products', 1);
     });
 });
