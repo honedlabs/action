@@ -55,19 +55,19 @@ abstract class Action extends Primitive implements Resolves
             'extra' => $this->getExtra(),
             'action' => $this->hasAction(),
             'confirm' => $this->getConfirm()?->toArray(),
-            ...$this->routeToArray(),
+            'route' => $this->routeToArray(),
         ];
     }
 
     /**
      * Get the array representation of the action's route if applicable.
      *
-     * @return array<string,mixed>
+     * @return array<string,mixed>|null
      */
-    public function routeToArray(): array
+    public function routeToArray(): ?array
     {
         if (! $this->hasRoute()) {
-            return [];
+            return null;
         }
 
         return [

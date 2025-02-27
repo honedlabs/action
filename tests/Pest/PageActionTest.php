@@ -23,6 +23,7 @@ it('has array representation', function () {
             'action' => false,
             'confirm' => null,
             'action' => false,
+            'route' => null,
         ]);
 });
 
@@ -38,8 +39,10 @@ it('has array representation with route', function () {
             'action' => false,
             'confirm' => null,
             'action' => false,
-            'href' => route('products.index'),
-            'method' => Request::METHOD_GET,
+            'route' => [
+                'href' => route('products.index'),
+                'method' => Request::METHOD_GET,
+            ],
         ]);
 });
 

@@ -35,6 +35,7 @@ it('has array representation', function () {
             'confirm' => null,
             'action' => false,
             'keepSelected' => false,
+            'route' => null,
         ]);
 });
 
