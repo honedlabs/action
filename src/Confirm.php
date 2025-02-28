@@ -22,14 +22,21 @@ class Confirm extends Primitive implements Resolves
 
     /**
      * Create a new confirm instance.
+     *
+     * @param  string|\Closure|null  $name
+     * @param  string|\Closure|null  $description
+     * @param  string  $dismiss
+     * @param  string  $submit
+     * @param  string|null  $intent
+     * @return static
      */
     public static function make(
-        string|\Closure|null $name = null,
-        string|\Closure|null $description = null,
-        string $dismiss = 'Cancel',
-        string $submit = 'Confirm',
-        ?string $intent = null
-    ): static {
+        $name = null,
+        $description = null,
+        $dismiss = 'Cancel',
+        $submit = 'Confirm',
+        $intent = null
+    ) {
         return resolve(static::class)
             ->name($name)
             ->description($description)
@@ -41,7 +48,7 @@ class Confirm extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'name' => $this->getName(),
@@ -55,7 +62,7 @@ class Confirm extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function resolve(array $parameters = [], array $typed = []): static
+    public function resolve($parameters = [], $typed = [])
     {
         $this->resolveName($parameters, $typed);
         $this->resolveDescription($parameters, $typed);

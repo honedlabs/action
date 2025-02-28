@@ -17,7 +17,7 @@ trait HasParameterNames
      * @param  T|\Illuminate\Database\Eloquent\Builder<T>  $parameter
      * @return array{0: T, 1: string, 2: string}
      */
-    public static function getParameterNames(Builder|Model $parameter): array
+    public static function getParameterNames($parameter)
     {
         $model = $parameter instanceof Builder
             ? $parameter->getModel()
@@ -41,7 +41,7 @@ trait HasParameterNames
      * @param  T|\Illuminate\Database\Eloquent\Builder<T>  $query
      * @return array{non-empty-array<string, T|\Illuminate\Database\Eloquent\Builder<T>>, non-empty-array<class-string, T|\Illuminate\Database\Eloquent\Builder<T>>}
      */
-    public static function getNamedAndTypedParameters(Builder|Model $query): array
+    public static function getNamedAndTypedParameters($query)
     {
         [$model, $singular, $plural] = static::getParameterNames($query);
 

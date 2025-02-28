@@ -11,9 +11,10 @@ trait KeepsSelected
     /**
      * Set the action to keep the records selected.
      *
+     * @param  bool  $keep
      * @return $this
      */
-    public function keepSelected(bool $keep = true): static
+    public function keepSelected($keep = true)
     {
         $this->keepSelected = $keep;
 
@@ -22,8 +23,10 @@ trait KeepsSelected
 
     /**
      * Determine if the action keeps the records selected.
+     *
+     * @return bool
      */
-    public function keepsSelected(): bool
+    public function keepsSelected()
     {
         return $this->keepSelected;
     }

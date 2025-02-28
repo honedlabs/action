@@ -34,8 +34,12 @@ abstract class Action extends Primitive implements Resolves
 
     /**
      * Create a new action instance.
+     *
+     * @param  string  $name
+     * @param  string|\Closure|null  $label
+     * @return static
      */
-    public static function make(string $name, string|\Closure|null $label = null): static
+    public static function make($name, $label = null)
     {
         return resolve(static::class)
             ->name($name)
@@ -45,7 +49,7 @@ abstract class Action extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'name' => $this->getName(),
@@ -64,7 +68,7 @@ abstract class Action extends Primitive implements Resolves
      *
      * @return array<string,mixed>|null
      */
-    public function routeToArray(): ?array
+    public function routeToArray()
     {
         if (! $this->hasRoute()) {
             return null;
@@ -79,7 +83,7 @@ abstract class Action extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function resolve(array $parameters = [], array $typed = []): static
+    public function resolve($parameters = [], $typed = [])
     {
         $this->resolveLabel($parameters, $typed);
         $this->resolveIcon($parameters, $typed);
@@ -93,7 +97,7 @@ abstract class Action extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
+    public function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
     {
         return match ($parameterName) {
             'confirm' => [$this->confirmInstance()],
@@ -104,7 +108,7 @@ abstract class Action extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
+    public function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
     {
         return match ($parameterType) {
             Confirm::class => [$this->confirmInstance()],

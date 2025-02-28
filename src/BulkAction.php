@@ -12,7 +12,7 @@ class BulkAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->type(Creator::Bulk);
     }
@@ -20,7 +20,7 @@ class BulkAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return \array_merge(parent::toArray(), [
             'keepSelected' => $this->keepsSelected(),

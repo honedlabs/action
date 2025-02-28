@@ -11,7 +11,7 @@ class PageAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->type(Creator::Page);
     }

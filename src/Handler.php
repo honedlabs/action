@@ -30,10 +30,13 @@ class Handler implements Makeable
     protected $key;
 
     /**
+     * Create a new handler instance.
+     *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
+     * @param  string|null  $key
      */
-    public function __construct(Builder $builder, array $actions, ?string $key = null)
+    public function __construct($builder, $actions, $key = null)
     {
         $this->builder = $builder;
         $this->actions = $actions;
@@ -45,8 +48,10 @@ class Handler implements Makeable
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
+     * @param  string|null  $key
+     * @return static
      */
-    public static function make(Builder $builder, array $actions, ?string $key = null): static
+    public static function make($builder, $actions, $key = null)
     {
         return resolve(static::class, \compact('builder', 'actions', 'key'));
     }
@@ -90,9 +95,11 @@ class Handler implements Makeable
     /**
      * Retrieve the action and query based on the type and data.
      *
+     * @param  string  $type
+     * @param  \Honed\Action\Http\Data\ActionData  $data
      * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null}
      */
-    protected function resolveAction(string $type, ActionData $data): array
+    protected function resolveAction($type, $data)
     {
         return match ($type) {
             Creator::Inline => $this->resolveInlineAction(type($data)->as(InlineData::class)),
@@ -107,7 +114,7 @@ class Handler implements Makeable
      *
      * @return array<int,\Honed\Action\Action>
      */
-    protected function getActions(): array
+    protected function getActions()
     {
         return $this->actions;
     }
@@ -116,17 +123,21 @@ class Handler implements Makeable
      * Get the key to use for selecting records.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @return string
      */
-    protected function getKey(Builder $builder): string
+    protected function getKey(Builder $builder)
     {
         return $builder->qualifyColumn($this->key
             ??= $builder->getModel()->getKeyName());
     }
 
     /**
-     * @return array{\Honed\Action\Action|null,\Illuminate\Database\Eloquent\Model|null}
+     * Resolve the inline action.
+     *
+     * @param  \Honed\Action\Http\Data\InlineData  $data
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Model|null}
      */
-    protected function resolveInlineAction(InlineData $data): array
+    protected function resolveInlineAction($data)
     {
         return [
             $this->getAction($data->name, InlineAction::class),
@@ -137,9 +148,12 @@ class Handler implements Makeable
     }
 
     /**
-     * @return array{\Honed\Action\Action|null,\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * Resolve the bulk action.
+     *
+     * @param  \Honed\Action\Http\Data\BulkData  $data
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
      */
-    protected function resolveBulkAction(BulkData $data): array
+    protected function resolveBulkAction($data)
     {
         $builder = $this->getBuilder();
 
@@ -154,9 +168,12 @@ class Handler implements Makeable
     }
 
     /**
-     * @return array{\Honed\Action\Action|null,\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * Resolve the page action.
+     *
+     * @param  \Honed\Action\Http\Data\ActionData  $data
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
      */
-    protected function resolvePageAction(ActionData $data): array
+    protected function resolvePageAction($data)
     {
         return [
             $this->getAction($data->name, PageAction::class),
@@ -166,8 +183,11 @@ class Handler implements Makeable
 
     /**
      * Throw an invalid argument exception.
+     *
+     * @param  string  $type
+     * @return never
      */
-    protected static function throwInvalidArgumentException(string $type): never
+    protected static function throwInvalidArgumentException($type)
     {
         throw new \InvalidArgumentException(\sprintf(
             'Action type [%s] is invalid.', $type
@@ -177,9 +197,11 @@ class Handler implements Makeable
     /**
      * Find the action by name and type.
      *
-     * @param  class-string<\Honed\Action\Action>  $type
+     * @param  string  $name
+     * @param  string  $type
+     * @return \Honed\Action\Action|null
      */
-    protected function getAction(string $name, string $type): ?Action
+    protected function getAction($name, $type)
     {
         return Arr::first(
             $this->getActions(),

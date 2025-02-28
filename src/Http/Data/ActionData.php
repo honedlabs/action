@@ -17,8 +17,9 @@ class ActionData implements Transferable
      * Create a new data transfer object from a request.
      *
      * @param  \Honed\Action\Http\Requests\ActionRequest  $request
+     * @return static
      */
-    public static function from($request): static
+    public static function from($request)
     {
         return resolve(static::class, $request->validated());
     }

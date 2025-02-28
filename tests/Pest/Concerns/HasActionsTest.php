@@ -64,7 +64,7 @@ it('has array representation', function () {
     expect($this->test->actionsToArray())
         ->toBeArray()
         ->toEqual([
-            'actions' => false,
+            'hasInline' => false,
             'bulk' => [],
             'page' => [],
         ]);

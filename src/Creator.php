@@ -6,16 +6,21 @@ namespace Honed\Action;
 
 class Creator
 {
-    const Bulk = 'bulk';
-
     const Inline = 'inline';
+
+    const Bulk = 'bulk';
 
     const Page = 'page';
 
     /**
      * Create a new action.
+     *
+     * @param  'bulk'|'inline'|'page'|string  $type
+     * @param  string  $name
+     * @param  string|\Closure|null  $label
+     * @return \Honed\Action\Action
      */
-    public function new(string $type, string $name, string|\Closure|null $label = null): Action
+    public function new($type, $name, $label = null)
     {
         return match ($type) {
             self::Bulk => $this->bulk($name, $label),
@@ -27,32 +32,47 @@ class Creator
 
     /**
      * Create a new bulk action.
+     *
+     * @param  string  $name
+     * @param  string|\Closure|null  $label
+     * @return \Honed\Action\BulkAction
      */
-    public function bulk(string $name, string|\Closure|null $label = null): BulkAction
+    public function bulk($name, $label = null)
     {
         return BulkAction::make($name, $label);
     }
 
     /**
      * Create a new inline action.
+     *
+     * @param  string  $name
+     * @param  string|\Closure|null  $label
+     * @return \Honed\Action\InlineAction
      */
-    public function inline(string $name, string|\Closure|null $label = null): InlineAction
+    public function inline($name, $label = null)
     {
         return InlineAction::make($name, $label);
     }
 
     /**
      * Create a new page action.
+     *
+     * @param  string  $name
+     * @param  string|\Closure|null  $label
+     * @return \Honed\Action\PageAction
      */
-    public function page(string $name, string|\Closure|null $label = null): PageAction
+    public function page($name, $label = null)
     {
         return PageAction::make($name, $label);
     }
 
     /**
      * Throw an invalid argument exception.
+     *
+     * @param  string  $type
+     * @return never
      */
-    protected static function throwInvalidArgumentException(string $type): never
+    protected static function throwInvalidArgumentException($type)
     {
         throw new \InvalidArgumentException(\sprintf(
             'Action type [%s] is invalid.', $type

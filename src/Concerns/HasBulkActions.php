@@ -45,8 +45,9 @@ trait HasBulkActions
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  callable  $handler
+     * @return mixed
      */
-    protected function executeWithChunking(Builder $builder, mixed $handler): mixed
+    protected function executeWithChunking($builder, $handler)
     {
         if ($this->chunksById()) {
             return $builder->chunkById(
@@ -68,7 +69,7 @@ trait HasBulkActions
      * @param  callable  $handler
      * @return \Closure(Collection<int,\Illuminate\Database\Eloquent\Model>):mixed
      */
-    protected function performChunk(mixed $handler): mixed
+    protected function performChunk($handler)
     {
         if ($this->actsOnRecord()) {
             return static fn (Collection $records) => $records
@@ -84,7 +85,7 @@ trait HasBulkActions
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $records
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function getEvaluationParameters($records): array
+    protected function getEvaluationParameters($records)
     {
         [$model, $singular, $plural] = $this->getParameterNames($records);
 

@@ -24,7 +24,7 @@ trait HasActions
      *
      * @return array<int,\Honed\Action\Action>
      */
-    public function getActions(): array
+    public function getActions()
     {
         return match (true) {
             isset($this->actions) => $this->actions,
@@ -36,18 +36,15 @@ trait HasActions
     /**
      * Add a list of actions to the instance.
      *
-     * @param  iterable<\Honed\Action\Action>  $actions
+     * @param  array<int, \Honed\Action\Action>|\Illuminate\Support\Collection<int, \Honed\Action\Action>  $actions
      * @return $this
      */
-    public function addActions(iterable $actions): static
+    public function addActions($actions)
     {
         if ($actions instanceof Collection) {
             $actions = $actions->all();
         }
 
-        /**
-         * @var array<int, \Honed\Action\Action> $actions
-         */
         $this->actions = \array_merge($this->actions ?? [], $actions);
 
         return $this;
@@ -56,9 +53,10 @@ trait HasActions
     /**
      * Add a single action to the instance.
      *
+     * @param  \Honed\Action\Action  $action
      * @return $this
      */
-    public function addAction(Action $action): static
+    public function addAction($action)
     {
         $this->actions[] = $action;
 
@@ -67,8 +65,10 @@ trait HasActions
 
     /**
      * Determine if the instance has any actions.
+     *
+     * @return bool
      */
-    public function hasActions(): bool
+    public function hasActions()
     {
         return filled($this->getActions());
     }
@@ -78,7 +78,7 @@ trait HasActions
      *
      * @return array<int,\Honed\Action\InlineAction>
      */
-    public function getInlineActions(): array
+    public function getInlineActions()
     {
         return \array_values(
             \array_filter(
@@ -93,7 +93,7 @@ trait HasActions
      *
      * @return array<int,\Honed\Action\BulkAction>
      */
-    public function getBulkActions(): array
+    public function getBulkActions()
     {
         return \array_values(
             \array_filter(
@@ -108,7 +108,7 @@ trait HasActions
      *
      * @return array<int,\Honed\Action\PageAction>
      */
-    public function getPageActions(): array
+    public function getPageActions()
     {
         return \array_values(
             \array_filter(
@@ -123,10 +123,10 @@ trait HasActions
      *
      * @return array<string,mixed>
      */
-    public function actionsToArray(): array
+    public function actionsToArray()
     {
         return [
-            'actions' => filled($this->getInlineActions()),
+            'hasInline' => filled($this->getInlineActions()),
             'bulk' => $this->bulkActionsToArray(),
             'page' => $this->pageActionsToArray(),
         ];
@@ -137,7 +137,7 @@ trait HasActions
      *
      * @return array<int,mixed>
      */
-    public function bulkActionsToArray(): array
+    public function bulkActionsToArray()
     {
         return \array_map(
             static fn (BulkAction $action) => $action->toArray(),
@@ -150,7 +150,7 @@ trait HasActions
      *
      * @return array<int,mixed>
      */
-    public function pageActionsToArray(): array
+    public function pageActionsToArray()
     {
         return \array_map(
             static fn (PageAction $action) => $action->toArray(),

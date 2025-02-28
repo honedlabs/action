@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Chunking
@@ -10,6 +11,7 @@ return [
     | by default. These can also be set on a per-action basis if needed.
     |
     */
+
     'chunk' => false,
     'chunk_size' => 200,
     'chunk_by_id' => true,
@@ -23,6 +25,7 @@ return [
     | class globally here.
     |
     */
+
     'confirm' => [
         'dismiss' => 'Cancel',
         'submit' => 'Confirm',

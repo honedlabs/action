@@ -30,7 +30,7 @@ trait HasAction
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model  $parameter
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    abstract protected function getEvaluationParameters($parameter): array;
+    abstract protected function getEvaluationParameters($parameter);
 
     /**
      * Set the action handler.
@@ -38,7 +38,7 @@ trait HasAction
      * @param  \Closure|class-string<\Honed\Action\Contracts\Actionable>|null  $action
      * @return $this
      */
-    public function action(\Closure|string|null $action = null): static
+    public function action($action = null)
     {
         if (! \is_null($action)) {
             $this->action = $action;
@@ -52,7 +52,7 @@ trait HasAction
      *
      * @return \Closure|class-string<\Honed\Action\Contracts\Actionable>|null
      */
-    public function getAction(): \Closure|string|null
+    public function getAction()
     {
         return $this->action;
     }
@@ -69,8 +69,10 @@ trait HasAction
 
     /**
      * Get the handler for the actionable class.
+     *
+     * @return \Closure|null
      */
-    protected function getHandler(): ?\Closure
+    protected function getHandler()
     {
         $action = $this->getAction();
 
