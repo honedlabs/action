@@ -10,13 +10,20 @@ use Honed\Action\Http\Data\InlineData;
 use Honed\Core\Concerns\HasBuilderInstance;
 use Honed\Core\Contracts\Makeable;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TBuilder of \Illuminate\Database\Eloquent\Builder
+ */
 class Handler implements Makeable
 {
     use Concerns\HasParameterNames;
+
+    /**
+     * @use HasBuilderInstance<TBuilder, TModel>
+     */
     use HasBuilderInstance;
 
     /**
@@ -32,7 +39,7 @@ class Handler implements Makeable
     /**
      * Create a new handler instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  TBuilder  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      */
@@ -46,7 +53,7 @@ class Handler implements Makeable
     /**
      * Make a new handler instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  TBuilder  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      * @return static
@@ -82,7 +89,7 @@ class Handler implements Makeable
 
         abort_if(! $action->isAllowed(...static::getNamedAndTypedParameters($query)), 403);
 
-        /** @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model $query */
+        /** @var TBuilder|TModel $query */
         $result = $action->execute($query);
 
         if ($result instanceof Responsable || $result instanceof RedirectResponse) {
@@ -97,7 +104,7 @@ class Handler implements Makeable
      *
      * @param  string  $type
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null}
+     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>|TModel|null}
      */
     protected function resolveAction($type, $data)
     {
@@ -122,10 +129,10 @@ class Handler implements Makeable
     /**
      * Get the key to use for selecting records.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  TBuilder<TModel>  $builder
      * @return string
      */
-    protected function getKey(Builder $builder)
+    protected function getKey($builder)
     {
         return $builder->qualifyColumn($this->key
             ??= $builder->getModel()->getKeyName());
@@ -135,7 +142,7 @@ class Handler implements Makeable
      * Resolve the inline action.
      *
      * @param  \Honed\Action\Http\Data\InlineData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Model|null}
+     * @return array{0: \Honed\Action\Action|null, 1: TModel|null}
      */
     protected function resolveInlineAction($data)
     {
@@ -151,7 +158,7 @@ class Handler implements Makeable
      * Resolve the bulk action.
      *
      * @param  \Honed\Action\Http\Data\BulkData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
      */
     protected function resolveBulkAction($data)
     {
@@ -171,7 +178,7 @@ class Handler implements Makeable
      * Resolve the page action.
      *
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
      */
     protected function resolvePageAction($data)
     {

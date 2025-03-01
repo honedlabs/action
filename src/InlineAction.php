@@ -14,7 +14,7 @@ class InlineAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->type(Creator::Inline);
     }
@@ -22,7 +22,7 @@ class InlineAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return \array_merge(parent::toArray(), [
             'default' => $this->isDefault(),
@@ -54,7 +54,7 @@ class InlineAction extends Action
      * @param  \Illuminate\Database\Eloquent\Model  $record
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function getEvaluationParameters($record): array
+    protected function getEvaluationParameters($record)
     {
         [$model, $singular] = $this->getParameterNames($record);
 
