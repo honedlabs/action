@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Honed\Action\Contracts\Actionable;
+use Illuminate\Support\Facades\DB;
+
+final class {{ class }} implements Actionable
+{
+    /**
+     * Handle the action.
+     */
+    public function handle($request, {{ model }} ${{ modelVariable }}): {{ model }}
+    {
+        ${{ modelVariable }} = DB::transaction(
+            fn () => $this->update($request, ${{ modelVariable }})
+        );
+
+        return ${{ modelVariable }};
+    }
+
+    /**
+     * Update the {{ modelVariable }} in the database.
+     */
+    protected function update($request, {{ model }} ${{ modelVariable }}): {{ model }}
+    {
+        ${{ modelVariable }}->update($request->validated());
+
+        return ${{ modelVariable }};
+    }
+}
+

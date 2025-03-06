@@ -17,36 +17,12 @@ class ActionGroup extends Primitive
     /**
      * Create a new action group instance.
      *
-     * @param  iterable<\Honed\Action\Action>  $actions
+     * @param  \Honed\Action\PageAction  ...$actions
      */
-    public static function make(iterable $actions = []): static
+    public static function make(...$actions): static
     {
         return resolve(static::class)
             ->addActions($actions);
-    }
-
-    /**
-     * Set a single resource to apply the inline actions to.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $resource
-     * @return $this
-     */
-    public function for($resource): static
-    {
-        // Builder or query
-        return $this;
-    }
-
-    /**
-     * Set multiple resources to apply the inline actions to each.
-     *
-     * @param  iterable<\Illuminate\Database\Eloquent\Model>  $resources
-     * @return $this
-     */
-    public function forEach(iterable $resources): static
-    {
-        // Builder or query
-        return $this;
     }
 
     /**
@@ -54,23 +30,23 @@ class ActionGroup extends Primitive
      */
     public function toArray(): array
     {
-        return [
-            'actions' => $this->getActions(),
-        ];
+        return $this->pageActionsToArray();
     }
 
     /**
-     * @param  string  $name
-     * @param  array<int, mixed>  $arguments
-     * @return $this
+     * {@inheritdoc}
+     *
+     * @param  array<int, mixed>  $parameters
      */
-    public function _call($name, $arguments)
+    public function __call($method, $parameters)
     {
-        /** @var array<int, \Honed\Action\Action> $arguments */
-        if ($name === 'actions') {
-            return $this->addActions($arguments);
+        if ($method === 'actions') {
+            /** @var array<int, \Honed\Action\PageAction> $args */
+            $args = $parameters[0] ?? [];
+
+            return $this->addActions($args);
         }
 
-        return $this;
+        return parent::__call($method, $parameters);
     }
 }

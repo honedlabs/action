@@ -17,24 +17,17 @@ trait HasActions
      *
      * @var array<int,\Honed\Action\Action>|null
      */
-    public $actions;
+    protected $actions;
 
     /**
-     * Retrieve the actions
+     * Whether the actions should be retrievable.
      *
-     * @return array<int,\Honed\Action\Action>
+     * @var bool
      */
-    public function getActions()
-    {
-        return match (true) {
-            isset($this->actions) => $this->actions,
-            \method_exists($this, 'actions') => $this->actions(),
-            default => [],
-        };
-    }
+    protected $withoutActions = false;
 
     /**
-     * Add a list of actions to the instance.
+     * Merge a set of actions with the existing.
      *
      * @param  array<int, \Honed\Action\Action>|\Illuminate\Support\Collection<int, \Honed\Action\Action>  $actions
      * @return $this
@@ -51,7 +44,7 @@ trait HasActions
     }
 
     /**
-     * Add a single action to the instance.
+     * Add a single action to the list of actions.
      *
      * @param  \Honed\Action\Action  $action
      * @return $this
@@ -61,6 +54,28 @@ trait HasActions
         $this->actions[] = $action;
 
         return $this;
+    }
+
+    /**
+     * Retrieve the actions
+     *
+     * @return array<int,\Honed\Action\Action>
+     */
+    public function getActions()
+    {
+        if ($this->isWithoutActions()) {
+            return [];
+        }
+
+        return once(function () {
+            $methodFilters = \method_exists($this, 'actions')  
+                ? $this->actions() 
+                : [];
+            
+            $propertyFilters = $this->actions ?? [];
+
+            return \array_merge($methodFilters, $propertyFilters);
+        });
     }
 
     /**
@@ -98,7 +113,8 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => $action instanceof BulkAction && $action->isAllowed()
+                static fn (Action $action) => 
+                    $action instanceof BulkAction && $action->isAllowed()
             )
         );
     }
@@ -113,7 +129,8 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => $action instanceof PageAction && $action->isAllowed()
+                static fn (Action $action) => 
+                    $action instanceof PageAction && $action->isAllowed()
             )
         );
     }
@@ -156,5 +173,27 @@ trait HasActions
             static fn (PageAction $action) => $action->toArray(),
             $this->getPageActions()
         );
+    }
+
+    /**
+     * Set the actions to not be retrieved.
+     *
+     * @return $this
+     */
+    public function withoutActions()
+    {
+        $this->withoutActions = true;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the actions should not be retrieved.
+     *
+     * @return bool
+     */
+    public function isWithoutActions()
+    {
+        return $this->withoutActions;
     }
 }

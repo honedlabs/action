@@ -70,18 +70,27 @@ it('has array representation', function () {
         ]);
 });
 
-it('adds actions', function () {
+it('adds action', function () {
     $action = InlineAction::make('edit.product');
 
     expect($this->test)
         ->addAction($action)->toBe($this->test)
         ->getActions()->toHaveCount(1);
+});
+
+it('adds actions', function () {
+    $action = InlineAction::make('edit.product');
+
 
     expect($this->test->addActions([$action]))
         ->toBe($this->test)
-        ->getActions()->toHaveCount(2);
+        ->getActions()->toHaveCount(1);
+});
 
-    expect($this->test->addActions(collect([InlineAction::make('edit.product')])))
+it('adds actions from collection', function () {
+    $action = InlineAction::make('edit.product');
+
+    expect($this->test->addActions(collect([$action])))
         ->toBe($this->test)
-        ->getActions()->toHaveCount(3);
+        ->getActions()->toHaveCount(1);
 });
