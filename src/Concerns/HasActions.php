@@ -68,10 +68,10 @@ trait HasActions
         }
 
         return once(function () {
-            $methodFilters = \method_exists($this, 'actions')  
-                ? $this->actions() 
+            $methodFilters = \method_exists($this, 'actions')
+                ? $this->actions()
                 : [];
-            
+
             $propertyFilters = $this->actions ?? [];
 
             return \array_merge($methodFilters, $propertyFilters);
@@ -113,8 +113,7 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => 
-                    $action instanceof BulkAction && $action->isAllowed()
+                static fn (Action $action) => $action instanceof BulkAction && $action->isAllowed()
             )
         );
     }
@@ -129,8 +128,7 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => 
-                    $action instanceof PageAction && $action->isAllowed()
+                static fn (Action $action) => $action instanceof PageAction && $action->isAllowed()
             )
         );
     }
