@@ -16,7 +16,7 @@ class InlineAction extends Action
      */
     public function setUp()
     {
-        $this->type(Creator::Inline);
+        $this->type(ActionFactory::Inline);
     }
 
     /**

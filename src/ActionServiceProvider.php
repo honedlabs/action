@@ -22,11 +22,13 @@ class ActionServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ActionMakeCommand::class,
-            ]);
+        if (! $this->app->runningInConsole()) {
+            return;
         }
+
+        $this->commands([
+            ActionMakeCommand::class,
+        ]);
 
         $this->publishes([
             __DIR__.'/../config/action.php' => config_path('action.php'),
@@ -35,17 +37,5 @@ class ActionServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../stubs' => base_path('stubs'),
         ], 'stubs');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array<int, class-string>
-     */
-    public function provides(): array
-    {
-        return [
-            ActionMakeCommand::class,
-        ];
     }
 }

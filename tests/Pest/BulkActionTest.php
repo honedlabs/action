@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\BulkAction;
-use Honed\Action\Creator;
+use Honed\Action\ActionFactory;
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -28,7 +28,7 @@ it('has array representation', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Creator::Bulk,
+            'type' => ActionFactory::Bulk,
             'icon' => null,
             'extra' => [],
             'action' => false,
@@ -37,6 +37,13 @@ it('has array representation', function () {
             'keepSelected' => false,
             'route' => null,
         ]);
+});
+
+it('keeps selected', function () {
+    expect($this->action)
+        ->keepsSelected()->toBeFalse()
+        ->keepSelected()->toBe($this->action)
+        ->keepsSelected()->toBeTrue();
 });
 
 it('executes', function () {

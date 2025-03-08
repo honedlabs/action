@@ -13,6 +13,6 @@ class PageAction extends Action
      */
     public function setUp()
     {
-        $this->type(Creator::Page);
+        $this->type(ActionFactory::Page);
     }
 }

@@ -75,9 +75,9 @@ class Handler implements Makeable
         $type = $request->validated('type');
 
         $data = match ($type) {
-            Creator::Inline => InlineData::from($request),
-            Creator::Bulk => BulkData::from($request),
-            Creator::Page => ActionData::from($request),
+            ActionFactory::Inline => InlineData::from($request),
+            ActionFactory::Bulk => BulkData::from($request),
+            ActionFactory::Page => ActionData::from($request),
             default => abort(400),
         };
 
@@ -109,9 +109,9 @@ class Handler implements Makeable
     protected function resolveAction($type, $data)
     {
         return match ($type) {
-            Creator::Inline => $this->resolveInlineAction(type($data)->as(InlineData::class)),
-            Creator::Bulk => $this->resolveBulkAction(type($data)->as(BulkData::class)),
-            Creator::Page => $this->resolvePageAction($data),
+            ActionFactory::Inline => $this->resolveInlineAction(type($data)->as(InlineData::class)),
+            ActionFactory::Bulk => $this->resolveBulkAction(type($data)->as(BulkData::class)),
+            ActionFactory::Page => $this->resolvePageAction($data),
             default => static::throwInvalidArgumentException($type),
         };
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Creator;
+use Honed\Action\ActionFactory;
 use Honed\Action\InlineAction;
 use Honed\Action\Tests\Fixtures\DestroyAction;
 use Honed\Action\Tests\Stubs\Product;
@@ -20,7 +20,7 @@ it('has array representation', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Creator::Inline,
+            'type' => ActionFactory::Inline,
             'icon' => null,
             'extra' => [],
             'action' => false,
@@ -37,7 +37,7 @@ it('has array representation with route', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Creator::Inline,
+            'type' => ActionFactory::Inline,
             'icon' => null,
             'extra' => [],
             'action' => false,
@@ -103,7 +103,7 @@ describe('executes', function () {
         expect($action)
             ->getName()->toBe('destroy')
             ->resolveLabel($named, $typed)->toBe('Destroy '.$this->product->name)
-            ->getType()->toBe(Creator::Inline)
+            ->getType()->toBe(ActionFactory::Inline)
             ->hasAction()->toBeTrue();
 
         $action->execute($this->product);

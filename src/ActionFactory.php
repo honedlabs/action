@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-class Creator
+class ActionFactory
 {
     const Inline = 'inline';
 

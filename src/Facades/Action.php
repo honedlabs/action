@@ -7,7 +7,7 @@ namespace Honed\Action\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Honed\Action\Creator
+ * @see \Honed\Action\ActionFactory
  *
  * @method static \Honed\Action\Action new(string $type, string $name, string|\Closure $label = null)
  * @method static \Honed\Action\BulkAction bulk(string $name, string|\Closure $label = null)
@@ -18,6 +18,6 @@ class Action extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Honed\Action\Creator::class;
+        return \Honed\Action\ActionFactory::class;
     }
 }

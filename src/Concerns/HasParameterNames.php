@@ -23,13 +23,22 @@ trait HasParameterNames
             ? $parameter->getModel()
             : $parameter;
 
-        /** @var \Illuminate\Support\Stringable $strTable */
-        $strTable = str($model->getTable());
+        $individual = str($model::class)
+            ->classBasename()
+            ->singular()
+            ->camel()
+            ->toString();
+        
+        $plural = str($model::class)
+            ->classBasename()
+            ->plural()
+            ->camel()
+            ->toString();
 
         return [
             $model,
-            $strTable->singular()->camel()->toString(),
-            $strTable->camel()->toString(),
+            $individual,
+            $plural,
         ];
     }
 

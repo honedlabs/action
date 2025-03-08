@@ -80,9 +80,7 @@ trait HasAction
             \is_string($action) => \Closure::fromCallable([
                 type(App::make($action))->as(Actionable::class), 'handle',
             ]),
-            $this instanceof Actionable => \Closure::fromCallable([
-                $this, 'handle',
-            ]),
+            $this instanceof Actionable => \Closure::fromCallable([$this, 'handle']),
             default => $action,
         };
     }

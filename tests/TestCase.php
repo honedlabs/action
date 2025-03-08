@@ -17,17 +17,27 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    /**
+     * Setup the test environment.
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
         View::addLocation(__DIR__.'/Stubs');
         Inertia::setRootView('app');
+
         config()->set('inertia.testing.ensure_pages_exist', false);
         config()->set('inertia.testing.page_paths', [realpath(__DIR__)]);
 
     }
 
+    /**
+     * Get the package providers.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return array<int,class-string>
+     */
     protected function getPackageProviders($app)
     {
         return [
@@ -36,6 +46,11 @@ class TestCase extends Orchestra
         ];
     }
 
+    /**
+     * Define the database migrations.
+     *
+     * @return void
+     */
     protected function defineDatabaseMigrations()
     {
         Schema::create('products', function (Blueprint $table) {
@@ -50,6 +65,12 @@ class TestCase extends Orchestra
         });
     }
 
+    /**
+     * Define the routes setup.
+     *
+     * @param  \Illuminate\Routing\Router  $router
+     * @return void
+     */
     protected function defineRoutes($router)
     {
         $router->middleware(SubstituteBindings::class)->group(function ($router) {
@@ -63,6 +84,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
+        config()->set('action', require __DIR__.'/../config/action.php');
         config()->set('database.default', 'testing');
     }
 }

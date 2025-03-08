@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Requests;
 
-use Honed\Action\Creator;
+use Honed\Action\ActionFactory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -17,13 +17,13 @@ class ActionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $bulk = Rule::excludeIf(\in_array($this->input('type'), [Creator::Inline, Creator::Page]));
-        $inline = Rule::excludeIf(\in_array($this->input('type'), [Creator::Bulk, Creator::Page]));
+        $bulk = Rule::excludeIf(\in_array($this->input('type'), [ActionFactory::Inline, ActionFactory::Page]));
+        $inline = Rule::excludeIf(\in_array($this->input('type'), [ActionFactory::Bulk, ActionFactory::Page]));
         $regex = 'regex:/^[\w-]*$/';
 
         return [
             'name' => ['required', 'string'],
-            'type' => ['required', Rule::in([Creator::Inline, Creator::Bulk, Creator::Page])],
+            'type' => ['required', Rule::in([ActionFactory::Inline, ActionFactory::Bulk, ActionFactory::Page])],
 
             'only' => [$bulk, 'sometimes', 'array'],
             'except' => [$bulk, 'sometimes', 'array'],

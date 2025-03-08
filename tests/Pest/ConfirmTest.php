@@ -13,7 +13,7 @@ it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
         ->toEqual([
-            'name' => null,
+            'label' => null,
             'description' => null,
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
@@ -29,20 +29,20 @@ it('resolves', function () {
         fn (Product $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
     )->resolve(...params($product)))
         ->toBeInstanceOf(Confirm::class)
-        ->getName()->toBe($product->name)
+        ->getLabel()->toBe($product->name)
         ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name));
 });
 
 it('has dismiss', function () {
     expect($this->test)
-        ->getDismiss()->toBe('Cancel')
+        ->getDismiss()->toBe(config('action.confirm.dismiss'))
         ->dismiss('Back')->toBeInstanceOf(Confirm::class)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
     expect($this->test)
-        ->getSubmit()->toBe('Confirm')
+        ->getSubmit()->toBe(config('action.confirm.submit'))
         ->submit('Accept')->toBeInstanceOf(Confirm::class)
         ->getSubmit()->toBe('Accept');
 });

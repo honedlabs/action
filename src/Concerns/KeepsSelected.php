@@ -6,7 +6,12 @@ namespace Honed\Action\Concerns;
 
 trait KeepsSelected
 {
-    protected bool $keepSelected = false;
+    /**
+     * Whether the action keeps the records selected after successful execution.
+     *
+     * @var bool
+     */
+    protected $keepSelected = false;
 
     /**
      * Set the action to keep the records selected.

@@ -14,7 +14,7 @@ class BulkAction extends Action
      */
     public function setUp()
     {
-        $this->type(Creator::Bulk);
+        $this->type(ActionFactory::Bulk);
     }
 
     /**

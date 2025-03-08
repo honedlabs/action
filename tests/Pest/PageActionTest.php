@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Creator;
+use Honed\Action\ActionFactory;
 use Honed\Action\PageAction;
 use Honed\Action\Tests\Stubs\Product;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +17,7 @@ it('has array representation', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Creator::Page,
+            'type' => ActionFactory::Page,
             'icon' => null,
             'extra' => [],
             'action' => false,
@@ -33,7 +33,7 @@ it('has array representation with route', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Creator::Page,
+            'type' => ActionFactory::Page,
             'icon' => null,
             'extra' => [],
             'action' => false,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Support\Arr;
-use Honed\Action\Creator;
+use Honed\Action\ActionFactory;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
@@ -16,7 +16,7 @@ describe('inline', function () {
 
         $this->base = [
             'name' => 'update',
-            'type' => Creator::Inline,
+            'type' => ActionFactory::Inline,
             'id' => 1,
         ];
     });
@@ -66,7 +66,7 @@ describe('bulk', function () {
 
         $this->base = [
             'name' => 'update',
-            'type' => Creator::Bulk,
+            'type' => ActionFactory::Bulk,
             'all' => false,
             'except' => [],
             'only' => [],
@@ -152,7 +152,7 @@ describe('page', function () {
     beforeEach(function () {
         $this->base = [
             'name' => 'update',
-            'type' => Creator::Page,
+            'type' => ActionFactory::Page,
         ];
     });
 
