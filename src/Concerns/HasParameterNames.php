@@ -28,7 +28,7 @@ trait HasParameterNames
             ->singular()
             ->camel()
             ->toString();
-        
+
         $plural = str($model::class)
             ->classBasename()
             ->plural()
