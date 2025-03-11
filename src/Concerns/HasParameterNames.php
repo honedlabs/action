@@ -59,11 +59,10 @@ trait HasParameterNames
             $query
         );
 
-        $typed = [
-            Model::class => $query,
-            Builder::class => $query,
-            $model::class => $query,
-        ];
+        $typed = \array_fill_keys(
+            [Model::class, Builder::class, $model::class],
+            $query
+        );
 
         return [$named, $typed];
     }

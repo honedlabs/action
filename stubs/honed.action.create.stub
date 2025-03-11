@@ -9,12 +9,12 @@ use Honed\Action\Contracts\Actionable;
 final class {{ class }} implements Actionable
 {
     /**
-     * Display a listing of {{ modelVariable }}s.
+     * Show the form to create a new {{ modelVariable }}.
      */
     public function handle(): \Inertia\Response
     {
-        return inertia('{{ model }}/Index', [
-            '{{ modelVariable }}s' => null,
+        return inertia('{{ model }}/Create', [
+            
         ]);
     }
 }

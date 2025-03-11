@@ -163,6 +163,16 @@ class Confirm extends Primitive implements Resolves
     }
 
     /**
+     * Get the submit message for the confirm from the config.
+     *
+     * @return string
+     */
+    public function fallbackSubmitMessage()
+    {
+        return type(config('action.confirm.submit', 'Confirm'))->asString();
+    }
+
+    /**
      * Get the dismiss message for the confirm.
      *
      * @return string
@@ -174,6 +184,16 @@ class Confirm extends Primitive implements Resolves
         }
 
         return $this->fallbackDismissMessage();
+    }
+
+    /**
+     * Get the dismiss message for the confirm from the config.
+     *
+     * @return string
+     */
+    public function fallbackDismissMessage()
+    {
+        return type(config('action.confirm.dismiss', 'Cancel'))->asString();
     }
 
     /**
@@ -209,25 +229,5 @@ class Confirm extends Primitive implements Resolves
         $this->resolveDescription($parameters, $typed);
 
         return $this;
-    }
-
-    /**
-     * Get the submit message for the confirm.
-     *
-     * @return string
-     */
-    protected function fallbackSubmitMessage()
-    {
-        return type(config('action.confirm.submit', 'Confirm'))->asString();
-    }
-
-    /**
-     * Get the dismiss message for the confirm.
-     *
-     * @return string
-     */
-    protected function fallbackDismissMessage()
-    {
-        return type(config('action.confirm.dismiss', 'Cancel'))->asString();
     }
 }

@@ -7,7 +7,13 @@ namespace Honed\Action;
 class BulkAction extends Action
 {
     use Concerns\HasBulkActions;
-    use Concerns\KeepsSelected;
+
+    /**
+     * Whether the action keeps the records selected after successful execution.
+     *
+     * @var bool
+     */
+    protected $keepSelected = false;
 
     /**
      * {@inheritdoc}
@@ -15,6 +21,29 @@ class BulkAction extends Action
     public function setUp()
     {
         $this->type(ActionFactory::Bulk);
+    }
+
+    /**
+     * Set the action to keep the records selected.
+     *
+     * @param  bool  $keep
+     * @return $this
+     */
+    public function keepSelected($keep = true)
+    {
+        $this->keepSelected = $keep;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the action keeps the records selected.
+     *
+     * @return bool
+     */
+    public function keepsSelected()
+    {
+        return $this->keepSelected;
     }
 
     /**

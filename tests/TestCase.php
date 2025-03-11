@@ -82,6 +82,12 @@ class TestCase extends Orchestra
         });
     }
 
+    /**
+     * Define the environment setup.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
     public function getEnvironmentSetUp($app)
     {
         config()->set('action', require __DIR__.'/../config/action.php');

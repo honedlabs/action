@@ -1,0 +1,18 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Honed\Action\Contracts\Actionable;
+
+final class {{ class }} implements Actionable
+{
+    /**
+     * Destroy the {{ modelVariable }} record in the database.
+     */
+    public function handle({{ model }} ${{ modelVariable }}): void
+    {
+        ${{ modelVariable }}->delete();
+    }
+}

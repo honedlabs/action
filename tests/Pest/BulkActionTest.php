@@ -6,8 +6,6 @@ use Honed\Action\BulkAction;
 use Honed\Action\ActionFactory;
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
-use Pest\Expectation;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');
@@ -17,9 +15,11 @@ beforeEach(function () {
     }
 });
 
-it('makes', function () {
+it('keeps selected', function () {
     expect($this->action)
-        ->toBeInstanceOf(BulkAction::class);
+        ->keepsSelected()->toBeFalse()
+        ->keepSelected()->toBe($this->action)
+        ->keepsSelected()->toBeTrue();
 });
 
 it('has array representation', function () {
@@ -37,13 +37,6 @@ it('has array representation', function () {
             'keepSelected' => false,
             'route' => null,
         ]);
-});
-
-it('keeps selected', function () {
-    expect($this->action)
-        ->keepsSelected()->toBeFalse()
-        ->keepSelected()->toBe($this->action)
-        ->keepsSelected()->toBeTrue();
 });
 
 it('executes', function () {

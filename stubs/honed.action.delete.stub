@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Honed\Action\Contracts\Actionable;
+
+final class {{ class }} implements Actionable
+{
+    /**
+     * Show the confirmation page to delete the {{ modelVariable }}.
+     */
+    public function handle({{ model }} ${{ modelVariable }}): \Inertia\Response
+    {
+        return inertia('{{ model }}/Delete', [
+            '{{ modelVariable }}' => ${{ modelVariable }},
+        ]);
+    }
+}
