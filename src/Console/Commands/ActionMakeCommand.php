@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Honed\Action\Console\Commands;
 
+use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
-use Illuminate\Console\GeneratorCommand;
-
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'make:action')]
 class ActionMakeCommand extends GeneratorCommand
@@ -72,7 +72,7 @@ class ActionMakeCommand extends GeneratorCommand
         }
 
         return $model
-            ? $this->replaceModel($stub, $model) 
+            ? $this->replaceModel($stub, $model)
             : $stub;
     }
 
@@ -122,7 +122,7 @@ class ActionMakeCommand extends GeneratorCommand
         $contract = "use Honed\Action\Contracts\Actionable;\r\n";
 
         return preg_replace(
-            '/' . preg_quote($contract, '/') . '/',
+            '/'.preg_quote($contract, '/').'/',
             vsprintf("use %s;\r\nuse %s;\r\n", [
                 'Honed\Action\Contracts\Actionable',
                 $namespacedModel,
@@ -143,7 +143,7 @@ class ActionMakeCommand extends GeneratorCommand
             ->append('.stub')
             ->replace('..', '.')
             ->value();
-            
+
         return $this->resolveStubPath($stub);
     }
 
@@ -188,8 +188,6 @@ class ActionMakeCommand extends GeneratorCommand
     /**
      * Interact further with the user if they were prompted for missing arguments.
      *
-     * @param  \Symfony\Component\Console\Input\InputInterface  $input
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
      * @return void
      */
     protected function afterPromptingForMissingArguments(InputInterface $input, OutputInterface $output)

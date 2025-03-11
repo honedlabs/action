@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Closure;
-use Illuminate\Support\Facades\App;
 use Honed\Action\Contracts\Actionable;
+use Illuminate\Support\Facades\App;
 
 trait HasAction
 {
@@ -79,10 +79,10 @@ trait HasAction
 
         return match (true) {
             \is_string($action) => Closure::fromCallable([
-                type(App::make($action))->as(Actionable::class), 'handle'
+                type(App::make($action))->as(Actionable::class), 'handle',
             ]),
             $this instanceof Actionable => Closure::fromCallable([
-                $this, 'handle'
+                $this, 'handle',
             ]),
             default => $action,
         };

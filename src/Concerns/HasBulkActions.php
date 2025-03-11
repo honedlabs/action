@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Illuminate\Support\Collection;
 use Honed\Action\Contracts\ShouldChunk;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
@@ -50,8 +50,6 @@ trait HasBulkActions
 
     /**
      * Determine if the action should be chunked.
-     *
-     * @return bool
      */
     public function isChunked(): bool
     {
@@ -68,8 +66,6 @@ trait HasBulkActions
 
     /**
      * Determine if the action should be chunked from the config.
-     *
-     * @return bool
      */
     public function fallbackChunked(): bool
     {
@@ -91,8 +87,6 @@ trait HasBulkActions
 
     /**
      * Determine if the action should chunk the records by id.
-     *
-     * @return bool
      */
     public function chunksById(): bool
     {
@@ -101,8 +95,6 @@ trait HasBulkActions
 
     /**
      * Determine if the action should chunk the records by id from the config.
-     *
-     * @return bool
      */
     public function fallbackChunksById(): bool
     {
@@ -134,8 +126,6 @@ trait HasBulkActions
 
     /**
      * Get the size of the chunk to use when chunking the records from the config.
-     *
-     * @return int
      */
     public function fallbackChunkSize(): int
     {
@@ -157,7 +147,7 @@ trait HasBulkActions
         }
 
         $references = $this->hasReferenceTo($handler);
-        
+
         if ($this->isChunked()) {
             $handler = $this->chunkHandler($handler, $references);
         } elseif ($references === 'model') {
