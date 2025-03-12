@@ -6,6 +6,7 @@ namespace Honed\Action\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 trait HasParameterNames
 {
@@ -53,7 +54,7 @@ trait HasParameterNames
      */
     public static function getPluralName($model)
     {
-        return str($model)
+        return Str::of($model)
             ->classBasename()
             ->plural()
             ->camel()
@@ -61,23 +62,51 @@ trait HasParameterNames
     }
 
     /**
-     * Retrieve the named and typed parameters for the action.
+     * Retrieve the named and typed parameters for a builder.
      *
      * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
      * @param  mixed  $value
      * @return array{array<string, mixed>, array<class-string,mixed>}
      */
-    public static function getNamedAndTypedParameters($model, $value = null)
+    public static function getBuilderParameters($model, $value = null)
     {
+        $value ??= $model;
+
         [$model, $singular, $plural] = static::getParameterNames($model);
 
         $named = \array_fill_keys(
-            ['model', 'record', 'query', 'builder', $singular, $plural],
+            ['model', 'record', 'query', 'builder', 'records', $singular, $plural],
             $value
         );
 
         $typed = \array_fill_keys(
             [Model::class, Builder::class, $model],
+            $value
+        );
+
+        return [$named, $typed];
+    }
+
+    /**
+     * Retrieve the named and typed parameters for a model.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
+     * @param  mixed  $value
+     * @return array{array<string, mixed>, array<class-string,mixed>}
+     */
+    public static function getModelParameters($model, $value = null)
+    {
+        $value ??= $model;
+
+        [$model, $singular] = static::getParameterNames($model);
+
+        $named = \array_fill_keys(
+            ['model', 'record', $singular],
+            $value
+        );
+
+        $typed = \array_fill_keys(
+            [Model::class, $model],
             $value
         );
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Core\Concerns\IsDefault;
-use Illuminate\Database\Eloquent\Model;
 
 class InlineAction extends Action
 {
@@ -43,31 +42,8 @@ class InlineAction extends Action
             return;
         }
 
-        [$named, $typed] = $this->getEvaluationParameters($record);
+        [$named, $typed] = static::getModelParameters($record);
 
         return $this->evaluate($handler, $named, $typed);
-    }
-
-    /**
-     * Get the named and typed parameters to use for callable evaluation.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $record
-     * @return array{array<string, mixed>,  array<class-string, mixed>}
-     */
-    protected function getEvaluationParameters($record)
-    {
-        [$model, $singular] = $this->getParameterNames($record);
-
-        $named = \array_fill_keys(
-            ['record', 'record', $singular],
-            $record
-        );
-
-        $typed = \array_fill_keys(
-            [Model::class, $model],
-            $record
-        );
-
-        return [$named, $typed];
     }
 }

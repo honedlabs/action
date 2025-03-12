@@ -87,7 +87,9 @@ class Handler implements Makeable
 
         abort_if(\is_null($query), 404);
 
-        abort_if(! $action->isAllowed(...static::getNamedAndTypedParameters($query)), 403);
+        [$named, $typed] = static::getBuilderParameters($query);
+
+        abort_if(! $action->isAllowed($named, $typed), 403);
 
         /** @var TBuilder|TModel $query */
         $result = $action->execute($query);
