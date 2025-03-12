@@ -12,8 +12,13 @@ return [
     |
     */
 
+    /** Whether to enable chunking of records */
     'chunk' => false,
+
+    /** The size of the chunk to use when chunking the records */
     'chunk_size' => 200,
+
+    /** Whether to chunk the records by id */
     'chunk_by_id' => true,
 
     /*
@@ -26,8 +31,9 @@ return [
     |
     */
 
-    'confirm' => [
-        'dismiss' => 'Cancel',
-        'submit' => 'Confirm',
-    ],
+    /** The message to display when dismissing the confirmation */
+    'dismiss' => 'Cancel',
+
+    /** The message to display when confirming the action */
+    'submit' => 'Confirm',
 ];

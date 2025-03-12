@@ -155,11 +155,7 @@ class Confirm extends Primitive implements Resolves
      */
     public function getSubmit()
     {
-        if (isset($this->submit)) {
-            return $this->submit;
-        }
-
-        return $this->fallbackSubmitMessage();
+        return $this->submit ?? static::fallbackSubmitMessage();
     }
 
     /**
@@ -167,9 +163,9 @@ class Confirm extends Primitive implements Resolves
      *
      * @return string
      */
-    public function fallbackSubmitMessage()
+    public static function fallbackSubmitMessage()
     {
-        return type(config('action.confirm.submit', 'Confirm'))->asString();
+        return type(config('action.submit', 'Confirm'))->asString();
     }
 
     /**
@@ -179,11 +175,7 @@ class Confirm extends Primitive implements Resolves
      */
     public function getDismiss()
     {
-        if (isset($this->dismiss)) {
-            return $this->dismiss;
-        }
-
-        return $this->fallbackDismissMessage();
+        return $this->dismiss ?? static::fallbackDismissMessage();
     }
 
     /**
@@ -191,9 +183,9 @@ class Confirm extends Primitive implements Resolves
      *
      * @return string
      */
-    public function fallbackDismissMessage()
+    public static function fallbackDismissMessage()
     {
-        return type(config('action.confirm.dismiss', 'Cancel'))->asString();
+        return type(config('action.dismiss', 'Cancel'))->asString();
     }
 
     /**

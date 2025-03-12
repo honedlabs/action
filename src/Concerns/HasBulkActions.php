@@ -57,13 +57,13 @@ trait HasBulkActions
             return true;
         }
 
-        return $this->chunk ?? $this->fallbackChunked();
+        return (bool) ($this->chunk ?? static::fallbackChunked());
     }
 
     /**
      * Determine if the action should be chunked from the config.
      */
-    public function fallbackChunked(): bool
+    public static function fallbackChunked(): bool
     {
         return (bool) config('action.chunk', false);
     }
@@ -87,13 +87,13 @@ trait HasBulkActions
      */
     public function chunksById(): bool
     {
-        return (bool) ($this->chunkById ?? $this->fallbackChunksById());
+        return (bool) ($this->chunkById ?? static::fallbackChunksById());
     }
 
     /**
      * Determine if the action should chunk the records by id from the config.
      */
-    public function fallbackChunksById(): bool
+    public static function fallbackChunksById(): bool
     {
         return (bool) config('action.chunk_by_id', true);
     }
@@ -118,7 +118,7 @@ trait HasBulkActions
      */
     public function getChunkSize()
     {
-        return $this->chunkSize ?? $this->fallbackChunkSize();
+        return $this->chunkSize ?? static::fallbackChunkSize();
     }
 
     /**
@@ -126,7 +126,7 @@ trait HasBulkActions
      *
      * @return int
      */
-    public function fallbackChunkSize()
+    public static function fallbackChunkSize()
     {
         return type(config('action.chunk_size', 1000))->asInt();
     }

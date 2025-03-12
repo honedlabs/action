@@ -35,14 +35,14 @@ it('resolves', function () {
 
 it('has dismiss', function () {
     expect($this->test)
-        ->getDismiss()->toBe(config('action.confirm.dismiss'))
+        ->getDismiss()->toBe(config('action.dismiss'))
         ->dismiss('Back')->toBeInstanceOf(Confirm::class)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
     expect($this->test)
-        ->getSubmit()->toBe(config('action.confirm.submit'))
+        ->getSubmit()->toBe(config('action.submit'))
         ->submit('Accept')->toBeInstanceOf(Confirm::class)
         ->getSubmit()->toBe('Accept');
 });
