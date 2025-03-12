@@ -65,6 +65,7 @@ class ActionMakeCommand extends GeneratorCommand
         $stub = parent::buildClass($name);
 
         $model = $this->option('model');
+        /** @var string|null */
         $action = $this->option('action');
 
         if ($action && ! $model) {
@@ -133,10 +134,16 @@ class ActionMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        $stub = str($this->option('action'))
+        /** @var string|null */
+        $action = $this->option('action');
+
+        if (! $action) {
+            return $this->resolveStubPath('/stubs/honed.action.stub');
+        }
+
+        $stub = Str::of($action)
             ->prepend('/stubs/honed.action.')
             ->append('.stub')
-            ->replace('..', '.')
             ->value();
 
         return $this->resolveStubPath($stub);
