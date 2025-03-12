@@ -95,8 +95,6 @@ class ActionMakeCommand extends GeneratorCommand
 
         $model = class_basename(trim($model, '\\'));
 
-        $dummyUser = class_basename($this->userProviderModel());
-
         $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
         $replace = [
@@ -109,10 +107,6 @@ class ActionMakeCommand extends GeneratorCommand
             'dummyModel' => Str::camel($dummyModel),
             '{{ modelVariable }}' => Str::camel($dummyModel),
             '{{modelVariable}}' => Str::camel($dummyModel),
-            'DummyUser' => $dummyUser,
-            '{{ user }}' => $dummyUser,
-            '{{user}}' => $dummyUser,
-            '$user' => '$'.Str::camel($dummyUser),
         ];
 
         $stub = str_replace(
@@ -121,6 +115,7 @@ class ActionMakeCommand extends GeneratorCommand
 
         $contract = "use Honed\Action\Contracts\Actionable;\r\n";
 
+        /** @var string */
         return preg_replace(
             '/'.preg_quote($contract, '/').'/',
             vsprintf("use %s;\r\nuse %s;\r\n", [

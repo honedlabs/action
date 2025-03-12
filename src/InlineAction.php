@@ -58,16 +58,15 @@ class InlineAction extends Action
     {
         [$model, $singular] = $this->getParameterNames($record);
 
-        $named = [
-            'model' => $record,
-            'record' => $record,
-            $singular => $record,
-        ];
+        $named = \array_fill_keys(
+            ['record', 'record', $singular],
+            $record
+        );
 
-        $typed = [
-            Model::class => $record,
-            $model::class => $record,
-        ];
+        $typed = \array_fill_keys(
+            [Model::class, $model],
+            $record
+        );
 
         return [$named, $typed];
     }

@@ -80,6 +80,7 @@ trait HasBulkActions
      */
     public function chunkById($chunkById = true)
     {
+        $this->chunk = true;
         $this->chunkById = $chunkById;
 
         return $this;
@@ -137,6 +138,8 @@ trait HasBulkActions
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @return mixed
+     *
+     * @throws \RuntimeException
      */
     public function execute($builder)
     {
@@ -146,68 +149,59 @@ trait HasBulkActions
             return;
         }
 
-        $references = $this->hasReferenceTo($handler);
+        $model = $builder->getModel();
+        $reference = $this->references($handler, $model);
 
-        if ($this->isChunked()) {
-            $handler = $this->chunkHandler($handler, $references);
-        } elseif ($references === 'model') {
-            $builder = $builder->get();
+        // First handle the builder case which might throw an exception
+        if ($reference === 'builder' && $this->isChunked()) {
+            throw new \RuntimeException('A chunked handler cannot reference the builder.');
         }
 
-        [$named, $typed] = $this->getEvaluationParameters($builder);
+        // Then use a single match for the remaining logic
+        [$builder, $handler] = match ($reference) {
+            'model' => [
+                ! $this->isChunked() ? $builder->get() : $builder,
+                fn ($records) => $records->each($handler),
+            ],
+
+            'collection' => [
+                ! $this->isChunked() ? $builder->get() : $builder,
+                $handler,
+            ],
+
+            default => [$builder, $handler]
+        };
+
+        // Apply chunking if needed
+        if ($this->isChunked()) {
+            $handler = $this->chunksById()
+                ? fn ($builder) => $builder->chunkById($this->getChunkSize(), $handler)
+                : fn ($builder) => $builder->chunk($this->getChunkSize(), $handler);
+        }
+
+        [$named, $typed] = $this->getEvaluationParameters($model::class, $builder);
 
         return $this->evaluate($handler, $named, $typed);
-    }
-
-    /**
-     * Get the handler using chunking.
-     *
-     * @param  callable  $handler
-     * @param  'builder'|'collection'|'model'  $references
-     * @return \Closure
-     */
-    public function chunkHandler($handler, $references)
-    {
-        $chunkSize = $this->getChunkSize();
-
-        // If the handler given contains references to the builder, we throw an
-        // error as they cannot access the builder in the chunked context. We only
-        // need to check one variable, and default it to the model.
-        if ($references === 'builder') {
-            throw new \RuntimeException(
-                'A chunked handler cannot reference the builder.'
-            );
-        }
-
-        // If the handler references the collection, we can use the collection's
-        // each method to iterate over the records. Otherwise, we need to wrap
-        // the handler in a closure that will iterate over the records.
-        $handler = $references === 'collection'
-            ? $handler
-            : fn (Collection $records) => $records->each($handler);
-
-        if ($this->chunksById()) {
-            return fn ($builder) => $builder
-                ->chunkById($chunkSize, $handler);
-        }
-
-        return fn ($builder) => $builder
-            ->chunk($chunkSize, $handler);
     }
 
     /**
      * Determine if the chunked handler references the builder, collection, or model.
      *
      * @param  \Closure  $handler
-     * @return 'builder'|'collection'|'model'
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model  $model
+     * @return 'builder'|'collection'|'model'|null
      */
-    public function hasReferenceTo($handler)
+    public function references($handler, $model)
     {
+        [$model, $singular, $plural] = $this->getParameterNames($model);
         $parameters = (new \ReflectionFunction($handler))->getParameters();
 
         foreach ($parameters as $parameter) {
             $name = $parameter->getName();
-            $type = $parameter->getType()?->getName();
+            $reflected = $parameter->getType();
+            $type = $reflected instanceof \ReflectionNamedType
+                ? $reflected->getName()
+                : null;
 
             if (\in_array($name, ['builder', 'query']) ||
                 $type === Builder::class
@@ -220,39 +214,37 @@ trait HasBulkActions
             ) {
                 return 'collection';
             }
+
+            if (\in_array($name, [$singular, $plural, 'record', 'model']) ||
+                \in_array($type, [Model::class, $model])
+            ) {
+                return 'model';
+            }
         }
 
-        return 'model';
+        return null;
     }
 
     /**
      * Get the named and typed parameters to use for callable evaluation.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $records
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
+     * @param  mixed  $value
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function getEvaluationParameters($records)
+    protected function getEvaluationParameters($model, $value)
     {
-        [$model, $singular, $plural] = $this->getParameterNames($records);
+        [$model, $singular, $plural] = $this->getParameterNames($model);
 
-        $named = \array_fill_keys([
-            'model',
-            'record',
-            'builder',
-            'query',
-            'records',
-            'collection',
-            $singular,
-            $plural,
-        ], $records);
+        $named = \array_fill_keys(
+            ['model', 'record', 'builder', 'query', 'records', 'collection', $singular, $plural],
+            $value
+        );
 
-        $typed = \array_fill_keys([
-            Builder::class,
-            DatabaseCollection::class,
-            Collection::class,
-            Model::class,
-            $model::class,
-        ], $records);
+        $typed = \array_fill_keys(
+            [Builder::class, DatabaseCollection::class, Collection::class, Model::class, $model],
+            $value
+        );
 
         return [$named, $typed];
     }

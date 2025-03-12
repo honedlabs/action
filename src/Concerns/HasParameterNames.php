@@ -12,56 +12,73 @@ trait HasParameterNames
     /**
      * Retrieve the parameter names for the action.
      *
-     * @template T of \Illuminate\Database\Eloquent\Model
-     *
-     * @param  T|\Illuminate\Database\Eloquent\Builder<T>  $parameter
-     * @return array{0: T, 1: string, 2: string}
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
+     * @return array{0: class-string<\Illuminate\Database\Eloquent\Model>, 1: string, 2: string}
      */
-    public static function getParameterNames($parameter)
+    public static function getParameterNames($model)
     {
-        $model = $parameter instanceof Builder
-            ? $parameter->getModel()
-            : $parameter;
+        $model = (match (true) {
+            $model instanceof Builder => $model->getModel()::class,
+            $model instanceof Model => $model::class,
+            default => $model,
+        });
 
-        $individual = str($model::class)
+        return [
+            $model,
+            static::getSingularName($model),
+            static::getPluralName($model),
+        ];
+    }
+
+    /**
+     * Get the singular name of a model.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     * @return string
+     */
+    public static function getSingularName($model)
+    {
+        return str($model)
             ->classBasename()
             ->singular()
             ->camel()
             ->toString();
+    }
 
-        $plural = str($model::class)
+    /**
+     * Get the plural name of a model.
+     *
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     * @return string
+     */
+    public static function getPluralName($model)
+    {
+        return str($model)
             ->classBasename()
             ->plural()
             ->camel()
             ->toString();
-
-        return [
-            $model,
-            $individual,
-            $plural,
-        ];
     }
 
     /**
      * Retrieve the named and typed parameters for the action.
      *
-     * @template T of \Illuminate\Database\Eloquent\Model
-     *
-     * @param  T|\Illuminate\Database\Eloquent\Builder<T>  $query
-     * @return array{non-empty-array<string, T|\Illuminate\Database\Eloquent\Builder<T>>, non-empty-array<class-string, T|\Illuminate\Database\Eloquent\Builder<T>>}
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
+     * @param  mixed  $value
+     * @return array{array<string, mixed>, array<class-string,mixed>}
      */
-    public static function getNamedAndTypedParameters($query)
+    public static function getNamedAndTypedParameters($model, $value = null)
     {
-        [$model, $singular, $plural] = static::getParameterNames($query);
+        [$model, $singular, $plural] = static::getParameterNames($model);
 
         $named = \array_fill_keys(
             ['model', 'record', 'query', 'builder', $singular, $plural],
-            $query
+            $value
         );
 
         $typed = \array_fill_keys(
-            [Model::class, Builder::class, $model::class],
-            $query
+            [Model::class, Builder::class, $model],
+            $value
         );
 
         return [$named, $typed];

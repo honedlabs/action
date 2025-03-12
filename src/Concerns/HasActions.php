@@ -67,15 +67,13 @@ trait HasActions
             return [];
         }
 
-        return once(function () {
-            $methodFilters = \method_exists($this, 'actions')
-                ? $this->actions()
-                : [];
+        $methodFilters = \method_exists($this, 'actions')
+            ? $this->actions()
+            : [];
 
-            $propertyFilters = $this->actions ?? [];
+        $propertyFilters = $this->actions ?? [];
 
-            return \array_merge($methodFilters, $propertyFilters);
-        });
+        return \array_merge($methodFilters, $propertyFilters);
     }
 
     /**

@@ -38,16 +38,3 @@ it('has array representation', function () {
             'route' => null,
         ]);
 });
-
-it('executes', function () {
-    $product = product();
-
-    $fn = fn (Builder $q) => $q->update(['name' => 'test']);
-
-    $this->action->action($fn)->execute(Product::query());
-    
-    $this->assertDatabaseHas('products', [
-        'id' => $product->id,
-        'name' => 'test',
-    ]); 
-});

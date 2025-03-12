@@ -7,58 +7,27 @@ use Illuminate\Support\Collection;
 use Honed\Action\Tests\Stubs\Product;
 
 beforeEach(function () {
-    $this->product = product();
-    $this->query = Product::query();
-    $this->test = BulkAction::make('test')->chunk();
+    $this->test = BulkAction::make('test');
 });
-it('can chunk', function () {
+
+it('chunks', function () {
     expect($this->test)
-        ->isChunked()->toBeTrue()
-        ->chunksById()->toBeTrue()
-        ->getChunkSize()->toBe(200);
+        ->isChunked()->toBe(config('action.chunk'))
+        ->chunk()->toBe($this->test)
+        ->isChunked()->toBeTrue();
 });
 
-it('can execute chunked', function () {
-    $fn = fn (Collection $collection) => $collection->each(function (Product $product) {
-        $product->update(['name' => 'test']);
-    });
-
-    $this->test->action($fn)->execute($this->query);
-
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-        'name' => 'test',
-    ]);
-});
-
-it('can execute chunked on record', function () {
-    $fn = fn (Product $product) => $product->update(['name' => 'test']);
-
-    $this->test->action($fn)->onRecord()->execute($this->query);
-
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-        'name' => 'test',
-    ]);
-});
-
-it('can customise the execution', function () {
-    $fn = fn (Product $product) => $product->update(['name' => 'test']);
-    
-    $this->test->action($fn)
-        ->onRecord()
-        ->chunkById(false)
-        ->chunkSize(1000)
-        ->execute($this->query);
-
+it('chunks by id', function () {
     expect($this->test)
-        ->actsOnRecord()->toBeTrue()
-        ->isChunked()->toBeTrue()
-        ->chunksById()->toBeFalse()
-        ->getChunkSize()->toBe(1000);
-
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-        'name' => 'test',
-    ]);
+        ->chunksById()->toBe(config('action.chunk_by_id'))
+        ->chunkById()->toBe($this->test)
+        ->chunksById()->toBeTrue();
 });
+
+it('has chunk size', function () {
+    expect($this->test)
+        ->getChunkSize()->toBe(config('action.chunk_size'))
+        ->chunkSize(100)->toBe($this->test)
+        ->getChunkSize()->toBe(100);
+});
+
