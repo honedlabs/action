@@ -64,6 +64,7 @@ class ActionMakeCommand extends GeneratorCommand
     {
         $stub = parent::buildClass($name);
 
+        /** @var string|null */
         $model = $this->option('model');
         /** @var string|null */
         $action = $this->option('action');
