@@ -14,6 +14,13 @@ beforeEach(function () {
     };
 });
 
+it('adds action', function () {
+    expect($this->test)
+        ->addAction(PageAction::make('create'))
+        ->hasActions()->toBeTrue()
+        ->getActions()->toHaveCount(1);
+});
+
 it('adds actions', function () {
     expect($this->test)
         ->hasActions()->toBeFalse()
@@ -70,4 +77,10 @@ it('can go without actions', function () {
         ->hasActions()->toBeFalse()
         ->isWithoutActions()->toBeTrue()
         ->getActions()->toBeEmpty();
+});
+
+it('gets record actions', function () {
+    expect($this->test)
+        ->addActions([InlineAction::make('create')])
+        ->getRecordActions([], [])->toHaveCount(1);
 });

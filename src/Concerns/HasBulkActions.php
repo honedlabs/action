@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\Contracts\ShouldChunk;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 trait HasBulkActions
@@ -41,7 +39,7 @@ trait HasBulkActions
      * @param  bool|null  $chunk
      * @return $this
      */
-    public function chunk($chunk = true): static
+    public function chunk($chunk = true)
     {
         $this->chunk = $chunk;
 
@@ -50,8 +48,10 @@ trait HasBulkActions
 
     /**
      * Determine if the action should be chunked.
+     *
+     * @return bool
      */
-    public function isChunked(): bool
+    public function isChunked()
     {
         if ($this instanceof ShouldChunk) {
             return true;
@@ -62,8 +62,10 @@ trait HasBulkActions
 
     /**
      * Determine if the action should be chunked from the config.
+     *
+     * @return bool
      */
-    public static function fallbackChunked(): bool
+    public static function fallbackChunked()
     {
         return (bool) config('action.chunk', false);
     }
@@ -84,16 +86,20 @@ trait HasBulkActions
 
     /**
      * Determine if the action should chunk the records by id.
+     *
+     * @return bool
      */
-    public function chunksById(): bool
+    public function chunksById()
     {
         return (bool) ($this->chunkById ?? static::fallbackChunksById());
     }
 
     /**
      * Determine if the action should chunk the records by id from the config.
+     *
+     * @return bool
      */
-    public static function fallbackChunksById(): bool
+    public static function fallbackChunksById()
     {
         return (bool) config('action.chunk_by_id', true);
     }
@@ -147,48 +153,26 @@ trait HasBulkActions
             return null;
         }
 
-        $model = $builder->getModel();
-        $reference = $this->handlerReference($handler, $model);
+        $model = $builder->getModel()::class;
+        $type = $this->getHandlerType($handler, $model);
 
-        if ($reference === 'builder' && $this->isChunked()) {
-            throw new \RuntimeException('A chunked handler cannot reference the builder.');
+        if ($type === 'builder' && $this->isChunked()) {
+            static::throwInvalidHandlerReference();
         }
 
-        return $this->executeWithReference($builder, $handler, $reference, $model);
-    }
+        $handler = $type === 'model'
+            ? fn ($records) => $records->each($handler)
+            : $handler;
 
-    /**
-     * Execute the handler with the appropriate reference type.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
-     * @param  \Closure  $handler
-     * @param  string|null  $reference
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return mixed
-     */
-    protected function executeWithReference($builder, $handler, $reference, $model)
-    {
-        $shouldChunk = $this->isChunked();
-
-        [$queryValue, $handlerWrapper] = match ($reference) {
-            'model' => [
-                $shouldChunk ? $builder : $builder->get(),
-                fn ($records) => $records->each($handler),
-            ],
-            'collection' => [
-                $shouldChunk ? $builder : $builder->get(),
-                $handler,
-            ],
-            default => [$builder, $handler]
-        };
-
-        if ($shouldChunk) {
-            $handlerWrapper = $this->wrapHandlerForChunking($handlerWrapper);
+        if ($this->isChunked()) {
+            $handler = $this->wrapHandlerForChunking($handler);
+        } elseif ($type !== 'builder') {
+            $builder = $builder->get();
         }
 
-        [$named, $typed] = $this->getEvaluationParameters($model::class, $queryValue);
+        [$named, $typed] = $this->getEvaluationParameters($model, $builder);
 
-        return $this->evaluate($handlerWrapper, $named, $typed);
+        return $this->evaluate($handler, $named, $typed);
     }
 
     /**
@@ -199,45 +183,42 @@ trait HasBulkActions
      */
     protected function wrapHandlerForChunking($handler)
     {
+        $chunkSize = $this->getChunkSize();
+
         return $this->chunksById()
-            ? fn ($builder) => $builder->chunkById($this->getChunkSize(), $handler)
-            : fn ($builder) => $builder->chunk($this->getChunkSize(), $handler);
+            ? fn ($builder) => $builder->chunkById($chunkSize, $handler)
+            : fn ($builder) => $builder->chunk($chunkSize, $handler);
     }
 
     /**
-     * Determine if the handler references the builder, collection, or model.
+     * Determine if the handler type references the builder, collection, or model.
      *
      * @param  \Closure  $handler
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model  $model
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
      * @return 'builder'|'collection'|'model'|null
      */
-    public function handlerReference($handler, $model)
+    public function getHandlerType($handler, $model)
     {
-        [$model, $singular, $plural] = $this->getParameterNames($model);
         $parameters = (new \ReflectionFunction($handler))->getParameters();
 
         foreach ($parameters as $parameter) {
             $name = $parameter->getName();
-            $reflected = $parameter->getType();
-            $type = $reflected instanceof \ReflectionNamedType
-                ? $reflected->getName()
+
+            $typed = $parameter->getType();
+
+            $type = $typed instanceof \ReflectionNamedType
+                ? $typed->getName()
                 : null;
 
-            if (\in_array($name, ['builder', 'query']) ||
-                $type === Builder::class
-            ) {
+            if (static::isBuilder($name, $type)) {
                 return 'builder';
             }
 
-            if (\in_array($name, ['collection', 'records']) ||
-                \in_array($type, [DatabaseCollection::class, Collection::class])
-            ) {
+            if (static::isCollection($name, $type)) {
                 return 'collection';
             }
 
-            if (\in_array($name, [$singular, $plural, 'record', 'model']) ||
-                \in_array($type, [Model::class, $model])
-            ) {
+            if (static::isModel($name, $type, $model)) {
                 return 'model';
             }
         }
@@ -248,14 +229,12 @@ trait HasBulkActions
     /**
      * Get the named and typed parameters to use for the bulk action.
      *
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
-     * @param  mixed  $value
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Collection<int,\Illuminate\Database\Eloquent\Model>  $value
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function getEvaluationParameters($model, $value = null)
+    protected function getEvaluationParameters($model, $value)
     {
-        $value ??= $model;
-
         [$named, $typed] = static::getBuilderParameters($model, $value);
 
         $named = \array_merge($named, [
@@ -268,5 +247,19 @@ trait HasBulkActions
         ]);
 
         return [$named, $typed];
+    }
+
+    /**
+     * Throw an exception if the handler references the builder.
+     *
+     * @return never
+     *
+     * @throws \RuntimeException
+     */
+    protected static function throwInvalidHandlerReference()
+    {
+        throw new \RuntimeException(
+            'A chunked handler cannot reference the builder.'
+        );
     }
 }

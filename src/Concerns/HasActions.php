@@ -87,6 +87,28 @@ trait HasActions
     }
 
     /**
+     * Set the actions to not be retrieved.
+     *
+     * @return $this
+     */
+    public function withoutActions()
+    {
+        $this->withoutActions = true;
+
+        return $this;
+    }
+
+    /**
+     * Determine if the actions should not be retrieved.
+     *
+     * @return bool
+     */
+    public function isWithoutActions()
+    {
+        return $this->withoutActions;
+    }
+
+    /**
      * Retrieve only the inline actions.
      *
      * @return array<int,\Honed\Action\InlineAction>
@@ -172,24 +194,22 @@ trait HasActions
     }
 
     /**
-     * Set the actions to not be retrieved.
+     * Get the actions for a record.
      *
-     * @return $this
+     * @param  array<string,mixed>  $named
+     * @param  array<class-string,mixed>  $typed
+     * @return array<int,mixed>
      */
-    public function withoutActions()
+    public function getRecordActions($named, $typed)
     {
-        $this->withoutActions = true;
+        $allowed = \array_filter(
+            $this->getInlineActions(),
+            static fn (InlineAction $action) => $action->isAllowed($named, $typed)
+        );
 
-        return $this;
-    }
-
-    /**
-     * Determine if the actions should not be retrieved.
-     *
-     * @return bool
-     */
-    public function isWithoutActions()
-    {
-        return $this->withoutActions;
+        return \array_map(
+            static fn (InlineAction $action) => $action->resolve($named, $typed)->toArray(),
+            $allowed
+        );
     }
 }

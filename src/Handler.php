@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Action\Concerns\HasParameterNames;
 use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
@@ -19,19 +20,24 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class Handler implements Makeable
 {
-    use Concerns\HasParameterNames;
-
     /**
      * @use HasBuilderInstance<TBuilder, TModel>
      */
     use HasBuilderInstance;
 
+    use HasParameterNames;
+
     /**
+     * List of the available actions.
+
+     *
      * @var array<int,\Honed\Action\Action>
      */
     protected $actions = [];
 
     /**
+     * The key to use for selecting records.
+     *
      * @var string|null
      */
     protected $key;
@@ -108,13 +114,13 @@ class Handler implements Makeable
      * @param  \Honed\Action\Http\Data\ActionData  $data
      * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>|TModel|null}
      */
-    protected function resolveAction($type, $data)
+    public function resolveAction($type, $data)
     {
         return match ($type) {
             ActionFactory::Inline => $this->resolveInlineAction(type($data)->as(InlineData::class)),
             ActionFactory::Bulk => $this->resolveBulkAction(type($data)->as(BulkData::class)),
             ActionFactory::Page => $this->resolvePageAction($data),
-            default => static::throwInvalidArgumentException($type),
+            default => static::throwInvalidActionTypeException($type),
         };
     }
 
@@ -123,7 +129,7 @@ class Handler implements Makeable
      *
      * @return array<int,\Honed\Action\Action>
      */
-    protected function getActions()
+    public function getActions()
     {
         return $this->actions;
     }
@@ -134,10 +140,11 @@ class Handler implements Makeable
      * @param  TBuilder<TModel>  $builder
      * @return string
      */
-    protected function getKey($builder)
+    public function getKey($builder)
     {
-        return $builder->qualifyColumn($this->key
-            ??= $builder->getModel()->getKeyName());
+        return $builder->qualifyColumn(
+            $this->key ??= $builder->getModel()->getKeyName()
+        );
     }
 
     /**
@@ -162,7 +169,7 @@ class Handler implements Makeable
      * @param  \Honed\Action\Http\Data\BulkData  $data
      * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
      */
-    protected function resolveBulkAction($data)
+    public function resolveBulkAction($data)
     {
         $builder = $this->getBuilder();
 
@@ -182,7 +189,7 @@ class Handler implements Makeable
      * @param  \Honed\Action\Http\Data\ActionData  $data
      * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
      */
-    protected function resolvePageAction($data)
+    public function resolvePageAction($data)
     {
         return [
             $this->getAction($data->name, PageAction::class),
@@ -196,7 +203,7 @@ class Handler implements Makeable
      * @param  string  $type
      * @return never
      */
-    protected static function throwInvalidArgumentException($type)
+    public static function throwInvalidActionTypeException($type)
     {
         throw new \InvalidArgumentException(\sprintf(
             'Action type [%s] is invalid.', $type
@@ -207,14 +214,14 @@ class Handler implements Makeable
      * Find the action by name and type.
      *
      * @param  string  $name
-     * @param  string  $type
+     * @param  class-string<\Honed\Action\Action>  $type
      * @return \Honed\Action\Action|null
      */
-    protected function getAction($name, $type)
+    public function getAction($name, $type)
     {
         return Arr::first(
             $this->getActions(),
-            fn (Action $action) => $action instanceof $type
+            static fn (Action $action) => $action instanceof $type
                 && $action->getName() === $name
         );
     }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 trait HasParameterNames
@@ -39,7 +41,7 @@ trait HasParameterNames
      */
     public static function getSingularName($model)
     {
-        return str($model)
+        return Str::of($model)
             ->classBasename()
             ->singular()
             ->camel()
@@ -65,7 +67,7 @@ trait HasParameterNames
      * Retrieve the named and typed parameters for a builder.
      *
      * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
-     * @param  mixed  $value
+     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Collection<int,\Illuminate\Database\Eloquent\Model>|null  $value
      * @return array{array<string, mixed>, array<class-string,mixed>}
      */
     public static function getBuilderParameters($model, $value = null)
@@ -91,7 +93,7 @@ trait HasParameterNames
      * Retrieve the named and typed parameters for a model.
      *
      * @param  class-string<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $model
-     * @param  mixed  $value
+     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Collection<int,\Illuminate\Database\Eloquent\Model>|null  $value
      * @return array{array<string, mixed>, array<class-string,mixed>}
      */
     public static function getModelParameters($model, $value = null)
@@ -111,5 +113,47 @@ trait HasParameterNames
         );
 
         return [$named, $typed];
+    }
+
+    /**
+     * Determine if the closure parameter references a builder
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @return bool
+     */
+    public static function isBuilder($name, $type)
+    {
+        return \in_array($name, ['builder', 'query']) ||
+            $type === Builder::class;
+    }
+
+    /**
+     * Determine if the closure parameter references a collection
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @return bool
+     */
+    public static function isCollection($name, $type)
+    {
+        return \in_array($name, ['collection', 'records']) ||
+            \in_array($type, [DatabaseCollection::class, Collection::class]);
+    }
+
+    /**
+     * Determine if the closure parameter references a model
+     *
+     * @param  string  $name
+     * @param  string|null  $type
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     * @return bool
+     */
+    public static function isModel($name, $type, $model)
+    {
+        [$model, $singular, $plural] = static::getParameterNames($model);
+
+        return \in_array($name, ['model', 'record', $singular, $plural]) ||
+            \in_array($type, [Model::class, $model]);
     }
 }
