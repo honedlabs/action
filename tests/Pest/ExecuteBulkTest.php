@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Database\Eloquent\Builder;
 
-
 beforeEach(function () {
     $this->action = BulkAction::make('test');
 });
@@ -111,6 +110,39 @@ it('executes on chunked models', function () {
         'id' => $product->id,
         'name' => $name,
     ]);
+});
+
+it('modifies query', function () {
+    foreach (range(1, 10) as $i) {
+        product();
+    }
+
+    $modify = fn (Builder $q) => $q->where('id', '>', 5);
+    $fn = fn (Collection $p) => $p->each(fn (Product $p) => $p->makeFree());
+
+    $this->action
+        ->query($modify)
+        ->action($fn)
+        ->execute(Product::query());
+
+    // Products with id > 5 should have price = 0
+    for ($i = 6; $i <= 10; $i++) {
+        $this->assertDatabaseHas('products', [
+            'id' => $i,
+            'price' => 0,
+        ]);
+    }
+
+    // Products with id <= 5 should not have price = 0
+    for ($i = 1; $i <= 5; $i++) {
+        $this->assertDatabaseHas('products', [
+            'id' => $i,
+        ]);
+        $this->assertDatabaseMissing('products', [
+            'id' => $i,
+            'price' => 0,
+        ]);
+    }
 });
 
 it('errors if chunking with builder', function () {

@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\Contracts\ShouldChunk;
+use Honed\Core\Concerns\HasQueryClosure;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
     use HasAction;
+
+    /** @use HasQueryClosure<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
+    use HasQueryClosure;
 
     /**
      * Whether the action should be chunked.
@@ -157,8 +161,12 @@ trait HasBulkActions
         $type = $this->getHandlerType($handler, $model);
 
         if ($type === 'builder' && $this->isChunked()) {
-            static::throwInvalidHandlerReference();
+            throw new \RuntimeException(
+                'A chunked handler cannot reference the builder.'
+            );
         }
+
+        $this->modifyQuery($builder);
 
         $handler = $type === 'model'
             ? fn ($records) => $records->each($handler)
@@ -247,19 +255,5 @@ trait HasBulkActions
         ]);
 
         return [$named, $typed];
-    }
-
-    /**
-     * Throw an exception if the handler references the builder.
-     *
-     * @return never
-     *
-     * @throws \RuntimeException
-     */
-    protected static function throwInvalidHandlerReference()
-    {
-        throw new \RuntimeException(
-            'A chunked handler cannot reference the builder.'
-        );
     }
 }

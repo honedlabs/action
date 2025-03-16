@@ -6,6 +6,7 @@ use Honed\Action\BulkAction;
 use Honed\Action\ActionFactory;
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\HttpFoundation\Request;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');
@@ -37,4 +38,37 @@ it('has array representation', function () {
             'keepSelected' => false,
             'route' => null,
         ]);
+});
+
+it('resolves to array', function () {
+    $product = product();
+
+    $action = BulkAction::make('test')
+        ->route(fn (Product $product) => route('products.show', $product));
+
+    expect($action->resolveToArray(...params($product)))
+        ->toEqual([
+            'name' => 'test',
+            'label' => 'Test',
+            'type' => ActionFactory::Bulk,
+            'icon' => null,
+            'extra' => [],
+            'action' => false,
+            'confirm' => null,
+            'route' => [
+                'href' => route('products.show', $product),
+                'method' => Request::METHOD_GET,
+            ],
+        ]);
+});
+
+it('calls query closure', function () {
+    $product = product();
+
+    $fn = fn ($query) => $query->where('id', $product->id);
+
+    expect(BulkAction::make('test'))
+        ->hasQueryClosure()->toBeFalse()
+        ->query($fn)->toBeInstanceOf(BulkAction::class)
+        ->hasQueryClosure()->toBeTrue();
 });

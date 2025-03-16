@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class Handler implements Makeable
 {
     /**
-     * @use HasBuilderInstance<TBuilder, TModel>
+     * @use HasBuilderInstance<TModel, TBuilder<TModel>>
      */
     use HasBuilderInstance;
 
@@ -29,7 +29,6 @@ class Handler implements Makeable
 
     /**
      * List of the available actions.
-
      *
      * @var array<int,\Honed\Action\Action>
      */
@@ -95,7 +94,7 @@ class Handler implements Makeable
 
         [$named, $typed] = static::getBuilderParameters($query);
 
-        abort_if(! $action->isAllowed($named, $typed), 403);
+        abort_unless($action->isAllowed($named, $typed), 403);
 
         /** @var TBuilder|TModel $query */
         $result = $action->execute($query);

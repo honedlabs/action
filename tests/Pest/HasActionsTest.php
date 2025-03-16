@@ -78,9 +78,3 @@ it('can go without actions', function () {
         ->isWithoutActions()->toBeTrue()
         ->getActions()->toBeEmpty();
 });
-
-it('gets record actions', function () {
-    expect($this->test)
-        ->addActions([InlineAction::make('create')])
-        ->getRecordActions([], [])->toHaveCount(1);
-});

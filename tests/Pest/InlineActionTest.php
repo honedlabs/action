@@ -30,7 +30,6 @@ it('has array representation', function () {
             'action' => false,
             'confirm' => null,
             'default' => false,
-            'action' => false,
             'route' => null,
         ]);
 });
@@ -55,12 +54,19 @@ it('has array representation with route', function () {
         ]);
 });
 
-it('resolves', function () {
+it('resolves to array', function () {
     $product = product();
-    $named = ['record' => $product];
-    $typed = [Product::class => $product];
 
-    expect((new DestroyAction)->resolve($named, $typed))
-        ->toBeInstanceOf(DestroyAction::class)
-        ->getLabel()->toBe('Destroy '.$product->name);
+    expect((new DestroyAction)->resolveToArray(...params($product)))
+        ->toEqual([
+            'name' => 'destroy',
+            'label' => 'Destroy '.$product->name,
+            'type' => ActionFactory::Inline,
+            'icon' => null,
+            'extra' => [],
+            'action' => true,
+            'confirm' => null,
+            'default' => false,
+            'route' => null,
+        ]);
 });

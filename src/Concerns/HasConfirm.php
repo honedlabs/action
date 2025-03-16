@@ -45,20 +45,6 @@ trait HasConfirm
     }
 
     /**
-     * Resolve the confirm using named and typed parameters.
-     *
-     * @param  array<string,mixed>  $parameters
-     * @param  array<string,mixed>  $typed
-     * @return $this
-     */
-    public function resolveConfirm($parameters = [], $typed = [])
-    {
-        $this->confirm?->resolve($parameters, $typed);
-
-        return $this;
-    }
-
-    /**
      * Determine if the instance has a confirm.
      *
      * @return bool

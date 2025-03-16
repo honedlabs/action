@@ -67,13 +67,9 @@ trait HasActions
             return [];
         }
 
-        $methodFilters = \method_exists($this, 'actions')
-            ? $this->actions()
-            : [];
+        $actions = \method_exists($this, 'actions') ? $this->actions() : [];
 
-        $propertyFilters = $this->actions ?? [];
-
-        return \array_merge($methodFilters, $propertyFilters);
+        return \array_merge($actions, $this->actions ?? []);
     }
 
     /**
@@ -89,11 +85,12 @@ trait HasActions
     /**
      * Set the actions to not be retrieved.
      *
+     * @param  bool  $withoutActions
      * @return $this
      */
-    public function withoutActions()
+    public function withoutActions($withoutActions = true)
     {
-        $this->withoutActions = true;
+        $this->withoutActions = $withoutActions;
 
         return $this;
     }
@@ -154,20 +151,6 @@ trait HasActions
     }
 
     /**
-     * Get the actions as an array.
-     *
-     * @return array<string,mixed>
-     */
-    public function actionsToArray()
-    {
-        return [
-            'hasInline' => filled($this->getInlineActions()),
-            'bulk' => $this->bulkActionsToArray(),
-            'page' => $this->pageActionsToArray(),
-        ];
-    }
-
-    /**
      * Get the bulk actions as an array.
      *
      * @return array<int,mixed>
@@ -194,22 +177,16 @@ trait HasActions
     }
 
     /**
-     * Get the actions for a record.
+     * Get the actions as an array.
      *
-     * @param  array<string,mixed>  $named
-     * @param  array<class-string,mixed>  $typed
-     * @return array<int,mixed>
+     * @return array<string,mixed>
      */
-    public function getRecordActions($named, $typed)
+    public function actionsToArray()
     {
-        $allowed = \array_filter(
-            $this->getInlineActions(),
-            static fn (InlineAction $action) => $action->isAllowed($named, $typed)
-        );
-
-        return \array_map(
-            static fn (InlineAction $action) => $action->resolve($named, $typed)->toArray(),
-            $allowed
-        );
+        return [
+            'hasInline' => filled($this->getInlineActions()),
+            'bulk' => $this->bulkActionsToArray(),
+            'page' => $this->pageActionsToArray(),
+        ];
     }
 }

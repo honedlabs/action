@@ -6,13 +6,13 @@ namespace Honed\Action;
 
 use Honed\Core\Concerns\HasDescription;
 use Honed\Core\Concerns\HasLabel;
-use Honed\Core\Contracts\Resolves;
+use Honed\Core\Contracts\ResolvesArrayable;
 use Honed\Core\Primitive;
 
 /**
  * @extends Primitive<string,mixed>
  */
-class Confirm extends Primitive implements Resolves
+class Confirm extends Primitive implements ResolvesArrayable
 {
     use HasDescription;
     use HasLabel;
@@ -49,24 +49,15 @@ class Confirm extends Primitive implements Resolves
      *
      * @param  string|\Closure|null  $label
      * @param  string|\Closure|null  $description
-     * @param  string  $dismiss
-     * @param  string  $submit
-     * @param  string|null  $intent
      * @return static
      */
     public static function make(
         $label = null,
-        $description = null,
-        $dismiss = null,
-        $submit = null,
-        $intent = null
+        $description = null
     ) {
         return resolve(static::class)
             ->label($label)
-            ->description($description)
-            ->dismiss($dismiss)
-            ->submit($submit)
-            ->intent($intent);
+            ->description($description);
     }
 
     /**
@@ -145,7 +136,7 @@ class Confirm extends Primitive implements Resolves
      */
     public function hasIntent()
     {
-        return ! \is_null($this->intent);
+        return isset($this->intent);
     }
 
     /**
@@ -215,11 +206,14 @@ class Confirm extends Primitive implements Resolves
     /**
      * {@inheritdoc}
      */
-    public function resolve($parameters = [], $typed = [])
+    public function resolveToArray($parameters = [], $typed = [])
     {
-        $this->resolveLabel($parameters, $typed);
-        $this->resolveDescription($parameters, $typed);
-
-        return $this;
+        return [
+            'label' => $this->resolveLabel($parameters, $typed),
+            'description' => $this->resolveDescription($parameters, $typed),
+            'dismiss' => $this->getDismiss(),
+            'submit' => $this->getSubmit(),
+            'intent' => $this->getIntent(),
+        ];
     }
 }

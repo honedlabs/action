@@ -46,16 +46,35 @@ it('has array representation with route', function () {
         ]);
 });
 
-it('resolves', function () {
+it('resolves to array', function () {
     $product = product();
 
-    expect(PageAction::make('test')
-        ->route(fn (Product $product) => route('products.show', $product))
-        ->resolve(...params($product))
-    )->toBeInstanceOf(PageAction::class)
-        ->getLabel()->toBe('Test')
-        ->routeToArray()->toEqual([
-        'href' => route('products.show', $product),
-        'method' => Request::METHOD_GET,
-    ]);
+    $action = PageAction::make('test')
+        ->route(fn (Product $product) => route('products.show', $product));
+
+    expect($action->resolveToArray(...params($product)))
+        ->toEqual([
+            'name' => 'test',
+            'label' => 'Test',
+            'type' => ActionFactory::Page,
+            'icon' => null,
+            'extra' => [],
+            'action' => false,
+            'confirm' => null,
+            'route' => [
+                'href' => route('products.show', $product),
+                'method' => Request::METHOD_GET,
+            ],
+        ]);
+});
+
+it('calls query closure', function () {
+    $product = product();
+
+    $fn = fn ($query) => $query->where('id', $product->id);
+
+    expect(PageAction::make('test'))
+        ->hasQueryClosure()->toBeFalse()
+        ->query($fn)->toBeInstanceOf(PageAction::class)
+        ->hasQueryClosure()->toBeTrue();
 });

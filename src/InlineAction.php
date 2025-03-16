@@ -29,6 +29,16 @@ class InlineAction extends Action
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function resolveToArray($parameters = [], $typed = [])
+    {
+        return \array_merge(parent::resolveToArray($parameters, $typed), [
+            'default' => $this->isDefault(),
+        ]);
+    }
+
+    /**
      * Execute the inline action on the given record.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
