@@ -76,6 +76,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
         $path = $this->option('path');
 
         foreach ($this->actions as $action => $verb) {
+            /** @var string */
             $model = $this->argument('model');
 
             $name = Str::of($path ?? '')
