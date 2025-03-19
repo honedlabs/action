@@ -8,7 +8,7 @@ beforeEach(function () {
     File::cleanDirectory(app_path('Actions'));
 });
 
-it('tests', function () {
+it('makes', function () {
     $this->artisan('make:action', [
         'name' => 'TestAction',
     ])->assertSuccessful();

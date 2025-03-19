@@ -22,7 +22,7 @@ class ActionGroup extends Primitive
     public static function make(...$actions): static
     {
         return resolve(static::class)
-            ->addActions($actions);
+            ->withActions($actions);
     }
 
     /**
@@ -44,7 +44,7 @@ class ActionGroup extends Primitive
             /** @var array<int, \Honed\Action\PageAction> $args */
             $args = $parameters[0] ?? [];
 
-            return $this->addActions($args);
+            return $this->withActions($args);
         }
 
         return parent::__call($method, $parameters);

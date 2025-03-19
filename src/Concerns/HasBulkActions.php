@@ -11,8 +11,6 @@ use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
-    use HasAction;
-
     /** @use HasQueryClosure<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
     use HasQueryClosure;
 

@@ -44,13 +44,14 @@ class ActionMakeCommand extends GeneratorCommand
      *
      * @var array<string,string>
      */
-    protected $actions = [
-        'create' => 'Create',
-        'delete' => 'Delete',
-        'update' => 'Update',
-        'show' => 'Show',
+    public $actions = [
         'index' => 'Index',
+        'create' => 'Create',
         'store' => 'Store',
+        'show' => 'Show',
+        'edit' => 'Edit',
+        'update' => 'Update',
+        'delete' => 'Delete',
         'destroy' => 'Destroy',
     ];
 
@@ -143,6 +144,7 @@ class ActionMakeCommand extends GeneratorCommand
         }
 
         $stub = Str::of($action)
+            ->lower()
             ->prepend('/stubs/honed.action.')
             ->append('.stub')
             ->value();

@@ -6,36 +6,32 @@ namespace Honed\Action\Concerns;
 
 use Closure;
 use Honed\Action\Contracts\Actionable;
+use Honed\Core\Concerns\HasParameterNames;
 use Illuminate\Support\Facades\App;
 
 trait HasAction
 {
+    /**
+     * @use HasParameterNames<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
+     */
     use HasParameterNames;
 
     /**
+     * The action handler.
+     *
      * @var \Closure|class-string<\Honed\Action\Contracts\Actionable>|null
      */
     protected $action;
 
     /**
-     * Execute the action handler using the provided data.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model  $parameter
-     * @return mixed
-     */
-    abstract public function execute($parameter);
-
-    /**
      * Set the action handler.
      *
-     * @param  \Closure|class-string<\Honed\Action\Contracts\Actionable>|null  $action
+     * @param  \Closure|class-string<\Honed\Action\Contracts\Actionable>  $action
      * @return $this
      */
-    public function action($action = null)
+    public function action($action)
     {
-        if (! \is_null($action)) {
-            $this->action = $action;
-        }
+        $this->action = $action;
 
         return $this;
     }

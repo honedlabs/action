@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Console\Commands\ActionMakeCommand;
+use Honed\Action\Console\Commands\ActionsMakeCommand;
 use Illuminate\Support\ServiceProvider;
 
 class ActionServiceProvider extends ServiceProvider
@@ -25,6 +26,7 @@ class ActionServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ActionMakeCommand::class,
+                ActionsMakeCommand::class,
             ]);
 
             $this->publishes([

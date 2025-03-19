@@ -34,4 +34,28 @@ class ActionRequest extends FormRequest
             'id' => [$inline, 'required', $regex],
         ];
     }
+
+    /**
+     * Determine if the action is an inline action.
+     */
+    public function isInline(): bool
+    {
+        return $this->validated('type') === ActionFactory::Inline;
+    }
+
+    /**
+     * Determine if the action is a bulk action.
+     */
+    public function isBulk(): bool
+    {
+        return $this->validated('type') === ActionFactory::Bulk;
+    }
+
+    /**
+     * Determine if the action is a page action.
+     */
+    public function isPage(): bool
+    {
+        return $this->validated('type') === ActionFactory::Page;
+    }
 }

@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Concerns\HasParameterNames;
 use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
 use Honed\Core\Concerns\HasBuilderInstance;
+use Honed\Core\Concerns\HasParameterNames;
 use Honed\Core\Contracts\Makeable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-/**
- * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TBuilder of \Illuminate\Database\Eloquent\Builder
- */
 class Handler implements Makeable
 {
     /**
-     * @use HasBuilderInstance<TModel, TBuilder<TModel>>
+     * @use HasBuilderInstance<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
      */
     use HasBuilderInstance;
 
+    /**
+     * @use HasParameterNames<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
+     */
     use HasParameterNames;
 
     /**
@@ -44,7 +43,7 @@ class Handler implements Makeable
     /**
      * Create a new handler instance.
      *
-     * @param  TBuilder  $builder
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      */
@@ -58,7 +57,7 @@ class Handler implements Makeable
     /**
      * Make a new handler instance.
      *
-     * @param  TBuilder  $builder
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      * @return static
@@ -96,7 +95,7 @@ class Handler implements Makeable
 
         abort_unless($action->isAllowed($named, $typed), 403);
 
-        /** @var TBuilder|TModel $query */
+        /** @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model $query */
         $result = $action->execute($query);
 
         if ($result instanceof Responsable || $result instanceof RedirectResponse) {
@@ -111,7 +110,7 @@ class Handler implements Makeable
      *
      * @param  string  $type
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>|TModel|null}
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null}
      */
     public function resolveAction($type, $data)
     {
@@ -136,7 +135,7 @@ class Handler implements Makeable
     /**
      * Get the key to use for selecting records.
      *
-     * @param  TBuilder<TModel>  $builder
+     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @return string
      */
     public function getKey($builder)
@@ -150,7 +149,7 @@ class Handler implements Makeable
      * Resolve the inline action.
      *
      * @param  \Honed\Action\Http\Data\InlineData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: TModel|null}
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Model|null}
      */
     protected function resolveInlineAction($data)
     {
@@ -166,7 +165,7 @@ class Handler implements Makeable
      * Resolve the bulk action.
      *
      * @param  \Honed\Action\Http\Data\BulkData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
+     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
      */
     public function resolveBulkAction($data)
     {
@@ -186,7 +185,7 @@ class Handler implements Makeable
      * Resolve the page action.
      *
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: TBuilder<TModel>}
+     * @return array{\Honed\Action\Action|null, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
      */
     public function resolvePageAction($data)
     {

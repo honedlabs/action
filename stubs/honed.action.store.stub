@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 final class {{ class }} implements Actionable
@@ -12,10 +13,10 @@ final class {{ class }} implements Actionable
     /**
      * Handle the action.
      */
-    public function handle($request): {{ model }}
+    public function handle(Request $request): {{ model }}
     {
         ${{ modelVariable }} = DB::transaction(
-            fn () => $this->store($request)
+            static fn () => static::store($request),
         );
 
         return ${{ modelVariable }};
@@ -24,7 +25,7 @@ final class {{ class }} implements Actionable
     /**
      * Store the {{ modelVariable }} record in the database.
      */
-    protected function store($request): {{ model }}
+    public static function store(Request $request): {{ model }}
     {
         ${{ modelVariable }} = {{ model }}::create($request->validated());
 
