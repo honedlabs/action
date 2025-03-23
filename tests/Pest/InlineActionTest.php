@@ -48,7 +48,7 @@ it('has array representation with route', function () {
             'default' => false,
             'action' => false,
             'route' => [
-                'route' => route('products.index'),
+                'url' => route('products.index'),
                 'method' => Request::METHOD_GET,
             ],
         ]);

@@ -57,6 +57,16 @@ trait HasActions
     }
 
     /**
+     * Define the actions for the instance.
+     *
+     * @return array<int,\Honed\Action\Action>
+     */
+    public function actions()
+    {
+        return [];
+    }
+
+    /**
      * Retrieve the actions
      *
      * @return array<int,\Honed\Action\Action>
@@ -67,9 +77,10 @@ trait HasActions
             return [];
         }
 
-        $actions = \method_exists($this, 'actions') ? $this->actions() : [];
-
-        return \array_merge($actions, $this->actions ?? []);
+        return \array_merge(
+            $this->actions ?? [],
+            $this->actions(),
+        );
     }
 
     /**

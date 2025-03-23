@@ -55,7 +55,7 @@ it('resolves to array', function () {
             'action' => false,
             'confirm' => null,
             'route' => [
-                'route' => route('products.show', $product),
+                'url' => route('products.show', $product),
                 'method' => Request::METHOD_GET,
             ],
         ]);

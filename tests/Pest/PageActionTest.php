@@ -40,7 +40,7 @@ it('has array representation with route', function () {
             'confirm' => null,
             'action' => false,
             'route' => [
-                'route' => route('products.index'),
+                'url' => route('products.index'),
                 'method' => Request::METHOD_GET,
             ],
         ]);
@@ -62,7 +62,7 @@ it('resolves to array', function () {
             'action' => false,
             'confirm' => null,
             'route' => [
-                'route' => route('products.show', $product),
+                'url' => route('products.show', $product),
                 'method' => Request::METHOD_GET,
             ],
         ]);
