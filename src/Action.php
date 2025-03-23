@@ -6,7 +6,6 @@ namespace Honed\Action;
 
 use Honed\Action\Concerns\HasAction;
 use Honed\Action\Concerns\HasConfirm;
-use Honed\Action\Contracts\Executes;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\HasExtra;
 use Honed\Core\Concerns\HasIcon;
@@ -19,10 +18,7 @@ use Honed\Core\Primitive;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Traits\ForwardsCalls;
 
-/**
- * @extends Primitive<string,mixed>
- */
-abstract class Action extends Primitive implements Executes, ResolvesArrayable
+abstract class Action extends Primitive implements ResolvesArrayable
 {
     use Allowable;
     use ForwardsCalls;
@@ -48,6 +44,14 @@ abstract class Action extends Primitive implements Executes, ResolvesArrayable
             ->name($name)
             ->label($label ?? static::makeLabel($name));
     }
+
+    /**
+     * Execute the action on a resource.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $record
+     * @return mixed
+     */
+    abstract public function execute($record);
 
     /**
      * {@inheritdoc}

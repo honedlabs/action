@@ -43,7 +43,7 @@ trait HasActions
     /**
      * Merge a set of actions with the existing.
      *
-     * @param  iterable<int, \Honed\Action\Action>  ...$actions
+     * @param  iterable<int, \Honed\Action\Action>|\Honed\Action\ActionGroup  ...$actions
      * @return $this
      */
     public function withActions(...$actions)

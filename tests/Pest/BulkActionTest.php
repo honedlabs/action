@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Honed\Action\BulkAction;
 use Honed\Action\ActionFactory;
 use Honed\Action\Tests\Stubs\Product;
-use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Request;
 
 beforeEach(function () {
@@ -56,19 +55,8 @@ it('resolves to array', function () {
             'action' => false,
             'confirm' => null,
             'route' => [
-                'href' => route('products.show', $product),
+                'route' => route('products.show', $product),
                 'method' => Request::METHOD_GET,
             ],
         ]);
-});
-
-it('calls query closure', function () {
-    $product = product();
-
-    $fn = fn ($query) => $query->where('id', $product->id);
-
-    expect(BulkAction::make('test'))
-        ->hasQueryClosure()->toBeFalse()
-        ->query($fn)->toBeInstanceOf(BulkAction::class)
-        ->hasQueryClosure()->toBeTrue();
 });

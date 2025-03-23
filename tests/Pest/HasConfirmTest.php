@@ -15,7 +15,7 @@ it('sets with instance', function () {
         ->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getLabel()->toBe('name')
+            ->getTitle()->toBe('name')
             ->getDescription()->toBe('description')
             ->getIntent()->toBe(Confirm::Constructive)
         );
@@ -23,13 +23,13 @@ it('sets with instance', function () {
 
 it('sets with self-call', function () {
     expect($this->test->confirm(fn (Confirm $confirm) => $confirm
-        ->label('name')
+        ->title('name')
         ->description('description')
         ->submit('Accept'))
     )->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getLabel()->toBe('name')
+            ->getTitle()->toBe('name')
             ->getDescription()->toBe('description')
             ->getSubmit()->toBe('Accept')
         );
@@ -40,27 +40,27 @@ it('sets with strings', function () {
         ->toBe($this->test)
         ->hasConfirm()->toBeTrue()
         ->getConfirm()->scoped(fn ($confirm) => $confirm
-            ->getLabel()->toBe('name')
+            ->getTitle()->toBe('name')
             ->getDescription()->toBe('description')
         );
 });
 
-// it('resolves to array', function () {
-//     $product = product();
+it('resolves to array', function () {
+    $product = product();
 
-//     $test = $this->test->confirm(fn (Confirm $confirm) => $confirm
-//         ->label(fn (Product $product) => \sprintf('Delete %s', $product->name))
-//         ->description(fn (Product $product) => \sprintf('Are you sure you want to delete %s?', $product->name))
-//         ->submit('Delete')
-//         ->destructive());
+    $test = $this->test->confirm(fn (Confirm $confirm) => $confirm
+        ->title(fn (Product $product) => \sprintf('Delete %s', $product->name))
+        ->description(fn (Product $product) => \sprintf('Are you sure you want to delete %s?', $product->name))
+        ->submit('Delete')
+        ->destructive()
+    );
 
-//     expect($test)
-//         ->hasConfirm()->toBeTrue()
-//         ->resolveConfirm(...params($product))->toBeInstanceOf(InlineAction::class)
-//         ->getConfirm()->scoped(fn ($confirm) => $confirm
-//             ->getLabel()->toBe(\sprintf('Delete %s', $product->name))
-//             ->getDescription()->toBe(\sprintf('Are you sure you want to delete %s?', $product->name))
-//             ->getSubmit()->toBe('Delete')
-//             ->getIntent()->toBe(Confirm::Destructive)
-//         );
-// });
+    expect($test->getConfirm()->resolveToArray(...params($product)))
+        ->toEqual([
+            'title' => \sprintf('Delete %s', $product->name),
+            'description' => \sprintf('Are you sure you want to delete %s?', $product->name),
+            'intent' => Confirm::Destructive,
+            'submit' => 'Delete',
+            'dismiss' => 'Cancel',
+        ]);
+});

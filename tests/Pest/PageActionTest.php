@@ -40,7 +40,7 @@ it('has array representation with route', function () {
             'confirm' => null,
             'action' => false,
             'route' => [
-                'href' => route('products.index'),
+                'route' => route('products.index'),
                 'method' => Request::METHOD_GET,
             ],
         ]);
@@ -62,19 +62,8 @@ it('resolves to array', function () {
             'action' => false,
             'confirm' => null,
             'route' => [
-                'href' => route('products.show', $product),
+                'route' => route('products.show', $product),
                 'method' => Request::METHOD_GET,
             ],
         ]);
-});
-
-it('calls query closure', function () {
-    $product = product();
-
-    $fn = fn ($query) => $query->where('id', $product->id);
-
-    expect(PageAction::make('test'))
-        ->hasQueryClosure()->toBeFalse()
-        ->query($fn)->toBeInstanceOf(PageAction::class)
-        ->hasQueryClosure()->toBeTrue();
 });

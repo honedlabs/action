@@ -4,24 +4,37 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Core\Concerns\HasDescription;
-use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Contracts\ResolvesArrayable;
 use Honed\Core\Primitive;
 
-/**
- * @extends Primitive<string,mixed>
- */
 class Confirm extends Primitive implements ResolvesArrayable
 {
-    use HasDescription;
-    use HasLabel;
-
     const Constructive = 'constructive';
 
     const Destructive = 'destructive';
 
     const Informative = 'informative';
+
+    /**
+     * The title of the confirm.
+     *
+     * @var string|\Closure(mixed...):string|null
+     */
+    protected $title;
+
+    /**
+     * The description of the confirm
+     *
+     * @var string|\Closure(mixed...):string|null
+     */
+    protected $description;
+
+    /**
+     * The intent of the confirm.
+     *
+     * @var string|null
+     */
+    protected $intent;
 
     /**
      * The message to display on the submit button.
@@ -38,52 +51,87 @@ class Confirm extends Primitive implements ResolvesArrayable
     protected $dismiss;
 
     /**
-     * The intent of the confirm.
-     *
-     * @var string|null
-     */
-    protected $intent;
-
-    /**
      * Create a new confirm instance.
      *
-     * @param  string|\Closure|null  $label
-     * @param  string|\Closure|null  $description
+     * @param  string|\Closure(mixed...):string|null  $title
+     * @param  string|\Closure(mixed...):string|null  $description
      * @return static
      */
-    public static function make(
-        $label = null,
-        $description = null
-    ) {
+    public static function make($title = null, $description = null)
+    {
         return resolve(static::class)
-            ->label($label)
+            ->title($title)
             ->description($description);
     }
 
     /**
-     * Set the submit message for the confirm.
+     * Set the title of the confirm.
      *
-     * @param  string|null  $submit
+     * @param  string|\Closure(mixed...):string|null  $title
      * @return $this
      */
-    public function submit($submit)
+    public function title($title)
     {
-        $this->submit = $submit;
+        $this->title = $title;
 
         return $this;
     }
 
     /**
-     * Set the dismiss message for the confirm.
+     * Get the title of the confirm.
      *
-     * @param  string|null  $dismiss
+     * @return string|null
+     */
+    public function getTitle()
+    {
+        return $this->evaluate($this->title);
+    }
+
+    /**
+     * Resolve the title of the confirm.
+     *
+     * @param  array<string, mixed>  $parameters
+     * @param  array<class-string, mixed>  $typed
+     * @return string|null
+     */
+    public function resolveTitle($parameters = [], $typed = [])
+    {
+        return $this->evaluate($this->title, $parameters, $typed);
+    }
+
+    /**
+     * Set the description of the confirm.
+     *
+     * @param  string|\Closure(mixed...):string|null  $description
      * @return $this
      */
-    public function dismiss($dismiss)
+    public function description($description)
     {
-        $this->dismiss = $dismiss;
+        $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     * Get the description of the confirm.
+     *
+     * @return string|null
+     */
+    public function getDescription()
+    {
+        return $this->evaluate($this->description);
+    }
+
+    /**
+     * Resolve the description of the confirm.
+     *
+     * @param  array<string, mixed>  $parameters
+     * @param  array<class-string, mixed>  $typed
+     * @return string|null
+     */
+    public function resolveDescription($parameters = [], $typed = [])
+    {
+        return $this->evaluate($this->description, $parameters, $typed);
     }
 
     /**
@@ -130,56 +178,6 @@ class Confirm extends Primitive implements ResolvesArrayable
     }
 
     /**
-     * Determine if the confirm has an intent set.
-     *
-     * @return bool
-     */
-    public function hasIntent()
-    {
-        return isset($this->intent);
-    }
-
-    /**
-     * Get the submit message for the confirm.
-     *
-     * @return string
-     */
-    public function getSubmit()
-    {
-        return $this->submit ?? static::fallbackSubmitMessage();
-    }
-
-    /**
-     * Get the submit message for the confirm from the config.
-     *
-     * @return string
-     */
-    public static function fallbackSubmitMessage()
-    {
-        return type(config('action.submit', 'Confirm'))->asString();
-    }
-
-    /**
-     * Get the dismiss message for the confirm.
-     *
-     * @return string
-     */
-    public function getDismiss()
-    {
-        return $this->dismiss ?? static::fallbackDismissMessage();
-    }
-
-    /**
-     * Get the dismiss message for the confirm from the config.
-     *
-     * @return string
-     */
-    public static function fallbackDismissMessage()
-    {
-        return type(config('action.dismiss', 'Cancel'))->asString();
-    }
-
-    /**
      * Get the intent of the confirm.
      *
      * @return string|null
@@ -190,12 +188,88 @@ class Confirm extends Primitive implements ResolvesArrayable
     }
 
     /**
+     * Determine if the confirm has an intent set.
+     *
+     * @return bool
+     */
+    public function hasIntent()
+    {
+        return isset($this->intent);
+    }
+
+    /**
+     * Set the submit message for the confirm.
+     *
+     * @param  string|null  $submit
+     * @return $this
+     */
+    public function submit($submit)
+    {
+        $this->submit = $submit;
+
+        return $this;
+    }
+
+    /**
+     * Get the submit message for the confirm.
+     *
+     * @return string
+     */
+    public function getSubmit()
+    {
+        return $this->submit ?? static::getDefaultSubmit();
+    }
+
+    /**
+     * Get the submit message for the confirm from the config.
+     *
+     * @return string
+     */
+    public static function getDefaultSubmit()
+    {
+        return type(config('action.submit', 'Confirm'))->asString();
+    }
+
+    /**
+     * Set the dismiss message for the confirm.
+     *
+     * @param  string|null  $dismiss
+     * @return $this
+     */
+    public function dismiss($dismiss)
+    {
+        $this->dismiss = $dismiss;
+
+        return $this;
+    }
+
+    /**
+     * Get the dismiss message for the confirm.
+     *
+     * @return string
+     */
+    public function getDismiss()
+    {
+        return $this->dismiss ?? static::getDefaultDismiss();
+    }
+
+    /**
+     * Get the dismiss message for the confirm from the config.
+     *
+     * @return string
+     */
+    public static function getDefaultDismiss()
+    {
+        return type(config('action.dismiss', 'Cancel'))->asString();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toArray()
     {
         return [
-            'label' => $this->getLabel(),
+            'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),
@@ -209,7 +283,7 @@ class Confirm extends Primitive implements ResolvesArrayable
     public function resolveToArray($parameters = [], $typed = [])
     {
         return [
-            'label' => $this->resolveLabel($parameters, $typed),
+            'title' => $this->resolveTitle($parameters, $typed),
             'description' => $this->resolveDescription($parameters, $typed),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),

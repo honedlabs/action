@@ -27,7 +27,7 @@ trait HasConfirm
             $confirm instanceof Confirm => $this->confirm = $confirm,
             $confirm instanceof \Closure => $this->evaluate($confirm),
             default => $this->confirmInstance()
-                ->label($confirm)
+                ->title($confirm)
                 ->description($description)
         };
 

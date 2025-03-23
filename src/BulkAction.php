@@ -57,19 +57,4 @@ class BulkAction extends Action
             'keepSelected' => $this->keepsSelected(),
         ]);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __call($method, $parameters)
-    {
-        if ($method === 'query') {
-            /** @var \Closure(mixed...):void|null $query */
-            $query = $parameters[0];
-
-            return $this->queryClosure($query);
-        }
-
-        return parent::__call($method, $parameters);
-    }
 }

@@ -9,17 +9,31 @@ beforeEach(function () {
     $this->test = Confirm::make();
 });
 
+it('has title', function () {
+    expect($this->test)
+        ->getTitle()->toBeNull()
+        ->title('name')->toBe($this->test)
+        ->getTitle()->toBe('name');
+});
+
+it('has description', function () {
+    expect($this->test)
+        ->getDescription()->toBeNull()
+        ->description('description')->toBe($this->test)
+        ->getDescription()->toBe('description');
+});
+
 it('has dismiss', function () {
     expect($this->test)
         ->getDismiss()->toBe(config('action.dismiss'))
-        ->dismiss('Back')->toBeInstanceOf(Confirm::class)
+        ->dismiss('Back')->toBe($this->test)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
     expect($this->test)
         ->getSubmit()->toBe(config('action.submit'))
-        ->submit('Accept')->toBeInstanceOf(Confirm::class)
+        ->submit('Accept')->toBe($this->test)
         ->getSubmit()->toBe('Accept');
 });
 
@@ -27,13 +41,13 @@ it('has intent', function () {
     expect($this->test)
         ->getIntent()->toBeNull()
         ->hasIntent()->toBeFalse()
-        ->intent('danger')->toBeInstanceOf(Confirm::class)
+        ->intent('danger')->toBe($this->test)
         ->getIntent()->toBe('danger')
-        ->constructive()->toBeInstanceOf(Confirm::class)
+        ->constructive()->toBe($this->test)
         ->getIntent()->toBe(Confirm::Constructive)
-        ->destructive()->toBeInstanceOf(Confirm::class)
+        ->destructive()->toBe($this->test)
         ->getIntent()->toBe(Confirm::Destructive)
-        ->informative()->toBeInstanceOf(Confirm::class)
+        ->informative()->toBe($this->test)
         ->getIntent()->toBe(Confirm::Informative)
         ->hasIntent()->toBeTrue();
 });
@@ -42,7 +56,7 @@ it('has array representation', function () {
     expect($this->test->toArray())
         ->toBeArray()
         ->toEqual([
-            'label' => null,
+            'title' => null,
             'description' => null,
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
@@ -60,7 +74,7 @@ it('resolves to array', function () {
 
     expect($confirm->resolveToArray(...params($product)))
         ->toEqual([
-            'label' => $product->name,
+            'title' => $product->name,
             'description' => \sprintf('Are you sure you want to delete %s?', $product->name),
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',

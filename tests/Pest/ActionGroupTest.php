@@ -12,12 +12,6 @@ it('makes', function () {
         ->getActions()->toHaveCount(2);
 });
 
-it('has actions called', function () {
-    expect(ActionGroup::make()->actions([PageAction::make('create'), PageAction::make('delete')]))
-        ->toBeInstanceOf(ActionGroup::class)
-        ->getActions()->toHaveCount(2);
-});
-
 it('has array representation', function () {
     expect(ActionGroup::make()->toArray())
         ->toBeArray()
@@ -25,7 +19,8 @@ it('has array representation', function () {
 });
 
 it('only has page actions', function () {
-    expect(ActionGroup::make()->actions([PageAction::make('create'), InlineAction::make('delete')]))
+    expect(ActionGroup::make())
+        ->withActions([PageAction::make('create'), InlineAction::make('delete')])
         ->toBeInstanceOf(ActionGroup::class)
         ->toArray()->toHaveCount(1);
 });

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\Contracts\ShouldChunk;
-use Honed\Core\Concerns\HasQueryClosure;
+use Honed\Core\Concerns\HasQuery;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Support\Collection;
 
 trait HasBulkActions
 {
-    /** @use HasQueryClosure<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
-    use HasQueryClosure;
+    /** @use HasQuery<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
+    use HasQuery;
 
     /**
      * Whether the action should be chunked.
@@ -140,7 +140,7 @@ trait HasBulkActions
     }
 
     /**
-     * Execute the bulk action on the given query.
+     * Execute the bulk action on a builder.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
      * @return mixed

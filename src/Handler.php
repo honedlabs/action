@@ -9,12 +9,11 @@ use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
 use Honed\Core\Concerns\HasBuilderInstance;
 use Honed\Core\Concerns\HasParameterNames;
-use Honed\Core\Contracts\Makeable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class Handler implements Makeable
+class Handler
 {
     /**
      * @use HasBuilderInstance<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>

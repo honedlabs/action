@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Data;
 
-use Honed\Core\Contracts\Transferable;
-
-class ActionData implements Transferable
+class ActionData
 {
-    public function __construct(public readonly string $name)
-    {
-        //
-    }
+    public function __construct(
+        public readonly string $name
+    ) {}
 
     /**
      * Create a new data transfer object from a request.
