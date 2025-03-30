@@ -6,16 +6,10 @@ namespace Honed\Action\Concerns;
 
 use Closure;
 use Honed\Action\Contracts\Actionable;
-use Honed\Core\Concerns\HasParameterNames;
 use Illuminate\Support\Facades\App;
 
 trait HasAction
 {
-    /**
-     * @use HasParameterNames<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
-     */
-    use HasParameterNames;
-
     /**
      * The action handler.
      *
@@ -24,14 +18,23 @@ trait HasAction
     protected $action;
 
     /**
+     * Optional parameters to pass to the Actionable handler.
+     *
+     * @var array<string,mixed>
+     */
+    protected $parameters = [];
+
+    /**
      * Set the action handler.
      *
      * @param  \Closure|class-string<\Honed\Action\Contracts\Actionable>  $action
+     * @param  array<string,mixed>  $parameters
      * @return $this
      */
-    public function action($action)
+    public function action($action, $parameters = [])
     {
         $this->action = $action;
+        $this->parameters = $parameters;
 
         return $this;
     }
@@ -57,11 +60,34 @@ trait HasAction
     }
 
     /**
+     * Set optional parameters to pass to the Actionable handler.
+     *
+     * @param  array<string,mixed>  $parameters
+     * @return $this
+     */
+    public function parameters($parameters)
+    {
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * Get the parameters to pass to the Actionable handler.
+     *
+     * @return array<string,mixed>
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
      * Get the handler for the actionable class.
      *
      * @return \Closure|null
      */
-    protected function getHandler()
+    public function getHandler()
     {
         $action = $this->getAction();
 

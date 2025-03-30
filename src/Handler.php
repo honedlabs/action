@@ -8,22 +8,21 @@ use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
 use Honed\Core\Concerns\HasBuilderInstance;
-use Honed\Core\Concerns\HasParameterNames;
+use Honed\Core\Parameters;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
+ */
 class Handler
 {
     /**
-     * @use HasBuilderInstance<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
+     * @use \Honed\Core\Concerns\HasBuilderInstance<TModel, TBuilder>
      */
     use HasBuilderInstance;
-
-    /**
-     * @use HasParameterNames<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
-     */
-    use HasParameterNames;
 
     /**
      * List of the available actions.
@@ -42,7 +41,7 @@ class Handler
     /**
      * Create a new handler instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  TBuilder  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      */
@@ -56,7 +55,7 @@ class Handler
     /**
      * Make a new handler instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
+     * @param  TBuilder  $builder
      * @param  array<int,\Honed\Action\Action>  $actions
      * @param  string|null  $key
      * @return static
@@ -64,6 +63,29 @@ class Handler
     public static function make($builder, $actions, $key = null)
     {
         return resolve(static::class, \compact('builder', 'actions', 'key'));
+    }
+
+    /**
+     * Get the actions for the handler.
+     *
+     * @return array<int,\Honed\Action\Action>
+     */
+    public function getActions()
+    {
+        return $this->actions;
+    }
+
+    /**
+     * Get the key to use for selecting records.
+     *
+     * @param  TBuilder  $builder
+     * @return string
+     */
+    public function getKey($builder)
+    {
+        return $builder->qualifyColumn(
+            $this->key ??= $builder->getModel()->getKeyName()
+        );
     }
 
     /**
@@ -86,15 +108,15 @@ class Handler
 
         [$action, $query] = $this->resolveAction($type, $data);
 
-        abort_if(\is_null($action), 400);
+        abort_unless((bool) $action, 400);
 
-        abort_if(\is_null($query), 404);
+        abort_unless((bool) $query, 404);
 
-        [$named, $typed] = static::getBuilderParameters($query);
+        [$named, $typed] = Parameters::builder($query);
 
         abort_unless($action->isAllowed($named, $typed), 403);
 
-        /** @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model $query */
+        /** @var TModel|TBuilder $query */
         $result = $action->execute($query);
 
         if ($result instanceof Responsable || $result instanceof RedirectResponse) {
@@ -109,7 +131,7 @@ class Handler
      *
      * @param  string  $type
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null}
+     * @return array{\Honed\Action\Action|null,TModel|TBuilder|null}
      */
     public function resolveAction($type, $data)
     {
@@ -122,33 +144,10 @@ class Handler
     }
 
     /**
-     * Get the actions for the handler.
-     *
-     * @return array<int,\Honed\Action\Action>
-     */
-    public function getActions()
-    {
-        return $this->actions;
-    }
-
-    /**
-     * Get the key to use for selecting records.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $builder
-     * @return string
-     */
-    public function getKey($builder)
-    {
-        return $builder->qualifyColumn(
-            $this->key ??= $builder->getModel()->getKeyName()
-        );
-    }
-
-    /**
      * Resolve the inline action.
      *
      * @param  \Honed\Action\Http\Data\InlineData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Model|null}
+     * @return array{\Honed\Action\Action|null, TModel|null}
      */
     protected function resolveInlineAction($data)
     {
@@ -164,19 +163,21 @@ class Handler
      * Resolve the bulk action.
      *
      * @param  \Honed\Action\Http\Data\BulkData  $data
-     * @return array{0: \Honed\Action\Action|null, 1: \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * @return array{\Honed\Action\Action|null, TBuilder}
      */
     public function resolveBulkAction($data)
     {
         $builder = $this->getBuilder();
-
         $key = $this->getKey($builder);
+
+        /** @var TBuilder $builder */
+        $builder = $data->all
+            ? $builder->whereNotIn($key, $data->except)
+            : $builder->whereIn($key, $data->only);
 
         return [
             $this->getAction($data->name, BulkAction::class),
-            $data->all
-                ? $builder->whereNotIn($key, $data->except)
-                : $builder->whereIn($key, $data->only),
+            $builder,
         ];
     }
 
@@ -184,7 +185,7 @@ class Handler
      * Resolve the page action.
      *
      * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{\Honed\Action\Action|null, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>}
+     * @return array{\Honed\Action\Action|null, TBuilder}
      */
     public function resolvePageAction($data)
     {
@@ -192,19 +193,6 @@ class Handler
             $this->getAction($data->name, PageAction::class),
             $this->getBuilder(),
         ];
-    }
-
-    /**
-     * Throw an invalid argument exception.
-     *
-     * @param  string  $type
-     * @return never
-     */
-    public static function throwInvalidActionTypeException($type)
-    {
-        throw new \InvalidArgumentException(\sprintf(
-            'Action type [%s] is invalid.', $type
-        ));
     }
 
     /**
@@ -221,5 +209,20 @@ class Handler
             static fn (Action $action) => $action instanceof $type
                 && $action->getName() === $name
         );
+    }
+
+    /**
+     * Throw an invalid argument exception.
+     *
+     * @param  string  $type
+     * @return never
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function throwInvalidActionTypeException($type)
+    {
+        throw new \InvalidArgumentException(\sprintf(
+            'Action type [%s] is invalid.', $type
+        ));
     }
 }

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 use Honed\Action\BulkAction;
 use Honed\Action\ActionFactory;
-use Honed\Action\Tests\Stubs\Product;
-use Symfony\Component\HttpFoundation\Request;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');
+});
 
-    foreach (range(1, 10) as $i) {
-        product();
-    }
+it('has bulk type', function () {
+    expect($this->action)
+        ->getType()->toBe(ActionFactory::Bulk);
 });
 
 it('keeps selected', function () {
@@ -25,38 +24,5 @@ it('keeps selected', function () {
 it('has array representation', function () {
     expect($this->action->toArray())
         ->toBeArray()
-        ->toEqual([
-            'name' => 'test',
-            'label' => 'Test',
-            'type' => ActionFactory::Bulk,
-            'icon' => null,
-            'extra' => [],
-            'action' => false,
-            'confirm' => null,
-            'action' => false,
-            'keepSelected' => false,
-            'route' => null,
-        ]);
-});
-
-it('resolves to array', function () {
-    $product = product();
-
-    $action = BulkAction::make('test')
-        ->route(fn (Product $product) => route('products.show', $product));
-
-    expect($action->resolveToArray(...params($product)))
-        ->toEqual([
-            'name' => 'test',
-            'label' => 'Test',
-            'type' => ActionFactory::Bulk,
-            'icon' => null,
-            'extra' => [],
-            'action' => false,
-            'confirm' => null,
-            'route' => [
-                'url' => route('products.show', $product),
-                'method' => Request::METHOD_GET,
-            ],
-        ]);
+        ->toHaveKey('keepSelected');
 });

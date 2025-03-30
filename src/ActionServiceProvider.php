@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Action\Console\Commands\ActionGroupMakeCommand;
 use Honed\Action\Console\Commands\ActionMakeCommand;
 use Honed\Action\Console\Commands\ActionsMakeCommand;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,7 @@ class ActionServiceProvider extends ServiceProvider
             $this->commands([
                 ActionMakeCommand::class,
                 ActionsMakeCommand::class,
+                ActionGroupMakeCommand::class,
             ]);
 
             $this->publishes([

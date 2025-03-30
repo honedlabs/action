@@ -16,7 +16,6 @@ beforeEach(function () {
 
 it('is empty by default', function () {
     expect($this->test)
-        ->hasActions()->toBeFalse()
         ->getActions()->toBeEmpty();
 });
 
@@ -25,61 +24,76 @@ it('adds actions', function () {
     expect($this->test)
         ->withActions([PageAction::make('view')])->toBe($this->test)
         ->withActions([InlineAction::make('edit')])->toBe($this->test)
-        ->hasActions()->toBeTrue()
         ->getActions()->toHaveCount(2);
 });
 
 it('adds actions variadically', function () {
     expect($this->test)
         ->withActions(PageAction::make('view'), InlineAction::make('edit'))->toBe($this->test)
-        ->hasActions()->toBeTrue()
         ->getActions()->toHaveCount(2);
 });
 
 it('adds actions collection', function () {
     expect($this->test)
         ->withActions(collect([PageAction::make('view'), InlineAction::make('edit')]))->toBe($this->test)
-        ->hasActions()->toBeTrue()
         ->getActions()->toHaveCount(2);
+});
+
+it('adds action groups', function () {
+    expect($this->test)
+        ->withActions(ActionGroup::make(PageAction::make('view')))->toBe($this->test)
+        ->getActions()->toHaveCount(1);
 });
 
 it('has inline actions', function () {
     expect($this->test)
-        ->hasActions()->toBeFalse()
         ->withActions([PageAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getInlineActions()->toHaveCount(0)
         ->withActions([InlineAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getInlineActions()->toHaveCount(1);
 });
 
 it('has bulk actions', function () {
     expect($this->test)
-        ->hasActions()->toBeFalse()
         ->withActions([PageAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getBulkActions()->toHaveCount(0)
         ->withActions([BulkAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getBulkActions()->toHaveCount(1);
 });
 
 it('has page actions', function () {
     expect($this->test)
-        ->hasActions()->toBeFalse()
         ->withActions([InlineAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getPageActions()->toHaveCount(0)
         ->withActions([PageAction::make('create')])
-        ->hasActions()->toBeTrue()
         ->getPageActions()->toHaveCount(1);
 });
 
-it('has array representation', function () {
+it('has inline actions array representation', function () {
+    $product = product();
+
+    expect($this->test)
+        ->withActions([
+            InlineAction::make('create')
+                ->label(fn ($product) => $product->name)
+                ->allow(fn ($product) => $product->id % 2 === 1),
+            InlineAction::make('edit')
+                ->label(fn ($product) => $product->name)
+                ->allow(fn ($product) => $product->id % 2 === 0),
+        ])
+        ->inlineActionsToArray($product)->toHaveCount(1);
+});
+
+it('has bulk actions array representation', function () {
+    expect($this->test)
+        ->withActions([BulkAction::make('create')])
+        ->bulkActionsToArray()->toHaveCount(1);
+});
+
+it('has page actions array representation', function () {
     expect($this->test)
         ->withActions([PageAction::make('create')])
-        ->actionsToArray()->toHaveKeys(['hasInline', 'bulk', 'page']);
+        ->pageActionsToArray()->toHaveCount(1);
 });
 
 describe('without', function () {
@@ -93,9 +107,10 @@ describe('without', function () {
 
     test('all', function () {
         expect($this->test)
-            ->hasActions()->toBeTrue()
+            ->isWithoutActions()->toBeFalse()
             ->withoutActions()->toBe($this->test)
-            ->hasActions()->toBeFalse();
+            ->isWithoutActions()->toBeTrue()
+            ->getActions()->toHaveCount(3);
     });
 
     test('inline', function () {

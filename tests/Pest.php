@@ -44,3 +44,5 @@ function params(Product $product): array
 
     return [$named, $typed];
 }
+
+// function ()

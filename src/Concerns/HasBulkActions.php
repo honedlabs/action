@@ -6,6 +6,7 @@ namespace Honed\Action\Concerns;
 
 use Honed\Action\Contracts\ShouldChunk;
 use Honed\Core\Concerns\HasQuery;
+use Honed\Core\Parameters;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Support\Collection;
 
@@ -59,7 +60,7 @@ trait HasBulkActions
             return true;
         }
 
-        return (bool) ($this->chunk ?? static::fallbackChunked());
+        return (bool) ($this->chunk ?? static::isChunkedByDefault());
     }
 
     /**
@@ -67,7 +68,7 @@ trait HasBulkActions
      *
      * @return bool
      */
-    public static function fallbackChunked()
+    public static function isChunkedByDefault()
     {
         return (bool) config('action.chunk', false);
     }
@@ -93,7 +94,7 @@ trait HasBulkActions
      */
     public function chunksById()
     {
-        return (bool) ($this->chunkById ?? static::fallbackChunksById());
+        return (bool) ($this->chunkById ?? static::chunksByIdByDefault());
     }
 
     /**
@@ -101,7 +102,7 @@ trait HasBulkActions
      *
      * @return bool
      */
-    public static function fallbackChunksById()
+    public static function chunksByIdByDefault()
     {
         return (bool) config('action.chunk_by_id', true);
     }
@@ -126,7 +127,7 @@ trait HasBulkActions
      */
     public function getChunkSize()
     {
-        return $this->chunkSize ?? static::fallbackChunkSize();
+        return $this->chunkSize ?? static::getDefaultChunkSize();
     }
 
     /**
@@ -134,7 +135,7 @@ trait HasBulkActions
      *
      * @return int
      */
-    public static function fallbackChunkSize()
+    public static function getDefaultChunkSize()
     {
         return type(config('action.chunk_size', 1000))->asInt();
     }
@@ -216,15 +217,15 @@ trait HasBulkActions
                 ? $typed->getName()
                 : null;
 
-            if (static::isBuilder($name, $type)) {
+            if (Parameters::isBuilder($name, $type)) {
                 return 'builder';
             }
 
-            if (static::isCollection($name, $type)) {
+            if (Parameters::isCollection($name, $type)) {
                 return 'collection';
             }
 
-            if (static::isModel($name, $type, $model)) {
+            if (Parameters::isModel($name, $type, $model)) {
                 return 'model';
             }
         }
@@ -241,7 +242,7 @@ trait HasBulkActions
      */
     protected function getEvaluationParameters($model, $value)
     {
-        [$named, $typed] = static::getBuilderParameters($model, $value);
+        [$named, $typed] = Parameters::builder($model, $value);
 
         $named = \array_merge($named, [
             'collection' => $value,

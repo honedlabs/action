@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Core\Concerns\IsDefault;
+use Honed\Core\Parameters;
 
 class InlineAction extends Action
 {
@@ -52,7 +53,7 @@ class InlineAction extends Action
             return;
         }
 
-        [$named, $typed] = static::getModelParameters($record);
+        [$named, $typed] = Parameters::model($record);
 
         return $this->evaluate($handler, $named, $typed);
     }

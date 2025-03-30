@@ -16,12 +16,10 @@ use Honed\Core\Concerns\HasType;
 use Honed\Core\Contracts\ResolvesArrayable;
 use Honed\Core\Primitive;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Traits\ForwardsCalls;
 
 abstract class Action extends Primitive implements ResolvesArrayable
 {
     use Allowable;
-    use ForwardsCalls;
     use HasAction;
     use HasConfirm;
     use HasExtra;
@@ -92,6 +90,10 @@ abstract class Action extends Primitive implements ResolvesArrayable
      */
     public function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
     {
+        if (isset($this->parameters[$parameterName])) {
+            return [$this->parameters[$parameterName]];
+        }
+
         return match ($parameterName) {
             'confirm' => [$this->confirmInstance()],
             default => [],

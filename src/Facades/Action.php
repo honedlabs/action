@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Honed\Action\BulkAction bulk(string $name, string|\Closure $label = null)
  * @method static \Honed\Action\InlineAction inline(string $name, string|\Closure $label = null)
  * @method static \Honed\Action\PageAction page(string $name, string|\Closure $label = null)
+ * @method static \Honed\Action\ActionGroup group(\Honed\Action\Action|iterable<int, \Honed\Action\Action> ...$actions)
  */
 class Action extends Facade
 {

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\Action;
+use Honed\Action\ActionGroup;
 use Honed\Action\BulkAction;
 use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
+use Honed\Core\Parameters;
 use Illuminate\Support\Arr;
 
 trait HasActions
@@ -15,7 +17,7 @@ trait HasActions
     /**
      * List of the actions.
      *
-     * @var array<int,\Honed\Action\Action>|null
+     * @var array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>|null
      */
     protected $actions;
 
@@ -43,7 +45,7 @@ trait HasActions
     /**
      * Merge a set of actions with the existing.
      *
-     * @param  iterable<int, \Honed\Action\Action>|\Honed\Action\ActionGroup  ...$actions
+     * @param  \Honed\Action\Action|\Honed\Action\ActionGroup|iterable<int, \Honed\Action\Action|\Honed\Action\ActionGroup>  ...$actions
      * @return $this
      */
     public function withActions(...$actions)
@@ -59,7 +61,7 @@ trait HasActions
     /**
      * Define the actions for the instance.
      *
-     * @return array<int,\Honed\Action\Action>
+     * @return array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>
      */
     public function actions()
     {
@@ -73,37 +75,27 @@ trait HasActions
      */
     public function getActions()
     {
-        if ($this->isWithoutActions()) {
-            return [];
-        }
-
         return \array_merge(
-            $this->actions ?? [],
-            $this->actions(),
+            [],
+            ...\array_map(
+                static fn ($action) => $action instanceof ActionGroup
+                    ? $action->getActions()
+                    : [$action],
+                \array_merge($this->actions(), $this->actions ?? [])
+            )
         );
     }
 
     /**
-     * Determine if the instance has any actions.
+     * Disable all action types.
      *
-     * @return bool
-     */
-    public function hasActions()
-    {
-        return filled($this->getActions());
-    }
-
-    /**
-     * Set the instance to not provide any actions.
-     *
-     * @param  bool  $withoutActions
      * @return $this
      */
-    public function withoutActions($withoutActions = true)
+    public function withoutActions(bool $without = true)
     {
-        $this->withoutInlineActions($withoutActions);
-        $this->withoutBulkActions($withoutActions);
-        $this->withoutPageActions($withoutActions);
+        $this->withoutInlineActions($without);
+        $this->withoutBulkActions($without);
+        $this->withoutPageActions($without);
 
         return $this;
     }
@@ -222,7 +214,8 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => $action instanceof BulkAction && $action->isAllowed()
+                static fn (Action $action) => $action instanceof BulkAction &&
+                    $action->isAllowed()
             )
         );
     }
@@ -241,7 +234,35 @@ trait HasActions
         return \array_values(
             \array_filter(
                 $this->getActions(),
-                static fn (Action $action) => $action instanceof PageAction && $action->isAllowed()
+                static fn (Action $action) => $action instanceof PageAction &&
+                    $action->isAllowed()
+            )
+        );
+    }
+
+    /**
+     * Get the inline actions as an array.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model|null  $model
+     * @return array<int,mixed>
+     */
+    public function inlineActionsToArray($model = null)
+    {
+        $named = [];
+        $typed = [];
+
+        if ($model) {
+            [$named, $typed] = Parameters::model($model);
+        }
+
+        return \array_map(
+            static fn (InlineAction $action) => $action
+                ->resolveToArray($named, $typed),
+            \array_values(
+                \array_filter(
+                    $this->getInlineActions(),
+                    static fn (InlineAction $action) => $action->isAllowed($named, $typed)
+                )
             )
         );
     }
@@ -270,19 +291,5 @@ trait HasActions
             static fn (PageAction $action) => $action->toArray(),
             $this->getPageActions()
         );
-    }
-
-    /**
-     * Get the actions as an array.
-     *
-     * @return array<string,mixed>
-     */
-    public function actionsToArray()
-    {
-        return [
-            'hasInline' => filled($this->getInlineActions()),
-            'bulk' => $this->bulkActionsToArray(),
-            'page' => $this->pageActionsToArray(),
-        ];
     }
 }
