@@ -29,7 +29,6 @@ class TestCase extends Orchestra
 
         config()->set('inertia.testing.ensure_pages_exist', false);
         config()->set('inertia.testing.page_paths', [realpath(__DIR__)]);
-
     }
 
     /**
@@ -92,5 +91,6 @@ class TestCase extends Orchestra
     {
         config()->set('action', require __DIR__.'/../config/action.php');
         config()->set('database.default', 'testing');
+        config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
 }
