@@ -94,6 +94,6 @@ class ActionRequest extends FormRequest
      */
     public static function fake()
     {
-        return (new RequestFactory);
+        return new RequestFactory;
     }
 }
