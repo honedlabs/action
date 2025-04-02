@@ -13,12 +13,7 @@ beforeEach(function () {
 it('has route key name', function () {
     expect($this->group)
         ->getRouteKeyName()->toBe('action');
-});
-
-it('has model', function () {
-    expect($this->group)
-        ->for(product())->toBe($this->group);
-});
+});;
 
 it('resolves route binding', function () {
     expect($this->group)

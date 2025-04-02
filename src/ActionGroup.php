@@ -17,13 +17,6 @@ class ActionGroup extends Primitive implements UrlRoutable
     use HasEndpoint;
 
     /**
-     * The model the inline actions should use to resolve.
-     *
-     * @var \Illuminate\Database\Eloquent\Model|null
-     */
-    protected $for;
-
-    /**
      * Create a new action group instance.
      *
      * @param  \Honed\Action\Action|iterable<int, \Honed\Action\Action>  ...$actions
@@ -36,27 +29,14 @@ class ActionGroup extends Primitive implements UrlRoutable
     }
 
     /**
-     * Set the model the inline actions should be bound to.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return $this
-     */
-    public function for($model)
-    {
-        $this->for = $model;
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      *
      * @param  string  $value
-     * @return \Honed\Action\ActionGroup|null
+     * @return static|null
      */
     public function resolveRouteBinding($value, $field = null)
     {
-        /** @var \Honed\Action\ActionGroup|null */
+        /** @var static|null */
         return $this->getPrimitive($value, ActionGroup::class);
     }
 
@@ -64,7 +44,7 @@ class ActionGroup extends Primitive implements UrlRoutable
      * {@inheritdoc}
      *
      * @param  string  $value
-     * @return \Honed\Action\ActionGroup|null
+     * @return static|null
      */
     public function resolveChildRouteBinding($childType, $value, $field = null)
     {
@@ -93,7 +73,7 @@ class ActionGroup extends Primitive implements UrlRoutable
     public function toArray()
     {
         $actions = [
-            'inline' => $this->inlineActionsToArray($this->for),
+            'inline' => $this->inlineActionsToArray(),
             'bulk' => $this->bulkActionsToArray(),
             'page' => $this->pageActionsToArray(),
         ];
