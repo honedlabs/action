@@ -78,7 +78,7 @@ class ActionGroup extends Primitive implements UrlRoutable
             'page' => $this->pageActionsToArray(),
         ];
 
-        if ($this->hasServerActions(ActionGroup::class)) {
+        if ($this->canExecuteServerActions(ActionGroup::class)) {
             return \array_merge($actions, [
                 'id' => $this->getRouteKey(),
                 'endpoint' => $this->getEndpoint(),

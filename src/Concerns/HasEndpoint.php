@@ -68,14 +68,36 @@ trait HasEndpoint
     }
 
     /**
+     * Set the instance to not execute server actions.
+     *
+     * @param  bool  $execute
+     * @return $this
+     */
+    public function shouldNotExecute($execute = true)
+    {
+        return $this->shouldExecute(! $execute);
+    }
+
+    /**
      * Determine if the instance can execute server actions.
      *
      * @param  class-string  $class
      * @return bool
      */
-    public function hasServerActions($class)
+    public function canExecuteServerActions($class)
     {
         // @phpstan-ignore-next-line
         return $this->execute && \is_subclass_of($this, $class);
+    }
+
+    /**
+     * Determine if the instance cannot execute server actions.
+     *
+     * @param  class-string  $class
+     * @return bool
+     */
+    public function cannotExecuteServerActions($class)
+    {
+        return ! $this->canExecuteServerActions($class);
     }
 }

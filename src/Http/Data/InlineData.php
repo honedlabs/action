@@ -8,7 +8,7 @@ class InlineData extends ActionData
 {
     public function __construct(
         public readonly string $name,
-        public readonly int|string $id,
+        public readonly int|string $record,
     ) {
         //
     }

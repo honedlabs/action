@@ -154,7 +154,7 @@ class Handler
         return [
             $this->getAction($data->name, InlineAction::class),
             $this->getBuilder()
-                ->where($this->getKey($this->getBuilder()), $data->id)
+                ->where($this->getKey($this->getBuilder()), $data->record)
                 ->first(),
         ];
     }

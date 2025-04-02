@@ -5,19 +5,25 @@ declare(strict_types=1);
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Support\Arr;
 use Honed\Action\ActionFactory;
+use Illuminate\Support\Str;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\post;
+
+beforeEach(function () {
+    $this->id = Str::uuid()->toString();
+});
 
 describe('inline', function () {
     beforeEach(function () {
         $this->product = product();
 
         $this->base = [
+            'id' => $this->id,
             'name' => 'update',
             'type' => ActionFactory::Inline,
-            'id' => 1,
+            'record' => 1,
         ];
     });
 
@@ -30,7 +36,7 @@ describe('inline', function () {
 
     it('returns 404 if no model is found', function () {
         Arr::set($this->base, 'name', 'update.name');
-        Arr::set($this->base, 'id', 0);
+        Arr::set($this->base, 'record', 0);
 
         post(route('actions'), $this->base)
             ->assertStatus(404);
@@ -38,7 +44,7 @@ describe('inline', function () {
 
     it('returns 403 if the action is not allowed', function () {
         Arr::set($this->base, 'name', 'update.description');
-        Arr::set($this->base, 'id', $this->product->id);
+        Arr::set($this->base, 'record', $this->product->id);
 
         post(route('actions'), $this->base)
             ->assertStatus(403);
@@ -46,7 +52,7 @@ describe('inline', function () {
 
     it('executes', function () {
         Arr::set($this->base, 'name', 'update.name');
-        Arr::set($this->base, 'id', $this->product->id);
+        Arr::set($this->base, 'record', $this->product->id);
 
         post(route('actions'), $this->base)
             ->assertRedirect();
@@ -65,6 +71,7 @@ describe('bulk', function () {
         $this->ids = \range(1, 10);
 
         $this->base = [
+            'id' => $this->id,
             'name' => 'update',
             'type' => ActionFactory::Bulk,
             'all' => false,
@@ -151,6 +158,7 @@ describe('bulk', function () {
 describe('page', function () {
     beforeEach(function () {
         $this->base = [
+            'id' => $this->id,
             'name' => 'update',
             'type' => ActionFactory::Page,
         ];

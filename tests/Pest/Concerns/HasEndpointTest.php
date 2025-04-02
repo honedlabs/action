@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Honed\Action\ActionGroup;
 use Honed\Action\Concerns\HasEndpoint;
+use Honed\Action\Tests\Fixtures\ProductActions;
 
 beforeEach(function () {
     $this->test = new class {
@@ -19,10 +20,22 @@ it('has endpoint', function () {
         ->getDefaultEndpoint()->toBe(config('action.endpoint'));
 });
 
-// it('has server actions', function () {
-//     expect($this->test)
-//         ->hasServerActions(ActionGroup::class)->toBeTrue()
-//         ->shouldExecute(false)->toBe($this->test)
-//         ->hasServerActions(ActionGroup::class)->toBeFalse();
-// });
+it('can execute server actions', function () {
+    $class = ActionGroup::class;
 
+    expect($this->test)
+        ->canExecuteServerActions($class)->toBeFalse()
+        ->cannotExecuteServerActions($class)->toBeTrue()
+        ->shouldExecute()->toBe($this->test)
+        ->canExecuteServerActions($class)->toBeFalse()
+        ->cannotExecuteServerActions($class)->toBeTrue();
+
+    $actions = ProductActions::make();
+    
+    expect($actions)
+        ->canExecuteServerActions(ActionGroup::class)->toBeTrue()
+        ->cannotExecuteServerActions(ActionGroup::class)->toBeFalse()
+        ->shouldNotExecute()->toBe($actions)
+        ->canExecuteServerActions(ActionGroup::class)->toBeFalse()
+        ->cannotExecuteServerActions(ActionGroup::class)->toBeTrue();
+});
