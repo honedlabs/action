@@ -50,11 +50,11 @@ trait HasAction
     }
 
     /**
-     * Determine if the instance has an action handler.
+     * Determine if the instance executes server actions.
      *
      * @return bool
      */
-    public function hasAction()
+    public function isActionable()
     {
         return isset($this->action) || $this instanceof Actionable;
     }

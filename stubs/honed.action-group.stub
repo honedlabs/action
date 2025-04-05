@@ -24,7 +24,7 @@ class {{ class }} extends ActionGroup
      * 
      * @return array<int, \Honed\Actions\Action>
      */
-    public function actions()
+    public function defineActions()
     {
         return [
             //

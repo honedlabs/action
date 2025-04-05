@@ -6,6 +6,7 @@ namespace Honed\Action\Testing;
 
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 class FakeActionRequest
 {
@@ -42,7 +43,7 @@ class FakeActionRequest
      *
      * @var array<string,mixed>
      */
-    protected $data;
+    protected $data = [];
 
     /**
      * Set the ID of the handler.
@@ -112,6 +113,16 @@ class FakeActionRequest
     }
 
     /**
+     * Get the URI for the fake request.
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
      * Whether to fill in details.
      *
      * @param  bool  $fill
@@ -132,16 +143,6 @@ class FakeActionRequest
     public function fills()
     {
         return $this->fill;
-    }
-
-    /**
-     * Get the URI of the fake request.
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->uri;
     }
 
     /**
@@ -177,6 +178,10 @@ class FakeActionRequest
      */
     public function create()
     {
-        return Request::create($this->uri, 'POST', $this->getData());
+        return Request::create(
+            $this->getUri(),
+            HttpFoundationRequest::METHOD_POST,
+            $this->getData()
+        );
     }
 }

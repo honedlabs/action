@@ -12,7 +12,7 @@ class ProductActions extends ActionGroup
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function defineActions()
     {
         return [
             PageAction::make('create'),

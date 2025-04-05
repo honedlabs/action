@@ -15,6 +15,6 @@ class PageActionRequest extends FakeActionRequest
     {
         return \array_merge([
             'type' => ActionFactory::Page,
-        ], $this->data);
+        ], parent::getData());
     }
 }

@@ -10,6 +10,11 @@ use Illuminate\Routing\Controller;
 
 class ActionController extends Controller
 {
+    // /**
+    //  * Delegate the incoming action request to the appropriate table.
+    //  *
+    //  * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse|void
+    //  */
     // public function __invoke(ActionRequest $request)
     // {
     //     /** @var string */

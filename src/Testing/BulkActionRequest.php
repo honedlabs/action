@@ -108,6 +108,6 @@ class BulkActionRequest extends FakeActionRequest
             'only' => $this->getOnly(),
             'except' => $this->getExcept(),
             'all' => $this->isAll(),
-        ], $this->data);
+        ], parent::getData());
     }
 }

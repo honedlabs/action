@@ -62,7 +62,7 @@ abstract class Action extends Primitive implements ResolvesArrayable
             'type' => $this->getType(),
             'icon' => $this->getIcon(),
             'extra' => $this->getExtra(),
-            'action' => $this->hasAction(),
+            'actionable' => $this->isActionable(),
             'confirm' => $this->getConfirm()?->toArray(),
             'route' => $this->routeToArray(),
         ];
@@ -79,7 +79,7 @@ abstract class Action extends Primitive implements ResolvesArrayable
             'type' => $this->getType(),
             'icon' => $this->resolveIcon($parameters, $typed),
             'extra' => $this->resolveExtra($parameters, $typed),
-            'action' => $this->hasAction(),
+            'actionable' => $this->isActionable(),
             'confirm' => $this->getConfirm()?->resolveToArray($parameters, $typed),
             'route' => $this->routeToArray($parameters, $typed),
         ];

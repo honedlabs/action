@@ -34,13 +34,25 @@ trait HasEndpoint
     }
 
     /**
+     * Define the endpoint to execute server actions.
+     *
+     * @return string|null
+     */
+    public static function defineEndpoint()
+    {
+        return null;
+    }
+
+    /**
      * Get the endpoint to execute server actions.
      *
      * @return string|null
      */
     public function getEndpoint()
     {
-        return $this->endpoint ?? static::getDefaultEndpoint();
+        $endpoint = $this->endpoint ?? static::defineEndpoint();
+
+        return $endpoint ?? static::getDefaultEndpoint();
     }
 
     /**
@@ -57,12 +69,11 @@ trait HasEndpoint
     /**
      * Set the instance to execute server actions.
      *
-     * @param  bool  $execute
      * @return $this
      */
-    public function shouldExecute($execute = true)
+    public function shouldExecute()
     {
-        $this->execute = $execute;
+        $this->execute = true;
 
         return $this;
     }
@@ -70,12 +81,13 @@ trait HasEndpoint
     /**
      * Set the instance to not execute server actions.
      *
-     * @param  bool  $execute
      * @return $this
      */
-    public function shouldNotExecute($execute = true)
+    public function shouldNotExecute()
     {
-        return $this->shouldExecute(! $execute);
+        $this->execute = false;
+
+        return $this;
     }
 
     /**
@@ -86,8 +98,10 @@ trait HasEndpoint
      */
     public function canExecuteServerActions($class)
     {
+        // dd($this);
+        // dd($this->execute, $class, static::class, \is_subclass_of(static::class, $class));
         // @phpstan-ignore-next-line
-        return $this->execute && \is_subclass_of($this, $class);
+        return $this->execute && \is_subclass_of($this::class, $class);
     }
 
     /**

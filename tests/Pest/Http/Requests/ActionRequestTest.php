@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Honed\Action\ActionFactory;
 use Honed\Action\Http\Requests\ActionRequest;
+use Honed\Action\Testing\RequestFactory;
 use Illuminate\Support\Str;
+
 beforeEach(function () {
     $this->id = Str::uuid()->toString();
 });
@@ -65,4 +67,9 @@ it('validates page', function () {
     expect($request)
         ->isPage()->toBeTrue()
         ->ids()->toEqual([]);
+});
+
+it('fakes', function () {
+    expect(ActionRequest::fake())
+        ->toBeInstanceOf(RequestFactory::class);
 });

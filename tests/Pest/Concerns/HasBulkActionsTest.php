@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Concerns\HasBulkActions;
+use Honed\Action\Contracts\ShouldChunk;
 
 beforeEach(function () {
     $this->test = new class {
@@ -16,6 +17,13 @@ it('chunks', function () {
         ->chunk(true)->toBe($this->test)
         ->isChunked()->toBeTrue()
         ->isChunkedByDefault()->toBe(config('action.chunk'));
+
+    $test = new class implements ShouldChunk {
+        use HasBulkActions;
+    };
+
+    expect($test)
+        ->isChunked()->toBeTrue();
 });
 
 it('chunks by id', function () {

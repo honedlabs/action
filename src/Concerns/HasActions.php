@@ -17,30 +17,30 @@ trait HasActions
     /**
      * List of the actions.
      *
-     * @var array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>|null
+     * @var array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>
      */
-    protected $actions;
+    protected $actions = [];
 
     /**
-     * Whether to not provide inline actions.
+     * Whether to provide inline actions.
      *
      * @var bool
      */
-    protected $withoutInlineActions = false;
+    protected $inline = true;
 
     /**
-     * Whether to not provide bulk actions.
+     * Whether to provide bulk actions.
      *
      * @var bool
      */
-    protected $withoutBulkActions = false;
+    protected $bulk = true;
 
     /**
-     * Whether to not provide page actions.
+     * Whether to provide page actions.
      *
      * @var bool
      */
-    protected $withoutPageActions = false;
+    protected $page = true;
 
     /**
      * Merge a set of actions with the existing.
@@ -48,12 +48,12 @@ trait HasActions
      * @param  \Honed\Action\Action|\Honed\Action\ActionGroup|iterable<int, \Honed\Action\Action|\Honed\Action\ActionGroup>  ...$actions
      * @return $this
      */
-    public function withActions(...$actions)
+    public function actions(...$actions)
     {
         /** @var array<int, \Honed\Action\Action> */
         $actions = Arr::flatten($actions);
 
-        $this->actions = \array_merge($this->actions ?? [], $actions);
+        $this->actions = \array_merge($this->actions, $actions);
 
         return $this;
     }
@@ -63,7 +63,7 @@ trait HasActions
      *
      * @return array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>
      */
-    public function actions()
+    public function defineActions()
     {
         return [];
     }
@@ -75,15 +75,34 @@ trait HasActions
      */
     public function getActions()
     {
+        $actions = \array_merge(
+            $this->defineActions(),
+            $this->actions
+        );
+
         return \array_merge(
             [],
             ...\array_map(
                 static fn ($action) => $action instanceof ActionGroup
                     ? $action->getActions()
                     : [$action],
-                \array_merge($this->actions(), $this->actions ?? [])
+                $actions
             )
         );
+    }
+
+    /**
+     * Enable all action types.
+     *
+     * @return $this
+     */
+    public function allActions()
+    {
+        $this->inline = true;
+        $this->bulk = true;
+        $this->page = true;
+
+        return $this;
     }
 
     /**
@@ -91,104 +110,161 @@ trait HasActions
      *
      * @return $this
      */
-    public function withoutActions(bool $without = true)
+    public function exceptActions()
     {
-        $this->withoutInlineActions($without);
-        $this->withoutBulkActions($without);
-        $this->withoutPageActions($without);
+        $this->exceptInlineActions();
+        $this->exceptBulkActions();
+        $this->exceptPageActions();
 
         return $this;
     }
 
     /**
-     * Determine if the instance should not provide any actions.
+     * Determine if the instance has provided all actions.
      *
      * @return bool
      */
-    public function isWithoutActions()
+    public function hasAllActions()
     {
-        return $this->isWithoutInlineActions() &&
-            $this->isWithoutBulkActions() &&
-            $this->isWithoutPageActions();
+        return $this->inline && $this->bulk && $this->page;
+    }
+
+    /**
+     * Determine if the instance provides any actions.
+     *
+     * @return bool
+     */
+    public function hasActions()
+    {
+        return $this->inline || $this->bulk || $this->page;
+    }
+
+    /**
+     * Determine if the instance has not provided any actions.
+     *
+     * @return bool
+     */
+    public function hasNoActions()
+    {
+        return ! $this->hasActions();
+    }
+
+    /**
+     * Set the instance to only provide inline actions.
+     *
+     * @return $this
+     */
+    public function onlyInlineActions()
+    {
+        $this->inline = true;
+        $this->bulk = false;
+        $this->page = false;
+
+        return $this;
     }
 
     /**
      * Set the instance to not provide inline actions.
      *
-     * @param  bool  $withoutInlineActions
      * @return $this
      */
-    public function withoutInlineActions($withoutInlineActions = true)
+    public function exceptInlineActions()
     {
-        $this->withoutInlineActions = $withoutInlineActions;
+        $this->inline = false;
 
         return $this;
     }
 
     /**
-     * Determine if the instance should not provide inline actions.
+     * Determine if the instance provides inline actions.
      *
      * @return bool
      */
-    public function isWithoutInlineActions()
+    public function hasInlineActions()
     {
-        return $this->withoutInlineActions;
+        return $this->inline;
+    }
+
+    /**
+     * Set the instance to only provide bulk actions.
+     *
+     * @return $this
+     */
+    public function onlyBulkActions()
+    {
+        $this->inline = false;
+        $this->bulk = true;
+        $this->page = false;
+
+        return $this;
     }
 
     /**
      * Set the instance to not provide bulk actions.
      *
-     * @param  bool  $withoutBulkActions
      * @return $this
      */
-    public function withoutBulkActions($withoutBulkActions = true)
+    public function exceptBulkActions()
     {
-        $this->withoutBulkActions = $withoutBulkActions;
+        $this->bulk = false;
 
         return $this;
     }
 
     /**
-     * Determine if the instance should not provide bulk actions.
+     * Determine if the instance provides bulk actions.
      *
      * @return bool
      */
-    public function isWithoutBulkActions()
+    public function hasBulkActions()
     {
-        return $this->withoutBulkActions;
+        return $this->bulk;
+    }
+
+    /**
+     * Set the instance to only provide page actions.
+     *
+     * @return $this
+     */
+    public function onlyPageActions()
+    {
+        $this->inline = false;
+        $this->bulk = false;
+        $this->page = true;
+
+        return $this;
     }
 
     /**
      * Set the instance to not provide page actions.
      *
-     * @param  bool  $withoutPageActions
      * @return $this
      */
-    public function withoutPageActions($withoutPageActions = true)
+    public function exceptPageActions()
     {
-        $this->withoutPageActions = $withoutPageActions;
+        $this->page = false;
 
         return $this;
     }
 
     /**
-     * Determine if the instance should not provide page actions.
+     * Determine if the instance provides page actions.
      *
      * @return bool
      */
-    public function isWithoutPageActions()
+    public function hasPageActions()
     {
-        return $this->withoutPageActions;
+        return $this->page;
     }
 
     /**
-     * Retrieve only the inline actions.
+     * Retrieve only the allowed inline actions.
      *
      * @return array<int,\Honed\Action\InlineAction>
      */
     public function getInlineActions()
     {
-        if ($this->isWithoutInlineActions()) {
+        if (! $this->hasInlineActions()) {
             return [];
         }
 
@@ -207,7 +283,7 @@ trait HasActions
      */
     public function getBulkActions()
     {
-        if ($this->isWithoutBulkActions()) {
+        if (! $this->hasBulkActions()) {
             return [];
         }
 
@@ -227,7 +303,7 @@ trait HasActions
      */
     public function getPageActions()
     {
-        if ($this->isWithoutPageActions()) {
+        if (! $this->hasPageActions()) {
             return [];
         }
 
@@ -248,8 +324,7 @@ trait HasActions
      */
     public function inlineActionsToArray($model = null)
     {
-        $named = [];
-        $typed = [];
+        $named = $typed = [];
 
         if ($model) {
             [$named, $typed] = Parameters::model($model);

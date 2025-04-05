@@ -53,7 +53,7 @@ test('with handler', function () {
         ->getName()->toBe('destroy')
         ->resolveLabel($named, $typed)->toBe('Destroy '.$this->product->name)
         ->getType()->toBe(ActionFactory::Inline)
-        ->hasAction()->toBeTrue();
+        ->isActionable()->toBeTrue();
 
     $action->execute($this->product);
 
