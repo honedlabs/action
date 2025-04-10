@@ -13,7 +13,7 @@ class ActionData
     /**
      * Create a new data transfer object from a request.
      *
-     * @param  \Honed\Action\Http\Requests\ActionRequest  $request
+     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
      * @return static
      */
     public static function from($request)

@@ -6,7 +6,7 @@ namespace Honed\Action\Testing;
 
 use Honed\Action\ActionFactory;
 
-class InlineActionRequest extends FakeActionRequest
+class InlineRequest extends FakeRequest
 {
     /**
      * The ID of the record.
@@ -44,7 +44,7 @@ class InlineActionRequest extends FakeActionRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::Inline,
+            'type' => ActionFactory::INLINE,
             'record' => $this->getRecord(),
         ], parent::getData());
     }

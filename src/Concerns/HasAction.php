@@ -18,7 +18,7 @@ trait HasAction
     protected $action;
 
     /**
-     * Optional parameters to pass to the Actionable handler.
+     * Optional parameters to pass to the Action handler.
      *
      * @var array<string,mixed>
      */
@@ -60,7 +60,7 @@ trait HasAction
     }
 
     /**
-     * Set optional parameters to pass to the Actionable handler.
+     * Set optional parameters to pass to the Action handler.
      *
      * @param  array<string,mixed>  $parameters
      * @return $this
@@ -73,7 +73,7 @@ trait HasAction
     }
 
     /**
-     * Get the parameters to pass to the Actionable handler.
+     * Get the parameters to pass to the Action handler.
      *
      * @return array<string,mixed>
      */

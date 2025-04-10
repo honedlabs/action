@@ -37,7 +37,7 @@ it('has array representation with route', function () {
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => ActionFactory::Inline,
+            'type' => ActionFactory::INLINE,
             'icon' => null,
             'extra' => [],
             'actionable' => false,
@@ -57,7 +57,7 @@ it('resolves to array', function () {
         ->toEqual([
             'name' => 'destroy',
             'label' => 'Destroy '.$product->name,
-            'type' => ActionFactory::Inline,
+            'type' => ActionFactory::INLINE,
             'icon' => null,
             'extra' => [],
             'actionable' => true,

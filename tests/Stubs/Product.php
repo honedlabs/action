@@ -25,6 +25,14 @@ class Product extends Model
     ];
 
     /**
+     * Get the public ID of the product.
+     */
+    public function getPublicId(): string
+    {
+        return $this->public_id->toString();
+    }
+
+    /**
      * Make the product free.
      */
     public function makeFree(): void

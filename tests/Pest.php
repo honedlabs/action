@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Honed\Action\BulkAction;
+use Honed\Action\InlineAction;
+use Honed\Action\PageAction;
 use Honed\Action\Tests\Stubs\Product;
 use Honed\Action\Tests\Stubs\Status;
 use Honed\Action\Tests\TestCase;
@@ -45,4 +48,33 @@ function params(Product $product): array
     return [$named, $typed];
 }
 
-// function ()
+/**
+ * Get the testing actions.
+ *
+ * @return \Illuminate\Support\Collection<int,\Honed\Action\Action>
+ */
+function actions()
+{
+    return collect([
+        InlineAction::make('update.name')
+            ->action(fn ($product) => $product->update(['name' => 'test'])),
+
+        InlineAction::make('update.description')
+            ->action(fn ($product) => $product->update(['description' => 'test']))
+            ->allow(false),
+
+        BulkAction::make('update.name')
+            ->action(fn ($product) => $product->update(['name' => 'test'])),
+
+        BulkAction::make('update.description')
+            ->action(fn ($product) => $product->update(['description' => 'test']))
+            ->allow(false),
+
+        PageAction::make('create.product.name')
+            ->action(fn () => $this->createProduct('name', 'name')),
+
+        PageAction::make('create.product.description')
+            ->action(fn () => $this->createProduct('description', 'description'))
+            ->allow(false),
+    ]);
+}

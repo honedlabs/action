@@ -6,7 +6,7 @@ namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
 
-final class {{ class }} implements Actionable
+final class {{ class }} implements Action
 {
     /**
      * Handle the action.

@@ -7,6 +7,14 @@ namespace Honed\Action\Concerns;
 trait HasEndpoint
 {
     /**
+     * Handle the incoming action request.
+     * 
+     * @param \Honed\Action\Http\Requests\InvokableRequest $request
+     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    abstract public function handle($request);
+
+    /**
      * The endpoint to execute server actions.
      *
      * @var string|null
@@ -93,13 +101,15 @@ trait HasEndpoint
     /**
      * Determine if the instance can execute server actions.
      *
-     * @param  class-string  $class
+     * @param  class-string|null  $class
      * @return bool
      */
-    public function canExecuteServerActions($class)
+    public function isExecutable($class = null)
     {
-        // dd($this);
-        // dd($this->execute, $class, static::class, \is_subclass_of(static::class, $class));
+        if ($class === null) {
+            return $this->execute;
+        }
+
         // @phpstan-ignore-next-line
         return $this->execute && \is_subclass_of($this::class, $class);
     }
@@ -107,11 +117,11 @@ trait HasEndpoint
     /**
      * Determine if the instance cannot execute server actions.
      *
-     * @param  class-string  $class
+     * @param  class-string|null  $class
      * @return bool
      */
-    public function cannotExecuteServerActions($class)
+    public function isNotExecutable($class = null)
     {
-        return ! $this->canExecuteServerActions($class);
+        return ! $this->isExecutable($class);
     }
 }

@@ -44,11 +44,11 @@ it('has intent', function () {
         ->intent('danger')->toBe($this->test)
         ->getIntent()->toBe('danger')
         ->constructive()->toBe($this->test)
-        ->getIntent()->toBe(Confirm::Constructive)
+        ->getIntent()->toBe(Confirm::CONSTRUCTIVE)
         ->destructive()->toBe($this->test)
-        ->getIntent()->toBe(Confirm::Destructive)
+        ->getIntent()->toBe(Confirm::DESTRUCTIVE)
         ->informative()->toBe($this->test)
-        ->getIntent()->toBe(Confirm::Informative)
+        ->getIntent()->toBe(Confirm::INFORMATIVE)
         ->hasIntent()->toBeTrue();
 });
 

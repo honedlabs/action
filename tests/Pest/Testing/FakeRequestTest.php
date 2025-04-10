@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Testing\FakeActionRequest;
+use Honed\Action\ActionFactory;
+use Honed\Action\Http\Requests\InvokableRequest;
+use Honed\Action\Testing\FakeRequest;
 use Illuminate\Http\Request;
 
 beforeEach(function () {
-    $this->request = new FakeActionRequest();
+    FakeRequest::shouldFill(false);
+    
+    $this->request = new FakeRequest();
 });
 
 it('has id', function () {
@@ -46,7 +50,8 @@ it('has data', function () {
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['id', 'name'])
-        )->data(['test' => 'test'])->toBe($this->request)
+        )
+        ->data(['test' => 'test'])->toBe($this->request)
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['id', 'name', 'test'])
@@ -56,4 +61,11 @@ it('has data', function () {
 it('creates', function () {
     expect($this->request)
         ->create()->toBeInstanceOf(Request::class);
+});
+
+it('validates', function () {
+    expect($this->request)
+        ->fill()->toBe($this->request)
+        ->data(['type' => ActionFactory::PAGE])->toBe($this->request)
+        ->validate()->toBeInstanceOf(InvokableRequest::class);
 });

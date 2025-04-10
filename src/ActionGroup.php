@@ -7,19 +7,22 @@ namespace Honed\Action;
 use Honed\Action\Concerns\HasActions;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Concerns\HasEndpoint;
+use Honed\Action\Contracts\Handles;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
-class ActionGroup extends Primitive implements UrlRoutable
+class ActionGroup extends Primitive implements UrlRoutable, Handles
 {
     use HasActions;
     use HasEncoder;
     use HasEndpoint;
 
     /**
-     * The model to be used to resolve inline actions.
+     * The builder to be used to resolve inline actions.
      *
-     * @var \Illuminate\Database\Eloquent\Model|null
+     * @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null
      */
     protected $resource;
 
@@ -31,53 +34,18 @@ class ActionGroup extends Primitive implements UrlRoutable
      */
     public static function make(...$actions)
     {
-        return resolve(static::class)->actions($actions);
+        return resolve(static::class)
+            ->actions($actions);
     }
 
     /**
-     * Set the model to be used to resolve inline actions.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $resource
-     * @return $this
+     * The root parent class.
+     * 
+     * @return class-string
      */
-    public function resource($resource)
+    public static function baseClass()
     {
-        $this->resource = $resource;
-
-        return $this;
-    }
-
-    /**
-     * Get the model to be used to resolve inline actions.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function getResource()
-    {
-        return $this->resource;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param  string  $value
-     * @return static|null
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        /** @var static|null */
-        return $this->getPrimitive($value, ActionGroup::class);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @param  string  $value
-     * @return static|null
-     */
-    public function resolveChildRouteBinding($childType, $value, $field = null)
-    {
-        return $this->resolveRouteBinding($value, $field);
+        return ActionGroup::class;
     }
 
     /**
@@ -89,11 +57,43 @@ class ActionGroup extends Primitive implements UrlRoutable
     }
 
     /**
+     * Set the model to be used to resolve inline actions.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $resource
+     * @return $this
+     */
+    public function resource($resource)
+    {
+        $this->resource = $resource;
+
+        return $this;
+    }
+
+    /**
+     * Get the resource to be used to resolve the actions.
+     *
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|null
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getRouteKey()
+    public function handle($request)
     {
-        return static::encode(static::class);
+        $resource = $this->getResource();
+
+        if ($resource instanceof Builder) {
+            return Handler::make(
+                $this->getResource(),
+                $this->getActions()
+            )->handle($request);
+        }
+
+        return back();
     }
 
     /**
@@ -101,13 +101,19 @@ class ActionGroup extends Primitive implements UrlRoutable
      */
     public function toArray()
     {
+        $resource = $this->getResource();
+
+        if (! $resource instanceof Model) {
+            $resource = null;
+        }
+
         $actions = [
-            'inline' => $this->inlineActionsToArray($this->getResource()),
+            'inline' => $this->inlineActionsToArray($resource),
             'bulk' => $this->bulkActionsToArray(),
             'page' => $this->pageActionsToArray(),
         ];
 
-        if ($this->canExecuteServerActions(ActionGroup::class)) {
+        if ($this->isExecutable(ActionGroup::class)) {
             return \array_merge($actions, [
                 'id' => $this->getRouteKey(),
                 'endpoint' => $this->getEndpoint(),

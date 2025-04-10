@@ -8,6 +8,7 @@ use Honed\Action\Console\Commands\ActionGroupMakeCommand;
 use Honed\Action\Console\Commands\ActionMakeCommand;
 use Honed\Action\Console\Commands\ActionsMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
+use Honed\Action\Http\Controllers\InvokableController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,30 +36,32 @@ class ActionServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../config/action.php' => config_path('action.php'),
-            ], 'config');
+            ], 'action-config');
 
             $this->publishes([
                 __DIR__.'/../stubs' => base_path('stubs'),
-            ], 'stubs');
+            ], 'action-stubs');
         }
 
-        // $this->registerRoutesMacro();
+        $this->registerRoutesMacro();
     }
 
     /**
      * Register the route macro for the Table class.
      */
-    // private function registerRoutesMacro(): void
-    // {
-    //     Router::macro('action', function () {
-    //         $endpoint = type(config('action.endpoint', '/actions'))->asString();
+    private function registerRoutesMacro(): void
+    {
+        Router::macro('actions', function () {
+            /** @var \Illuminate\Routing\Router $this */
+            $endpoint = type(config('action.endpoint', 'actions'))->asString();
 
-    //         /** @var \Illuminate\Routing\Router $this */
-    //         $this->match(
-    //             ['post', 'patch', 'put'],
-    //             $endpoint,
-    //             ActionController::class
-    //         )->name('actions');
-    //     });
-    // }
+            $methods = ['post', 'patch', 'put'];
+
+            $this->match($methods, $endpoint, [ActionController::class, 'dispatch'])
+                ->name('actions');
+
+            $this->match($methods, $endpoint.'/{action}', [ActionController::class, 'invoke'])
+                ->name('actions.invoke');
+        });
+    }
 }

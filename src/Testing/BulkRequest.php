@@ -6,7 +6,7 @@ namespace Honed\Action\Testing;
 
 use Honed\Action\ActionFactory;
 
-class BulkActionRequest extends FakeActionRequest
+class BulkRequest extends FakeRequest
 {
     /**
      * Whether to include all records.
@@ -104,7 +104,7 @@ class BulkActionRequest extends FakeActionRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::Bulk,
+            'type' => ActionFactory::BULK,
             'only' => $this->getOnly(),
             'except' => $this->getExcept(),
             'all' => $this->isAll(),

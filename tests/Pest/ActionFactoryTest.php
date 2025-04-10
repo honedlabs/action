@@ -10,7 +10,7 @@ use Honed\Action\ActionFactory;
 use Honed\Action\Facades\Action;
 
 it('makes bulk', function () {
-    expect(Action::new(ActionFactory::Bulk, 'test'))
+    expect(Action::new(ActionFactory::BULK, 'test'))
         ->toBeInstanceOf(BulkAction::class);
 
     expect(Action::bulk('test'))
@@ -18,7 +18,7 @@ it('makes bulk', function () {
 });
 
 it('makes inline', function () {
-    expect(Action::new(ActionFactory::Inline, 'test'))
+    expect(Action::new(ActionFactory::INLINE, 'test'))
         ->toBeInstanceOf(InlineAction::class);
 
     expect(Action::inline('test'))
@@ -26,7 +26,7 @@ it('makes inline', function () {
 });
 
 it('makes page', function () {
-    expect(Action::new(ActionFactory::Page, 'test'))
+    expect(Action::new(ActionFactory::PAGE, 'test'))
         ->toBeInstanceOf(PageAction::class);
 
     expect(Action::page('test'))
@@ -34,7 +34,7 @@ it('makes page', function () {
 });
 
 it('makes group', function () {
-    expect(Action::group(Action::new(ActionFactory::Bulk, 'test')))
+    expect(Action::group(Action::new(ActionFactory::BULK, 'test')))
         ->toBeInstanceOf(ActionGroup::class);
 });
 

@@ -5,11 +5,17 @@ declare(strict_types=1);
 use Honed\Action\ActionGroup;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Tests\Fixtures\ProductActions;
-use Honed\Action\Tests\Stubs\Status;
+use Honed\Action\Tests\Stubs\Product;
+use Illuminate\Database\Eloquent\Model;
 
 beforeEach(function () {
     $this->test = new class {
         use HasEncoder;
+
+        public static function baseClass()
+        {
+            return ActionGroup::class;
+        }
     };
 
     // Null the encoder and decoder as they are static
@@ -44,10 +50,16 @@ it('retrieves primitive', function () {
     $actions = ProductActions::make();
 
     expect($actions)
-        ->getPrimitive($actions->getRouteKey(), ActionGroup::class)
+        ->makeFrom($actions->getRouteKey())
         ->toBeInstanceOf(ProductActions::class);
 
     expect($actions)
-        ->getPrimitive($actions->getRouteKey(), ProductActions::class)
+        ->makeFrom(ActionGroup::make()->getRouteKey())
         ->toBeNull();
 });
+
+it('must have a make method', function () {
+    expect($this->test->makeFrom(Product::class))
+        ->toBeNull();
+});
+

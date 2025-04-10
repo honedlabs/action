@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Honed\Action\ActionFactory;
-use Honed\Action\Testing\PageActionRequest;
+use Honed\Action\Testing\PageRequest;
 
 beforeEach(function () {
-    $this->request = new PageActionRequest();
+    $this->request = new PageRequest();
 });
 
 it('has data', function () {
@@ -14,8 +14,9 @@ it('has data', function () {
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'id', 'name'])
-            ->{'type'}->toBe(ActionFactory::Page)
-        )->data(['type' => 'test'])->toBe($this->request)
+            ->{'type'}->toBe(ActionFactory::PAGE)
+        )
+        ->data(['type' => 'test'])->toBe($this->request)
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'id', 'name'])

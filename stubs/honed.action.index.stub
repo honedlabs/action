@@ -6,7 +6,7 @@ namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
 
-final class {{ class }} implements Actionable
+final class {{ class }} implements Action
 {
     /**
      * Display a listing of {{ modelVariable }}s.

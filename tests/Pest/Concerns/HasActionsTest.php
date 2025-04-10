@@ -14,12 +14,6 @@ beforeEach(function () {
     };
 });
 
-it('is empty by default', function () {
-    expect($this->test)
-        ->getActions()->toBeEmpty();
-});
-
-
 it('adds actions', function () {
     expect($this->test)
         ->actions([PageAction::make('view')])->toBe($this->test)

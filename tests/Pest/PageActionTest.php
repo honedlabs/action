@@ -11,5 +11,5 @@ beforeEach(function () {
 
 it('has page type', function () {
     expect($this->action)
-        ->getType()->toBe(ActionFactory::Page);
+        ->getType()->toBe(ActionFactory::PAGE);
 });

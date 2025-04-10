@@ -9,11 +9,11 @@ use Honed\Core\Primitive;
 
 class Confirm extends Primitive implements ResolvesArrayable
 {
-    const Constructive = 'constructive';
+    const CONSTRUCTIVE = 'constructive';
 
-    const Destructive = 'destructive';
+    const DESTRUCTIVE = 'destructive';
 
-    const Informative = 'informative';
+    const INFORMATIVE = 'informative';
 
     /**
      * The title of the confirm.
@@ -80,21 +80,11 @@ class Confirm extends Primitive implements ResolvesArrayable
     /**
      * Get the title of the confirm.
      *
-     * @return string|null
-     */
-    public function getTitle()
-    {
-        return $this->evaluate($this->title);
-    }
-
-    /**
-     * Resolve the title of the confirm.
-     *
      * @param  array<string, mixed>  $parameters
      * @param  array<class-string, mixed>  $typed
      * @return string|null
      */
-    public function resolveTitle($parameters = [], $typed = [])
+    public function getTitle($parameters = [], $typed = [])
     {
         return $this->evaluate($this->title, $parameters, $typed);
     }
@@ -115,21 +105,11 @@ class Confirm extends Primitive implements ResolvesArrayable
     /**
      * Get the description of the confirm.
      *
-     * @return string|null
-     */
-    public function getDescription()
-    {
-        return $this->evaluate($this->description);
-    }
-
-    /**
-     * Resolve the description of the confirm.
-     *
      * @param  array<string, mixed>  $parameters
      * @param  array<class-string, mixed>  $typed
      * @return string|null
      */
-    public function resolveDescription($parameters = [], $typed = [])
+    public function getDescription($parameters = [], $typed = [])
     {
         return $this->evaluate($this->description, $parameters, $typed);
     }
@@ -154,7 +134,7 @@ class Confirm extends Primitive implements ResolvesArrayable
      */
     public function constructive()
     {
-        return $this->intent(self::Constructive);
+        return $this->intent(self::CONSTRUCTIVE);
     }
 
     /**
@@ -164,7 +144,7 @@ class Confirm extends Primitive implements ResolvesArrayable
      */
     public function destructive()
     {
-        return $this->intent(self::Destructive);
+        return $this->intent(self::DESTRUCTIVE);
     }
 
     /**
@@ -174,7 +154,7 @@ class Confirm extends Primitive implements ResolvesArrayable
      */
     public function informative()
     {
-        return $this->intent(self::Informative);
+        return $this->intent(self::INFORMATIVE);
     }
 
     /**
@@ -268,13 +248,7 @@ class Confirm extends Primitive implements ResolvesArrayable
      */
     public function toArray()
     {
-        return [
-            'title' => $this->getTitle(),
-            'description' => $this->getDescription(),
-            'dismiss' => $this->getDismiss(),
-            'submit' => $this->getSubmit(),
-            'intent' => $this->getIntent(),
-        ];
+        return $this->resolveToArray();
     }
 
     /**
@@ -283,8 +257,8 @@ class Confirm extends Primitive implements ResolvesArrayable
     public function resolveToArray($parameters = [], $typed = [])
     {
         return [
-            'title' => $this->resolveTitle($parameters, $typed),
-            'description' => $this->resolveDescription($parameters, $typed),
+            'title' => $this->getTitle($parameters, $typed),
+            'description' => $this->getDescription($parameters, $typed),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),
             'intent' => $this->getIntent(),

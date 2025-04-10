@@ -17,7 +17,7 @@ it('sets with instance', function () {
         ->getConfirm()->scoped(fn ($confirm) => $confirm
             ->getTitle()->toBe('name')
             ->getDescription()->toBe('description')
-            ->getIntent()->toBe(Confirm::Constructive)
+            ->getIntent()->toBe(Confirm::CONSTRUCTIVE)
         );
 });
 
@@ -59,7 +59,7 @@ it('resolves to array', function () {
         ->toEqual([
             'title' => \sprintf('Delete %s', $product->name),
             'description' => \sprintf('Are you sure you want to delete %s?', $product->name),
-            'intent' => Confirm::Destructive,
+            'intent' => Confirm::DESTRUCTIVE,
             'submit' => 'Delete',
             'dismiss' => 'Cancel',
         ]);

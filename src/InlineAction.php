@@ -14,9 +14,9 @@ class InlineAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    public function defineType()
     {
-        $this->type(ActionFactory::Inline);
+        return ActionFactory::INLINE;
     }
 
     /**

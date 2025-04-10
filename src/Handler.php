@@ -7,7 +7,7 @@ namespace Honed\Action;
 use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
-use Honed\Core\Concerns\HasBuilderInstance;
+use Honed\Core\Concerns\HasResource;
 use Honed\Core\Parameters;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
@@ -20,9 +20,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class Handler
 {
     /**
-     * @use \Honed\Core\Concerns\HasBuilderInstance<TModel, TBuilder>
+     * @use \Honed\Core\Concerns\HasResource<TModel, TBuilder>
      */
-    use HasBuilderInstance;
+    use HasResource;
 
     /**
      * List of the available actions.
@@ -39,20 +39,6 @@ class Handler
     protected $key;
 
     /**
-     * Create a new handler instance.
-     *
-     * @param  TBuilder  $builder
-     * @param  array<int,\Honed\Action\Action>  $actions
-     * @param  string|null  $key
-     */
-    public function __construct($builder, $actions, $key = null)
-    {
-        $this->builder = $builder;
-        $this->actions = $actions;
-        $this->key = $key;
-    }
-
-    /**
      * Make a new handler instance.
      *
      * @param  TBuilder  $builder
@@ -60,9 +46,25 @@ class Handler
      * @param  string|null  $key
      * @return static
      */
-    public static function make($builder, $actions, $key = null)
+    public static function make($builder, $actions = [], $key = null)
     {
-        return resolve(static::class, \compact('builder', 'actions', 'key'));
+        return resolve(static::class)
+            ->resource($builder)
+            ->actions($actions)
+            ->key($key);
+    }
+
+    /**
+     * Set the actions for the handler.
+     *
+     * @param  array<int,\Honed\Action\Action>  $actions
+     * @return $this
+     */
+    public function actions($actions)
+    {
+        $this->actions = $actions;
+
+        return $this;
     }
 
     /**
@@ -73,6 +75,19 @@ class Handler
     public function getActions()
     {
         return $this->actions;
+    }
+
+    /**
+     * Set the key to use for selecting records.
+     *
+     * @param  string|null  $key
+     * @return $this
+     */
+    public function key($key)
+    {
+        $this->key = $key;
+
+        return $this;
     }
 
     /**
@@ -91,8 +106,8 @@ class Handler
     /**
      * Handle the incoming action request using the actions from the source, and the resource provided.
      *
-     * @param  \Honed\Action\Http\Requests\ActionRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse|void
+     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
+     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function handle($request)
     {
@@ -100,15 +115,15 @@ class Handler
         $type = $request->validated('type');
 
         $data = match ($type) {
-            ActionFactory::Inline => InlineData::from($request),
-            ActionFactory::Bulk => BulkData::from($request),
-            ActionFactory::Page => ActionData::from($request),
+            ActionFactory::INLINE => InlineData::from($request),
+            ActionFactory::BULK => BulkData::from($request),
+            ActionFactory::PAGE => ActionData::from($request),
             default => abort(400),
         };
 
         [$action, $query] = $this->resolveAction($type, $data);
 
-        abort_unless((bool) $action, 400);
+        abort_unless((bool) $action, 404);
 
         abort_unless((bool) $query, 404);
 
@@ -119,7 +134,8 @@ class Handler
         /** @var TModel|TBuilder $query */
         $result = $action->execute($query);
 
-        if ($result instanceof Responsable || $result instanceof RedirectResponse) {
+        if ($this->isResponsable($result)) {
+            /** @var \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse */
             return $result;
         }
 
@@ -136,9 +152,9 @@ class Handler
     public function resolveAction($type, $data)
     {
         return match ($type) {
-            ActionFactory::Inline => $this->resolveInlineAction(type($data)->as(InlineData::class)),
-            ActionFactory::Bulk => $this->resolveBulkAction(type($data)->as(BulkData::class)),
-            ActionFactory::Page => $this->resolvePageAction($data),
+            ActionFactory::INLINE => $this->resolveInlineAction(type($data)->as(InlineData::class)),
+            ActionFactory::BULK => $this->resolveBulkAction(type($data)->as(BulkData::class)),
+            ActionFactory::PAGE => $this->resolvePageAction($data),
             default => static::throwInvalidActionTypeException($type),
         };
     }
@@ -151,10 +167,13 @@ class Handler
      */
     protected function resolveInlineAction($data)
     {
+        $resource = $this->getResource();
+        $key = $this->getKey($resource);
+
         return [
             $this->getAction($data->name, InlineAction::class),
-            $this->getBuilder()
-                ->where($this->getKey($this->getBuilder()), $data->record)
+            $resource
+                ->where($key, $data->record)
                 ->first(),
         ];
     }
@@ -167,17 +186,17 @@ class Handler
      */
     public function resolveBulkAction($data)
     {
-        $builder = $this->getBuilder();
-        $key = $this->getKey($builder);
+        $resource = $this->getResource();
+        $key = $this->getKey($resource);
 
-        /** @var TBuilder $builder */
-        $builder = $data->all
-            ? $builder->whereNotIn($key, $data->except)
-            : $builder->whereIn($key, $data->only);
+        /** @var TBuilder $resource */
+        $resource = $data->all
+            ? $resource->whereNotIn($key, $data->except)
+            : $resource->whereIn($key, $data->only);
 
         return [
             $this->getAction($data->name, BulkAction::class),
-            $builder,
+            $resource,
         ];
     }
 
@@ -191,7 +210,7 @@ class Handler
     {
         return [
             $this->getAction($data->name, PageAction::class),
-            $this->getBuilder(),
+            $this->getResource(),
         ];
     }
 
@@ -212,6 +231,19 @@ class Handler
     }
 
     /**
+     * Determine if the result is a responsable or redirect response.
+     *
+     * @param  mixed  $result
+     * @return bool
+     */
+    protected function isResponsable($result)
+    {
+        return $result instanceof Responsable ||
+            $result instanceof RedirectResponse ||
+            $result instanceof \Inertia\ResponseFactory;
+    }
+
+    /**
      * Throw an invalid argument exception.
      *
      * @param  string  $type
@@ -221,8 +253,11 @@ class Handler
      */
     public static function throwInvalidActionTypeException($type)
     {
-        throw new \InvalidArgumentException(\sprintf(
-            'Action type [%s] is invalid.', $type
-        ));
+        throw new \InvalidArgumentException(
+            \sprintf(
+                'Action type [%s] is invalid.',
+                $type
+            )
+        );
     }
 }

@@ -51,8 +51,8 @@ test('with handler', function () {
 
     expect($action)
         ->getName()->toBe('destroy')
-        ->resolveLabel($named, $typed)->toBe('Destroy '.$this->product->name)
-        ->getType()->toBe(ActionFactory::Inline)
+        ->getLabel(...params($this->product))->toBe('Destroy '.$this->product->name)
+        ->getType()->toBe(ActionFactory::INLINE)
         ->isActionable()->toBeTrue();
 
     $action->execute($this->product);

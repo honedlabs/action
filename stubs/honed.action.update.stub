@@ -4,32 +4,28 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use Honed\Action\Contracts\Actionable;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Honed\Action\Contracts\Actionable;
+use Illuminate\Support\ValidatedInput;
 
-final class {{ class }} implements Actionable
+final class {{ class }} implements Action
 {
     /**
      * Handle the action.
      */
-    public function handle(Request $request, {{ model }} ${{ modelVariable }}): {{ model }}
+    public function handle(ValidatedInput $input, {{ model }} ${{ modelVariable }}): void
     {
-        ${{ modelVariable }} = DB::transaction(
-            static fn () => static::update($request, ${{ modelVariable }}),
+        DB::transaction(
+            fn () => static::update($request, ${{ modelVariable }})
         );
-
-        return ${{ modelVariable }};
     }
 
     /**
      * Update the {{ modelVariable }} in the database.
      */
-    public static function update(Request $request, {{ model }} ${{ modelVariable }}): {{ model }}
+    public function update(ValidatedInput $input, {{ model }} ${{ modelVariable }}): void
     {
-        ${{ modelVariable }}->update($request->validated());
-
-        return ${{ modelVariable }};
+        ${{ modelVariable }}->update($input->all());
     }
 }
 

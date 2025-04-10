@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\RequestFactory;
-use Honed\Action\Testing\InlineActionRequest;
-use Honed\Action\Testing\BulkActionRequest;
-use Honed\Action\Testing\PageActionRequest;
+use Honed\Action\Testing\InlineRequest;
+use Honed\Action\Testing\BulkRequest;
+use Honed\Action\Testing\PageRequest;
 
 beforeEach(function () {
     $this->factory = RequestFactory::make();
@@ -13,15 +13,15 @@ beforeEach(function () {
 
 it('makes inline', function () {
     expect($this->factory)
-        ->inline()->toBeInstanceOf(InlineActionRequest::class);
+        ->inline()->toBeInstanceOf(InlineRequest::class);
 });
 
 it('makes bulk', function () {
     expect($this->factory)
-        ->bulk()->toBeInstanceOf(BulkActionRequest::class);
+        ->bulk()->toBeInstanceOf(BulkRequest::class);
 });
 
 it('makes page', function () {
     expect($this->factory)
-        ->page()->toBeInstanceOf(PageActionRequest::class);
+        ->page()->toBeInstanceOf(PageRequest::class);
 });

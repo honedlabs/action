@@ -6,11 +6,11 @@ namespace Honed\Action;
 
 class ActionFactory
 {
-    const Inline = 'inline';
+    const INLINE = 'inline';
 
-    const Bulk = 'bulk';
+    const BULK = 'bulk';
 
-    const Page = 'page';
+    const PAGE = 'page';
 
     /**
      * Create a new action.
@@ -25,10 +25,10 @@ class ActionFactory
     public function new($type, $name, $label = null)
     {
         return match ($type) {
-            self::Bulk => $this->bulk($name, $label),
-            self::Inline => $this->inline($name, $label),
-            self::Page => $this->page($name, $label),
-            default => static::throwInvalidArgumentException($type),
+            self::BULK => $this->bulk($name, $label),
+            self::INLINE => $this->inline($name, $label),
+            self::PAGE => $this->page($name, $label),
+            default => static::throwInvalidActionException($type),
         };
     }
 
@@ -87,10 +87,13 @@ class ActionFactory
      *
      * @throws \InvalidArgumentException
      */
-    protected static function throwInvalidArgumentException($type)
+    public static function throwInvalidActionException($type)
     {
-        throw new \InvalidArgumentException(\sprintf(
-            'Action type [%s] is invalid.', $type
-        ));
+        throw new \InvalidArgumentException(
+            \sprintf(
+                'Action type [%s] is invalid.',
+                $type
+            )
+        );
     }
 }

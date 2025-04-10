@@ -6,7 +6,7 @@ namespace Honed\Action\Testing;
 
 use Honed\Action\ActionFactory;
 
-class PageActionRequest extends FakeActionRequest
+class PageRequest extends FakeRequest
 {
     /**
      * {@inheritdoc}
@@ -14,7 +14,7 @@ class PageActionRequest extends FakeActionRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::Page,
+            'type' => ActionFactory::PAGE,
         ], parent::getData());
     }
 }

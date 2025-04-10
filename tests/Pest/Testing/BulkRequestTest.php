@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Honed\Action\ActionFactory;
-use Honed\Action\Testing\BulkActionRequest;
+use Honed\Action\Testing\BulkRequest;
 
 beforeEach(function () {
-    $this->request = new BulkActionRequest();
+    $this->request = new BulkRequest();
 });
 
 it('has all', function () {
@@ -35,8 +35,9 @@ it('has data', function () {
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'only', 'except', 'all', 'id', 'name'])
-            ->{'type'}->toBe(ActionFactory::Bulk)
-        )->data(['type' => 'test'])->toBe($this->request)
+            ->{'type'}->toBe(ActionFactory::BULK)
+        )
+        ->data(['type' => 'test'])->toBe($this->request)
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'only', 'except', 'all', 'id', 'name'])

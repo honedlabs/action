@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+/**
+ * @phpstan-require-implements \Honed\Action\Contracts\Handles
+ * @phpstan-require-implements \Illuminate\Contracts\Routing\UrlRoutable
+ */
 trait HasEncoder
 {
     /**
@@ -19,6 +23,13 @@ trait HasEncoder
      * @var \Closure(string):mixed|null
      */
     protected static $decoder;
+
+    /**
+     * The root parent class.
+     * 
+     * @return class-string
+     */
+    abstract public static function baseClass();
 
     /**
      * Set the encoder.
@@ -70,19 +81,54 @@ trait HasEncoder
     }
 
     /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  string  $value
+     * @param  string|null  $field
+     * @return static|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field = null)
+    {
+        return $this->resolveRouteBinding($value, $field);
+    }
+
+    /**
+     * Get the value of the model's route key.
+     *
+     * @return string
+     */
+    public function getRouteKey()
+    {
+        return static::encode(static::class);
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param  string  $value
+     * @param string|null $field
+     * @return static|null
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        /** @var static|null */
+        return static::makeFrom($value);
+    }
+
+    /**
      * Decode and retrieve a primitive class.
      *
      * @param  string  $value
-     * @param  class-string  $class
      * @return mixed
      */
-    public static function getPrimitive($value, $class)
+    public static function makeFrom($value)
     {
         try {
             $primitive = static::decode($value);
 
             // @phpstan-ignore-next-line
-            if (\class_exists($primitive) && \is_subclass_of($primitive, $class)) {
+            if (\class_exists($primitive) && \is_subclass_of($primitive, static::baseClass())) {
                 return $primitive::make();
             }
 

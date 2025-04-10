@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +17,7 @@ use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
 
 #[AsCommand(name: 'make:action')]
-class ActionMakeCommand extends GeneratorCommand
+class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInput
 {
     /**
      * The console command name.
@@ -67,6 +68,7 @@ class ActionMakeCommand extends GeneratorCommand
 
         /** @var string|null */
         $model = $this->option('model');
+
         /** @var string|null */
         $action = $this->option('action');
 

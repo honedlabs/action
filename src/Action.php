@@ -56,16 +56,7 @@ abstract class Action extends Primitive implements ResolvesArrayable
      */
     public function toArray()
     {
-        return [
-            'name' => $this->getName(),
-            'label' => $this->getLabel(),
-            'type' => $this->getType(),
-            'icon' => $this->getIcon(),
-            'extra' => $this->getExtra(),
-            'actionable' => $this->isActionable(),
-            'confirm' => $this->getConfirm()?->toArray(),
-            'route' => $this->routeToArray(),
-        ];
+        return $this->resolveToArray();
     }
 
     /**
@@ -75,10 +66,10 @@ abstract class Action extends Primitive implements ResolvesArrayable
     {
         return [
             'name' => $this->getName(),
-            'label' => $this->resolveLabel($parameters, $typed),
+            'label' => $this->getLabel($parameters, $typed),
             'type' => $this->getType(),
-            'icon' => $this->resolveIcon($parameters, $typed),
-            'extra' => $this->resolveExtra($parameters, $typed),
+            'icon' => $this->getIcon($parameters, $typed),
+            'extra' => $this->getExtra($parameters, $typed),
             'actionable' => $this->isActionable(),
             'confirm' => $this->getConfirm()?->resolveToArray($parameters, $typed),
             'route' => $this->routeToArray($parameters, $typed),

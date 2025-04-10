@@ -81,7 +81,7 @@ trait HasBulkActions
      */
     public function chunkById($chunkById = true)
     {
-        $this->chunk = true;
+        $this->chunk();
         $this->chunkById = $chunkById;
 
         return $this;

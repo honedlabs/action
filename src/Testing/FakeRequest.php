@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Illuminate\Support\Facades\Request;
+use Honed\Action\Http\Requests\InvokableRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
-class FakeActionRequest
+class FakeRequest
 {
     /**
      * The ID of the handler.
@@ -34,9 +35,16 @@ class FakeActionRequest
     /**
      * Whether to fill in details.
      *
+     * @var bool|null
+     */
+    protected $fill;
+
+    /**
+     * Whether all action requests should fill by default.
+     *
      * @var bool
      */
-    protected $fill = false;
+    protected static $shouldFill = false;
 
     /**
      * The data of the fake request.
@@ -44,6 +52,16 @@ class FakeActionRequest
      * @var array<string,mixed>
      */
     protected $data = [];
+
+    /**
+     * Create a new fake action request.
+     *
+     * @return static
+     */
+    public static function make()
+    {
+        return resolve(static::class);
+    }
 
     /**
      * Set the ID of the handler.
@@ -142,12 +160,25 @@ class FakeActionRequest
      */
     public function fills()
     {
-        return $this->fill;
+        if (isset($this->fill)) {
+            return $this->fill;
+        }
+
+        return static::$shouldFill;
     }
 
     /**
-     * Set the data of the fake request.
+     * Whether all action requests should fill by default.
      *
+     * @param  bool  $shouldFill
+     * @return void
+     */
+    public static function shouldFill($shouldFill = true)
+    {
+        static::$shouldFill = $shouldFill;
+    }
+
+    /**
      * @param  array<string,mixed>  $data
      * @return $this
      */
@@ -183,5 +214,23 @@ class FakeActionRequest
             HttpFoundationRequest::METHOD_POST,
             $this->getData()
         );
+    }
+
+    /**
+     * Resolve the request and validate it.
+     *
+     * @return \Honed\Action\Http\Requests\InvokableRequest
+     */
+    public function validate()
+    {
+        app()->instance('request', $this->create());
+
+        /** @var \Honed\Action\Http\Requests\InvokableRequest */
+        $request = app()->make(InvokableRequest::class);
+
+        $request->setContainer(app());
+        $request->validateResolved();
+
+        return $request;
     }
 }

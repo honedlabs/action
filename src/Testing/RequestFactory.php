@@ -19,30 +19,30 @@ class RequestFactory
     /**
      * Create a new inline action request instance.
      *
-     * @return \Honed\Action\Testing\InlineActionRequest
+     * @return \Honed\Action\Testing\InlineRequest
      */
     public static function inline()
     {
-        return new InlineActionRequest;
+        return new InlineRequest;
     }
 
     /**
      * Create a new bulk action request instance.
      *
-     * @return \Honed\Action\Testing\BulkActionRequest
+     * @return \Honed\Action\Testing\BulkRequest
      */
     public static function bulk()
     {
-        return new BulkActionRequest;
+        return new BulkRequest;
     }
 
     /**
      * Create a new page action request instance.
      *
-     * @return \Honed\Action\Testing\PageActionRequest
+     * @return \Honed\Action\Testing\PageRequest
      */
     public static function page()
     {
-        return new PageActionRequest;
+        return new PageRequest;
     }
 }

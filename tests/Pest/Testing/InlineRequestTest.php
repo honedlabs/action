@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Honed\Action\ActionFactory;
-use Honed\Action\Testing\InlineActionRequest;
+use Honed\Action\Testing\InlineRequest;
 
 beforeEach(function () {
-    $this->request = new InlineActionRequest();
+    $this->request = new InlineRequest();
 });
 
 it('has record', function () {
@@ -22,8 +22,9 @@ it('has data', function () {
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'record', 'id', 'name'])
-            ->{'type'}->toBe(ActionFactory::Inline)
-        )->data(['type' => 'test'])->toBe($this->request)
+            ->{'type'}->toBe(ActionFactory::INLINE)
+        )
+        ->data(['type' => 'test'])->toBe($this->request)
         ->getData()->scoped(fn ($data) => $data
             ->toBeArray()
             ->toHaveKeys(['type', 'record', 'id', 'name'])

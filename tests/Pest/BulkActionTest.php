@@ -11,7 +11,7 @@ beforeEach(function () {
 
 it('has bulk type', function () {
     expect($this->action)
-        ->getType()->toBe(ActionFactory::Bulk);
+        ->getType()->toBe(ActionFactory::BULK);
 });
 
 it('keeps selected', function () {

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 
+use function Pest\Laravel\artisan;
+
 beforeEach(function () {
     File::cleanDirectory(app_path('Actions'));
 });
 
 it('makes', function () {
-    $this->artisan('make:action', [
+    artisan('make:action', [
         'name' => 'TestAction',
     ])->assertSuccessful();
 
@@ -17,7 +19,7 @@ it('makes', function () {
 });
 
 it('sets verb', function () {
-    $this->artisan('make:action', [
+    artisan('make:action', [
         'name' => 'UpdateAction',
         '--action' => 'update',
         '--model' => 'Product',
@@ -27,7 +29,7 @@ it('sets verb', function () {
 });
 
 it('prompts', function () {
-    $this->artisan('make:action')
+    artisan('make:action')
         ->expectsQuestion('What should the action be named?', 'StoreAction')
         ->expectsQuestion('What action should be used? (Optional)', 'store')
         ->expectsQuestion('What model should this action be for? (Optional)', 'Product')
