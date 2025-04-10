@@ -13,7 +13,7 @@ use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class ActionGroup extends Primitive implements UrlRoutable, Handles
+class ActionGroup extends Primitive implements Handles, UrlRoutable
 {
     use HasActions;
     use HasEncoder;
@@ -40,7 +40,7 @@ class ActionGroup extends Primitive implements UrlRoutable, Handles
 
     /**
      * The root parent class.
-     * 
+     *
      * @return class-string
      */
     public static function baseClass()
