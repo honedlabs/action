@@ -15,7 +15,7 @@ use Illuminate\Support\Arr;
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
- *
+ * 
  * @phpstan-require-extends \Honed\Core\Primitive
  */
 trait HasActions
