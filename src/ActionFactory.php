@@ -72,7 +72,7 @@ class ActionFactory
      * Create a new action group.
      *
      * @param  \Honed\Action\Action|iterable<int, \Honed\Action\Action>  ...$actions
-     * @return \Honed\Action\ActionGroup
+     * @return \Honed\Action\ActionGroup<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
      */
     public function group(...$actions)
     {

@@ -8,23 +8,35 @@ use Honed\Action\Concerns\HasActions;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Concerns\HasEndpoint;
 use Honed\Action\Contracts\Handles;
+use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class ActionGroup extends Primitive implements Handles, UrlRoutable
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
+ */
+class ActionGroup extends Primitive implements UrlRoutable, Handles
 {
+    /**
+     * @use \Honed\Action\Concerns\HasActions<TModel, TBuilder>
+     */
     use HasActions;
     use HasEncoder;
     use HasEndpoint;
+    /**
+     * @use \Honed\Core\Concerns\HasResource<TModel, TBuilder>
+     */
+    use HasResource;
 
     /**
-     * The builder to be used to resolve inline actions.
+     * The model to be used to resolve inline actions.
      *
-     * @var \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model|null
+     * @var TModel|null
      */
-    protected $resource;
+    protected $model;
 
     /**
      * Create a new action group instance.
@@ -39,8 +51,31 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     }
 
     /**
-     * The root parent class.
+     * Set the model to be used to resolve inline actions.
      *
+     * @param  TModel|null  $model
+     * @return $this
+     */
+    public function for($model)
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /**
+     * Get the model to be used to resolve inline actions.
+     *
+     * @return TModel|null
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * The root parent class.
+     * 
      * @return class-string
      */
     public static function baseClass()
@@ -57,43 +92,20 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     }
 
     /**
-     * Set the model to be used to resolve inline actions.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $resource
-     * @return $this
-     */
-    public function resource($resource)
-    {
-        $this->resource = $resource;
-
-        return $this;
-    }
-
-    /**
-     * Get the resource to be used to resolve the actions.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|null
-     */
-    public function getResource()
-    {
-        return $this->resource;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function handle($request)
     {
-        $resource = $this->getResource();
-
-        if ($resource instanceof Builder) {
-            return Handler::make(
-                $this->getResource(),
-                $this->getActions()
-            )->handle($request);
+        if ($this->isntActionable()) {
+            abort(404);
         }
 
-        return back();
+        $resource = $this->getResource();
+
+        return Handler::make(
+            $resource,
+            $this->getActions()
+        )->handle($request);
     }
 
     /**
@@ -101,14 +113,8 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
      */
     public function toArray()
     {
-        $resource = $this->getResource();
-
-        if (! $resource instanceof Model) {
-            $resource = null;
-        }
-
         $actions = [
-            'inline' => $this->inlineActionsToArray($resource),
+            'inline' => $this->inlineActionsToArray($this->getModel()),
             'bulk' => $this->bulkActionsToArray(),
             'page' => $this->pageActionsToArray(),
         ];

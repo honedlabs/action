@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Concerns\HasBulkActions;
+
 use Honed\Action\Contracts\ShouldChunk;
 
 beforeEach(function () {
@@ -14,7 +15,7 @@ beforeEach(function () {
 it('chunks', function () {
     expect($this->test)
         ->isChunked()->toBe(config('action.chunk'))
-        ->chunk(true)->toBe($this->test)
+        ->chunks(true)->toBe($this->test)
         ->isChunked()->toBeTrue()
         ->isChunkedByDefault()->toBe(config('action.chunk'));
 
@@ -28,10 +29,10 @@ it('chunks', function () {
 
 it('chunks by id', function () {
     expect($this->test)
-        ->chunksById()->toBe(config('action.chunk_by_id'))
-        ->chunkById(true)->toBe($this->test)
-        ->chunksById()->toBeTrue()
-        ->chunksByIdByDefault()->toBe(config('action.chunk_by_id'));
+        ->isChunkedById()->toBe(config('action.chunk_by_id'))
+        ->chunksById(true)->toBe($this->test)
+        ->isChunkedById()->toBeTrue()
+        ->isChunkedByIdByDefault()->toBe(config('action.chunk_by_id'));
 });
 
 it('has chunk size', function () {

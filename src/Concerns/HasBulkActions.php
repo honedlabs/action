@@ -39,12 +39,12 @@ trait HasBulkActions
     /**
      * Set the action to chunk the records.
      *
-     * @param  bool|null  $chunk
+     * @param  bool|null  $chunks
      * @return $this
      */
-    public function chunk($chunk = true)
+    public function chunks($chunks = true)
     {
-        $this->chunk = $chunk;
+        $this->chunk = $chunks;
 
         return $this;
     }
@@ -76,13 +76,13 @@ trait HasBulkActions
     /**
      * Set the action to chunk the records by id.
      *
-     * @param  bool|null  $chunkById
+     * @param  bool|null  $chunksById
      * @return $this
      */
-    public function chunkById($chunkById = true)
+    public function chunksById($chunksById = true)
     {
-        $this->chunk();
-        $this->chunkById = $chunkById;
+        $this->chunks();
+        $this->chunkById = $chunksById;
 
         return $this;
     }
@@ -92,9 +92,9 @@ trait HasBulkActions
      *
      * @return bool
      */
-    public function chunksById()
+    public function isChunkedById()
     {
-        return (bool) ($this->chunkById ?? static::chunksByIdByDefault());
+        return (bool) ($this->chunkById ?? static::isChunkedByIdByDefault());
     }
 
     /**
@@ -102,7 +102,7 @@ trait HasBulkActions
      *
      * @return bool
      */
-    public static function chunksByIdByDefault()
+    public static function isChunkedByIdByDefault()
     {
         return (bool) config('action.chunk_by_id', true);
     }
@@ -192,7 +192,7 @@ trait HasBulkActions
     {
         $chunkSize = $this->getChunkSize();
 
-        return $this->chunksById()
+        return $this->isChunkedById()
             ? fn ($builder) => $builder->chunkById($chunkSize, $handler)
             : fn ($builder) => $builder->chunk($chunkSize, $handler);
     }

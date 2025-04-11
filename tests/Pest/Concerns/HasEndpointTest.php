@@ -30,17 +30,17 @@ it('can execute server actions', function () {
 
     expect($this->test)
         ->isExecutable($class)->toBeFalse()
-        ->isNotExecutable($class)->toBeTrue()
-        ->shouldExecute()->toBe($this->test)
+        ->isntExecutable($class)->toBeTrue()
+        ->executes()->toBe($this->test)
         ->isExecutable($class)->toBeFalse()
-        ->isNotExecutable($class)->toBeTrue();
+        ->isntExecutable($class)->toBeTrue();
 
     $actions = ProductActions::make();
     
     expect($actions)
         ->isExecutable(ActionGroup::class)->toBeTrue()
-        ->isNotExecutable(ActionGroup::class)->toBeFalse()
-        ->shouldNotExecute()->toBe($actions)
+        ->isntExecutable(ActionGroup::class)->toBeFalse()
+        ->executes(false)->toBe($actions)
         ->isExecutable(ActionGroup::class)->toBeFalse()
-        ->isNotExecutable(ActionGroup::class)->toBeTrue();
+        ->isntExecutable(ActionGroup::class)->toBeTrue();
 });

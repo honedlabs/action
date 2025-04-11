@@ -6,6 +6,8 @@ use Honed\Action\PageAction;
 use Honed\Action\ActionGroup;
 use Honed\Action\InlineAction;
 use Honed\Action\Tests\Stubs\Product;
+use Illuminate\Http\RedirectResponse;
+use Honed\Action\Testing\RequestFactory;
 use Honed\Action\Tests\Fixtures\ProductActions;
 
 beforeEach(function () {
@@ -24,6 +26,28 @@ it('has route key name', function () {
         ->getRouteKeyName()->toBe('action');
 });;
 
+it('requires builder to handle requests', function () {
+    $request = RequestFactory::page()
+        ->fill()
+        ->validate();
+
+    expect($this->group->handle($request))
+        ->toBeInstanceOf(RedirectResponse::class);
+});
+
+it('handles requests with model', function () {
+    $request = RequestFactory::page()
+        ->fill()
+        ->validate();
+
+    expect(Product::query()->count())->toBe(0);
+
+    expect(ProductActions::make())
+        ->handle($request)
+        ->toBeInstanceOf(RedirectResponse::class);
+
+    expect(Product::query()->count())->toBe(1);
+});
 
 it('resolves route binding', function () {
     expect($this->group)
@@ -54,7 +78,10 @@ it('has array representation with server actions', function () {
         ->toHaveCount(5)
         ->toHaveKeys(['id', 'endpoint', 'inline', 'bulk', 'page']);
 
-    expect(ProductActions::make()->shouldNotExecute()->toArray())
+    expect(ProductActions::make()
+            ->executes(false)
+            ->toArray()
+        )
         ->toHaveCount(3)
         ->toHaveKeys(['inline', 'bulk', 'page']);
 });

@@ -26,7 +26,7 @@ trait HasEncoder
 
     /**
      * The root parent class.
-     *
+     * 
      * @return class-string
      */
     abstract public static function baseClass();
@@ -107,13 +107,13 @@ trait HasEncoder
      * Retrieve the model for a bound value.
      *
      * @param  string  $value
-     * @param  string|null  $field
+     * @param string|null $field
      * @return static|null
      */
     public function resolveRouteBinding($value, $field = null)
     {
         /** @var static|null */
-        return static::makeFrom($value);
+        return static::tryFrom($value);
     }
 
     /**
@@ -122,7 +122,7 @@ trait HasEncoder
      * @param  string  $value
      * @return mixed
      */
-    public static function makeFrom($value)
+    public static function tryFrom($value)
     {
         try {
             $primitive = static::decode($value);

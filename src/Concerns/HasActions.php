@@ -12,40 +12,25 @@ use Honed\Action\PageAction;
 use Honed\Core\Parameters;
 use Illuminate\Support\Arr;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
+ * 
+ * @phpstan-require-extends \Honed\Core\Primitive
+ */
 trait HasActions
 {
     /**
      * List of the actions.
      *
-     * @var array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>
+     * @var array<int,\Honed\Action\Action|\Honed\Action\ActionGroup<TModel, TBuilder>>
      */
     protected $actions = [];
 
     /**
-     * Whether to provide inline actions.
-     *
-     * @var bool
-     */
-    protected $inline = true;
-
-    /**
-     * Whether to provide bulk actions.
-     *
-     * @var bool
-     */
-    protected $bulk = true;
-
-    /**
-     * Whether to provide page actions.
-     *
-     * @var bool
-     */
-    protected $page = true;
-
-    /**
      * Merge a set of actions with the existing.
      *
-     * @param  \Honed\Action\Action|\Honed\Action\ActionGroup|iterable<int, \Honed\Action\Action|\Honed\Action\ActionGroup>  ...$actions
+     * @param  \Honed\Action\Action|\Honed\Action\ActionGroup<TModel, TBuilder>|iterable<int, \Honed\Action\Action|\Honed\Action\ActionGroup<TModel, TBuilder>>  ...$actions
      * @return $this
      */
     public function actions(...$actions)
@@ -61,7 +46,7 @@ trait HasActions
     /**
      * Define the actions for the instance.
      *
-     * @return array<int,\Honed\Action\Action|\Honed\Action\ActionGroup>
+     * @return array<int,\Honed\Action\Action|\Honed\Action\ActionGroup<TModel, TBuilder>>
      */
     public function defineActions()
     {
@@ -92,41 +77,13 @@ trait HasActions
     }
 
     /**
-     * Enable all action types.
-     *
-     * @return $this
-     */
-    public function allActions()
-    {
-        $this->inline = true;
-        $this->bulk = true;
-        $this->page = true;
-
-        return $this;
-    }
-
-    /**
-     * Disable all action types.
-     *
-     * @return $this
-     */
-    public function exceptActions()
-    {
-        $this->exceptInlineActions();
-        $this->exceptBulkActions();
-        $this->exceptPageActions();
-
-        return $this;
-    }
-
-    /**
-     * Determine if the instance has provided all actions.
+     * Determines if the instance has any actions.
      *
      * @return bool
      */
-    public function hasAllActions()
+    public function hasActions()
     {
-        return $this->inline && $this->bulk && $this->page;
+        return filled($this->getActions());
     }
 
     /**
@@ -134,19 +91,39 @@ trait HasActions
      *
      * @return bool
      */
-    public function hasActions()
+    public function isActionable()
     {
-        return $this->inline || $this->bulk || $this->page;
+        return $this->hasAny('inline', 'bulk', 'page');
     }
 
     /**
-     * Determine if the instance has not provided any actions.
+     * Determine if the instance does not provide any actions.
      *
      * @return bool
      */
-    public function hasNoActions()
+    public function isntActionable()
     {
-        return ! $this->hasActions();
+        return ! $this->isActionable();
+    }
+
+    /**
+     * Set the instance to not provide any actions.
+     *
+     * @return $this
+     */
+    public function exceptActions()
+    {
+        return $this->except('inline', 'bulk', 'page');
+    }
+
+    /**
+     * Set the instance to only provide actions.
+     *
+     * @return $this
+     */
+    public function onlyActions()
+    {
+        return $this->only('inline', 'bulk', 'page');
     }
 
     /**
@@ -156,11 +133,7 @@ trait HasActions
      */
     public function onlyInlineActions()
     {
-        $this->inline = true;
-        $this->bulk = false;
-        $this->page = false;
-
-        return $this;
+        return $this->only('inline');
     }
 
     /**
@@ -170,9 +143,7 @@ trait HasActions
      */
     public function exceptInlineActions()
     {
-        $this->inline = false;
-
-        return $this;
+        return $this->except('inline');
     }
 
     /**
@@ -180,9 +151,9 @@ trait HasActions
      *
      * @return bool
      */
-    public function hasInlineActions()
+    public function providesInlineActions()
     {
-        return $this->inline;
+        return $this->has('inline');
     }
 
     /**
@@ -192,11 +163,7 @@ trait HasActions
      */
     public function onlyBulkActions()
     {
-        $this->inline = false;
-        $this->bulk = true;
-        $this->page = false;
-
-        return $this;
+        return $this->only('bulk');
     }
 
     /**
@@ -206,9 +173,7 @@ trait HasActions
      */
     public function exceptBulkActions()
     {
-        $this->bulk = false;
-
-        return $this;
+        return $this->except('bulk');
     }
 
     /**
@@ -216,9 +181,9 @@ trait HasActions
      *
      * @return bool
      */
-    public function hasBulkActions()
+    public function providesBulkActions()
     {
-        return $this->bulk;
+        return $this->has('bulk');
     }
 
     /**
@@ -228,11 +193,7 @@ trait HasActions
      */
     public function onlyPageActions()
     {
-        $this->inline = false;
-        $this->bulk = false;
-        $this->page = true;
-
-        return $this;
+        return $this->only('page');
     }
 
     /**
@@ -242,9 +203,7 @@ trait HasActions
      */
     public function exceptPageActions()
     {
-        $this->page = false;
-
-        return $this;
+        return $this->except('page');
     }
 
     /**
@@ -252,9 +211,9 @@ trait HasActions
      *
      * @return bool
      */
-    public function hasPageActions()
+    public function providesPageActions()
     {
-        return $this->page;
+        return $this->has('page');
     }
 
     /**
@@ -264,7 +223,7 @@ trait HasActions
      */
     public function getInlineActions()
     {
-        if (! $this->hasInlineActions()) {
+        if (! $this->providesInlineActions()) {
             return [];
         }
 
@@ -283,7 +242,7 @@ trait HasActions
      */
     public function getBulkActions()
     {
-        if (! $this->hasBulkActions()) {
+        if (! $this->providesBulkActions()) {
             return [];
         }
 
@@ -303,7 +262,7 @@ trait HasActions
      */
     public function getPageActions()
     {
-        if (! $this->hasPageActions()) {
+        if (! $this->providesPageActions()) {
             return [];
         }
 

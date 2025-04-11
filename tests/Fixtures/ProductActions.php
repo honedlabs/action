@@ -15,7 +15,8 @@ class ProductActions extends ActionGroup
     public function defineActions()
     {
         return [
-            PageAction::make('create'),
+            PageAction::make('create')
+                ->action(fn () => product()),
         ];
     }
 }

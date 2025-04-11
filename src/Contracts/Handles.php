@@ -20,5 +20,5 @@ interface Handles
      * @param  string  $value
      * @return mixed
      */
-    public static function makeFrom($value);
+    public static function tryFrom($value);
 }

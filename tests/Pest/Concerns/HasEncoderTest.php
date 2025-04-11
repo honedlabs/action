@@ -50,16 +50,16 @@ it('retrieves primitive', function () {
     $actions = ProductActions::make();
 
     expect($actions)
-        ->makeFrom($actions->getRouteKey())
+        ->tryFrom($actions->getRouteKey())
         ->toBeInstanceOf(ProductActions::class);
 
     expect($actions)
-        ->makeFrom(ActionGroup::make()->getRouteKey())
+        ->tryFrom(ActionGroup::make()->getRouteKey())
         ->toBeNull();
 });
 
 it('must have a make method', function () {
-    expect($this->test->makeFrom(Product::class))
+    expect($this->test->tryFrom(Product::class))
         ->toBeNull();
 });
 

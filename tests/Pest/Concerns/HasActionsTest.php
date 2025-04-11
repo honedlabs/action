@@ -7,10 +7,16 @@ use Honed\Action\PageAction;
 use Honed\Action\ActionGroup;
 use Honed\Action\InlineAction;
 use Honed\Action\Concerns\HasActions;
+use Honed\Core\Primitive;
 
 beforeEach(function () {
-    $this->test = new class {
+    $this->test = new class extends Primitive{
         use HasActions;
+
+        public function toArray()
+        {
+            return [];
+        }
     };
 });
 
@@ -39,58 +45,40 @@ it('adds action groups', function () {
         ->getActions()->toHaveCount(1);
 });
 
-it('can set all or none of the action types', function () {
-    expect($this->test)
-        ->hasAllActions()->toBeTrue()
-        ->hasActions()->toBeTrue()
-        ->hasNoActions()->toBeFalse()
-        ->exceptActions()->toBe($this->test)
-        ->hasAllActions()->toBeFalse()
-        ->hasActions()->toBeFalse()
-        ->hasNoActions()->toBeTrue()
-        ->allActions()->toBe($this->test)
-        ->hasAllActions()->toBeTrue()
-        ->hasActions()->toBeTrue()
-        ->hasNoActions()->toBeFalse();
-});
-
-it('toggles inline actions', function () {
-    expect($this->test->actions())
-        ->hasInlineActions()->toBeTrue()
-        ->exceptInlineActions()->toBe($this->test)
-        ->hasInlineActions()->toBeFalse()
-        ->onlyInlineActions()->toBe($this->test)
-        ->hasInlineActions()->toBeTrue();
-
+it('provides inline actions', function () {
     expect($this->test->actions(InlineAction::make('edit')))
+        ->providesInlineActions()->toBeTrue()
+        ->getInlineActions()->toHaveCount(1)
         ->exceptInlineActions()->toBe($this->test)
-        ->getInlineActions()->toBeEmpty();
+        ->providesInlineActions()->toBeFalse()
+        ->getInlineActions()->toBeEmpty()
+        ->onlyInlineActions()->toBe($this->test)
+        ->providesInlineActions()->toBeTrue()
+        ->getInlineActions()->toHaveCount(1);
 });
 
-it('toggles bulk actions', function () {
-    expect($this->test)
-        ->hasBulkActions()->toBeTrue()
-        ->exceptBulkActions()->toBe($this->test)
-        ->hasBulkActions()->toBeFalse()
-        ->onlyBulkActions()->toBe($this->test)
-        ->hasBulkActions()->toBeTrue();
-
+it('provides bulk actions', function () {
     expect($this->test->actions(BulkAction::make('edit')))
+        ->providesBulkActions()->toBeTrue()
+        ->getBulkActions()->toHaveCount(1)
         ->exceptBulkActions()->toBe($this->test)
-        ->getBulkActions()->toBeEmpty();
+        ->providesBulkActions()->toBeFalse()
+        ->getBulkActions()->toBeEmpty()
+        ->onlyBulkActions()->toBe($this->test)
+        ->providesBulkActions()->toBeTrue()
+        ->getBulkActions()->toHaveCount(1);
 });
 
-it('toggles page actions', function () {
-    expect($this->test)
-        ->hasPageActions()->toBeTrue()
-        ->exceptPageActions()->toBe($this->test)
-        ->hasPageActions()->toBeFalse()
-        ->onlyPageActions()->toBe($this->test)
-        ->hasPageActions()->toBeTrue();
-
+it('provides page actions', function () {
     expect($this->test->actions(PageAction::make('edit')))
+        ->providesPageActions()->toBeTrue()
+        ->getPageActions()->toHaveCount(1)
         ->exceptPageActions()->toBe($this->test)
-        ->getPageActions()->toBeEmpty();
+        ->providesPageActions()->toBeFalse()
+        ->getPageActions()->toBeEmpty()
+        ->onlyPageActions()->toBe($this->test)
+        ->providesPageActions()->toBeTrue()
+        ->getPageActions()->toHaveCount(1);
 });
 
 it('has inline actions', function () {

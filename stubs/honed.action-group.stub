@@ -7,6 +7,12 @@ namespace {{ namespace }};
 use Honed\Action\ActionGroup;
 use Honed\Action\Contracts\ShouldExecute;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TBuilder of \Illuminate\Database\Eloquent\Builder<\TModel>
+ *
+ * @extends \Honed\Action\ActionGroup<TModel, TBuilder>
+ */
 class {{ class }} extends ActionGroup
 {
     /**
@@ -21,8 +27,8 @@ class {{ class }} extends ActionGroup
 
     /**
      * Define the available actions.
-     * 
-     * @return array<int, \Honed\Actions\Action>
+     *
+     * @return array<int,\Honed\Action\Action|\Honed\Action\ActionGroup<TModel, TBuilder>>
      */
     public function defineActions()
     {

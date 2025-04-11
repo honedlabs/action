@@ -8,8 +8,8 @@ trait HasEndpoint
 {
     /**
      * Handle the incoming action request.
-     *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
+     * 
+     * @param \Honed\Action\Http\Requests\InvokableRequest $request
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     abstract public function handle($request);
@@ -77,23 +77,12 @@ trait HasEndpoint
     /**
      * Set the instance to execute server actions.
      *
+     * @param  bool  $executes
      * @return $this
      */
-    public function shouldExecute()
+    public function executes($executes = true)
     {
-        $this->execute = true;
-
-        return $this;
-    }
-
-    /**
-     * Set the instance to not execute server actions.
-     *
-     * @return $this
-     */
-    public function shouldNotExecute()
-    {
-        $this->execute = false;
+        $this->execute = $executes;
 
         return $this;
     }
@@ -120,7 +109,7 @@ trait HasEndpoint
      * @param  class-string|null  $class
      * @return bool
      */
-    public function isNotExecutable($class = null)
+    public function isntExecutable($class = null)
     {
         return ! $this->isExecutable($class);
     }

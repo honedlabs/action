@@ -53,7 +53,7 @@ it('executes on collection', function () {
 it('executes on chunked by id collection', function () {
     $product = product();
 
-    $this->action->chunkById();
+    $this->action->chunksById();
 
     $fn = fn (Collection $p) => $p->each(fn (Product $p) => $p->makeFree());
 
@@ -69,7 +69,7 @@ it('executes on chunked by id models', function () {
     $product = product();
     $name = 'test';
 
-    $this->action->chunkById();
+    $this->action->chunksById();
 
     $fn = fn (Product $q) => $q->update(['name' => $name]);
 
@@ -84,7 +84,7 @@ it('executes on chunked by id models', function () {
 it('executes on chunked collection', function () {
     $product = product();
 
-    $this->action->chunk();
+    $this->action->chunks();
 
     $fn = fn (Collection $p) => $p->each(fn (Product $p) => $p->makeFree());
 
@@ -100,7 +100,7 @@ it('executes on chunked models', function () {
     $product = product();
     $name = 'test';
 
-    $this->action->chunk();
+    $this->action->chunks();
 
     $fn = fn (Product $q) => $q->update(['name' => $name]);
 
@@ -149,7 +149,7 @@ it('errors if chunking with builder', function () {
     $fn = fn (Builder $q) => $q->update(['name' => 'test']);
 
     $this->action->action($fn)
-        ->chunk()
+        ->chunks()
         ->execute(Product::query());
 
 })->throws(\RuntimeException::class);
