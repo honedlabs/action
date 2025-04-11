@@ -8,7 +8,6 @@ use Honed\Action\Console\Commands\ActionGroupMakeCommand;
 use Honed\Action\Console\Commands\ActionMakeCommand;
 use Honed\Action\Console\Commands\ActionsMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
-use Honed\Action\Http\Controllers\InvokableController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 

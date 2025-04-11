@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Controllers;
 
 use Honed\Action\ActionGroup;
-use Illuminate\Routing\Controller;
-use Honed\Action\Http\Requests\InvokableRequest;
 use Honed\Action\Http\Requests\DispatchableRequest;
+use Honed\Action\Http\Requests\InvokableRequest;
+use Illuminate\Routing\Controller;
 
 class ActionController extends Controller
 {
@@ -45,7 +45,7 @@ class ActionController extends Controller
 
     /**
      * Get the class to use to handle the actions.
-     * 
+     *
      * @return class-string<\Honed\Action\Contracts\Handles>
      */
     public function baseClass()
