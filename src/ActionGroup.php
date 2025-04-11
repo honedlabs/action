@@ -11,21 +11,22 @@ use Honed\Action\Contracts\Handles;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
  */
-class ActionGroup extends Primitive implements UrlRoutable, Handles
+class ActionGroup extends Primitive implements Handles, UrlRoutable
 {
     /**
      * @use \Honed\Action\Concerns\HasActions<TModel, TBuilder>
      */
     use HasActions;
+
     use HasEncoder;
     use HasEndpoint;
+
     /**
      * @use \Honed\Core\Concerns\HasResource<TModel, TBuilder>
      */
@@ -75,7 +76,7 @@ class ActionGroup extends Primitive implements UrlRoutable, Handles
 
     /**
      * The root parent class.
-     * 
+     *
      * @return class-string
      */
     public static function baseClass()

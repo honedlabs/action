@@ -6,7 +6,6 @@ namespace Honed\Action;
 
 use Honed\Action\Concerns\HasBulkActions;
 
-
 class PageAction extends Action
 {
     use HasBulkActions;

@@ -81,7 +81,7 @@ class TestCase extends Orchestra
                 $router->post('/actions', Controller::class)->name('actions');
                 // $router->actions();
             }
-        );
+            );
     }
 
     /**
