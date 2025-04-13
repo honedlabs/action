@@ -160,9 +160,7 @@ trait HasBulkActions
         $type = $this->getHandlerType($handler, $model);
 
         if ($type === 'builder' && $this->isChunked()) {
-            throw new \RuntimeException(
-                'A chunked handler cannot reference the builder.'
-            );
+            static::throwChunkedHandlerException();
         }
 
         $this->modifyQuery($builder);
@@ -240,7 +238,7 @@ trait HasBulkActions
      * @param  \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Collection<int,\Illuminate\Database\Eloquent\Model>  $value
      * @return array{array<string, mixed>,  array<class-string, mixed>}
      */
-    protected function getEvaluationParameters($model, $value)
+    public function getEvaluationParameters($model, $value)
     {
         [$named, $typed] = Parameters::builder($model, $value);
 
@@ -254,5 +252,19 @@ trait HasBulkActions
         ]);
 
         return [$named, $typed];
+    }
+
+    /**
+     * Throw an exception for a chunked handler.
+     *
+     * @return never
+     *
+     * @throws \RuntimeException
+     */
+    public static function throwChunkedHandlerException()
+    {
+        throw new \RuntimeException(
+            'A chunked handler cannot reference the builder.'
+        );
     }
 }

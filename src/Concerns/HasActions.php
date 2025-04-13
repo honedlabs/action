@@ -9,6 +9,7 @@ use Honed\Action\ActionGroup;
 use Honed\Action\BulkAction;
 use Honed\Action\InlineAction;
 use Honed\Action\PageAction;
+use Honed\Action\Support\Constants;
 use Honed\Core\Parameters;
 use Illuminate\Support\Arr;
 
@@ -93,7 +94,7 @@ trait HasActions
      */
     public function isActionable()
     {
-        return $this->hasAny('inline', 'bulk', 'page');
+        return $this->hasAny(Constants::INLINE, Constants::BULK, Constants::PAGE);
     }
 
     /**
@@ -113,7 +114,7 @@ trait HasActions
      */
     public function exceptActions()
     {
-        return $this->except('inline', 'bulk', 'page');
+        return $this->except(Constants::INLINE, Constants::BULK, Constants::PAGE);
     }
 
     /**
@@ -123,7 +124,7 @@ trait HasActions
      */
     public function onlyActions()
     {
-        return $this->only('inline', 'bulk', 'page');
+        return $this->only(Constants::INLINE, Constants::BULK, Constants::PAGE);
     }
 
     /**
@@ -133,7 +134,7 @@ trait HasActions
      */
     public function onlyInlineActions()
     {
-        return $this->only('inline');
+        return $this->only(Constants::INLINE);
     }
 
     /**
@@ -143,7 +144,7 @@ trait HasActions
      */
     public function exceptInlineActions()
     {
-        return $this->except('inline');
+        return $this->except(Constants::INLINE);
     }
 
     /**
@@ -153,7 +154,7 @@ trait HasActions
      */
     public function providesInlineActions()
     {
-        return $this->has('inline');
+        return $this->has(Constants::INLINE);
     }
 
     /**
@@ -163,7 +164,7 @@ trait HasActions
      */
     public function onlyBulkActions()
     {
-        return $this->only('bulk');
+        return $this->only(Constants::BULK);
     }
 
     /**
@@ -173,7 +174,7 @@ trait HasActions
      */
     public function exceptBulkActions()
     {
-        return $this->except('bulk');
+        return $this->except(Constants::BULK);
     }
 
     /**
@@ -183,7 +184,7 @@ trait HasActions
      */
     public function providesBulkActions()
     {
-        return $this->has('bulk');
+        return $this->has(Constants::BULK);
     }
 
     /**
@@ -193,7 +194,7 @@ trait HasActions
      */
     public function onlyPageActions()
     {
-        return $this->only('page');
+        return $this->only(Constants::PAGE);
     }
 
     /**
@@ -203,7 +204,7 @@ trait HasActions
      */
     public function exceptPageActions()
     {
-        return $this->except('page');
+        return $this->except(Constants::PAGE);
     }
 
     /**
@@ -213,7 +214,7 @@ trait HasActions
      */
     public function providesPageActions()
     {
-        return $this->has('page');
+        return $this->has(Constants::PAGE);
     }
 
     /**

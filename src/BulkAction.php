@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Concerns\HasBulkActions;
+use Honed\Action\Support\Constants;
 
 class BulkAction extends Action
 {
@@ -22,7 +23,7 @@ class BulkAction extends Action
      */
     public function defineType()
     {
-        return ActionFactory::BULK;
+        return Constants::BULK;
     }
 
     /**

@@ -16,7 +16,7 @@ final class {{ class }} implements Action
     public function handle(ValidatedInput $input, {{ model }} ${{ modelVariable }}): void
     {
         DB::transaction(
-            fn () => static::update($request, ${{ modelVariable }})
+            fn () => $this->update($input, ${{ modelVariable }})
         );
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Honed\Action\ActionFactory;
+use Honed\Action\Support\Constants;
 
 class InlineRequest extends FakeRequest
 {
@@ -44,7 +44,7 @@ class InlineRequest extends FakeRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::INLINE,
+            'type' => Constants::INLINE,
             'record' => $this->getRecord(),
         ], parent::getData());
     }

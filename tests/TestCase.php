@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action\Tests;
 
 use Honed\Action\ActionServiceProvider;
-use Honed\Action\Tests\Stubs\Controller;
 use Honed\Action\Tests\Stubs\Status;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -78,8 +77,7 @@ class TestCase extends Orchestra
                 $router->get('/products', fn () => Inertia::render('Products/Index'))->name('products.index');
                 $router->get('/products/{product}', fn () => Inertia::render('Products/Show'))->name('products.show');
                 $router->get('/products/create', fn () => Inertia::render('Products/Create'))->name('products.create');
-                $router->post('/actions', Controller::class)->name('actions');
-                // $router->actions();
+                $router->actions();
             }
             );
     }

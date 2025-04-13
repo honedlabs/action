@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Honed\Action\ActionFactory;
+use Honed\Action\Support\Constants;
 
 class PageRequest extends FakeRequest
 {
@@ -14,7 +14,7 @@ class PageRequest extends FakeRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::PAGE,
+            'type' => Constants::PAGE,
         ], parent::getData());
     }
 }

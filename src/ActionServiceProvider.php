@@ -52,7 +52,7 @@ class ActionServiceProvider extends ServiceProvider
     {
         Router::macro('actions', function () {
             /** @var \Illuminate\Routing\Router $this */
-            $endpoint = type(config('action.endpoint', 'actions'))->asString();
+            $endpoint = type(config('action.endpoint', '/actions'))->asString();
 
             $methods = ['post', 'patch', 'put'];
 

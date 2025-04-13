@@ -64,6 +64,16 @@ class FakeRequest
     }
 
     /**
+     * Create a new fake action request.
+     *
+     * @return static
+     */
+    public static function fake()
+    {
+        return static::make();
+    }
+
+    /**
      * Set the ID of the handler.
      *
      * @param  string  $id
@@ -72,6 +82,23 @@ class FakeRequest
     public function id($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Set the request to be for the given class.
+     *
+     * @param  string|object  $class
+     * @return $this
+     */
+    public function for($class)
+    {
+        if (! \is_string($class)) {
+            $class = $class::class;
+        }
+
+        $this->id = $class::encode($class);
 
         return $this;
     }

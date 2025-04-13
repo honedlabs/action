@@ -7,6 +7,7 @@ namespace Honed\Action;
 use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
+use Honed\Action\Support\Constants;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Parameters;
 use Illuminate\Contracts\Support\Responsable;
@@ -115,20 +116,19 @@ class Handler
         $type = $request->validated('type');
 
         $data = match ($type) {
-            ActionFactory::INLINE => InlineData::from($request),
-            ActionFactory::BULK => BulkData::from($request),
-            ActionFactory::PAGE => ActionData::from($request),
+            Constants::INLINE => InlineData::from($request),
+            Constants::BULK => BulkData::from($request),
+            Constants::PAGE => ActionData::from($request),
             default => abort(400),
         };
 
         [$action, $query] = $this->resolveAction($type, $data);
 
-        abort_unless((bool) $action, 404);
-
-        abort_unless((bool) $query, 404);
+        abort_unless($action && $query, 404);
 
         [$named, $typed] = Parameters::builder($query);
 
+        // Page, Bulk will already pass this. Additional check for Inline.
         abort_unless($action->isAllowed($named, $typed), 403);
 
         /** @var TModel|TBuilder $query */
@@ -152,9 +152,9 @@ class Handler
     public function resolveAction($type, $data)
     {
         return match ($type) {
-            ActionFactory::INLINE => $this->resolveInlineAction(type($data)->as(InlineData::class)),
-            ActionFactory::BULK => $this->resolveBulkAction(type($data)->as(BulkData::class)),
-            ActionFactory::PAGE => $this->resolvePageAction($data),
+            Constants::INLINE => $this->resolveInlineAction(type($data)->as(InlineData::class)),
+            Constants::BULK => $this->resolveBulkAction(type($data)->as(BulkData::class)),
+            Constants::PAGE => $this->resolvePageAction($data),
             default => static::throwInvalidActionTypeException($type),
         };
     }

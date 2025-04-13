@@ -8,6 +8,7 @@ use Honed\Action\Concerns\HasActions;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Concerns\HasEndpoint;
 use Honed\Action\Contracts\Handles;
+use Honed\Action\Support\Constants;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
@@ -97,16 +98,20 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
      */
     public function handle($request)
     {
-        if ($this->isntActionable()) {
+        if ($this->isntExecutable()) {
             abort(404);
         }
 
-        $resource = $this->getResource();
+        try {
+            $resource = $this->getResource();
 
-        return Handler::make(
-            $resource,
-            $this->getActions()
-        )->handle($request);
+            return Handler::make(
+                $resource,
+                $this->getActions()
+            )->handle($request);
+        } catch (\RuntimeException $e) {
+            abort(404);
+        }
     }
 
     /**
@@ -115,9 +120,9 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     public function toArray()
     {
         $actions = [
-            'inline' => $this->inlineActionsToArray($this->getModel()),
-            'bulk' => $this->bulkActionsToArray(),
-            'page' => $this->pageActionsToArray(),
+            Constants::INLINE => $this->inlineActionsToArray($this->getModel()),
+            Constants::BULK => $this->bulkActionsToArray(),
+            Constants::PAGE => $this->pageActionsToArray(),
         ];
 
         if ($this->isExecutable(ActionGroup::class)) {

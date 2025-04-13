@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Concerns\HasBulkActions;
+use Honed\Action\Support\Constants;
 
 class PageAction extends Action
 {
@@ -15,6 +16,6 @@ class PageAction extends Action
      */
     public function defineType()
     {
-        return ActionFactory::PAGE;
+        return Constants::PAGE;
     }
 }

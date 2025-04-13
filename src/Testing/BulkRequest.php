@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Honed\Action\ActionFactory;
+use Honed\Action\Support\Constants;
 
 class BulkRequest extends FakeRequest
 {
@@ -104,7 +104,7 @@ class BulkRequest extends FakeRequest
     public function getData()
     {
         return \array_merge([
-            'type' => ActionFactory::BULK,
+            'type' => Constants::BULK,
             'only' => $this->getOnly(),
             'except' => $this->getExcept(),
             'all' => $this->isAll(),

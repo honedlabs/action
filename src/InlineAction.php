@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Action\Support\Constants;
 use Honed\Core\Concerns\IsDefault;
 use Honed\Core\Parameters;
 
@@ -16,7 +17,7 @@ class InlineAction extends Action
      */
     public function defineType()
     {
-        return ActionFactory::INLINE;
+        return Constants::INLINE;
     }
 
     /**

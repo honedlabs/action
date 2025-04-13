@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Action\Support\Constants;
+
 class ActionFactory
 {
     const INLINE = 'inline';
@@ -25,9 +27,9 @@ class ActionFactory
     public function new($type, $name, $label = null)
     {
         return match ($type) {
-            self::BULK => $this->bulk($name, $label),
-            self::INLINE => $this->inline($name, $label),
-            self::PAGE => $this->page($name, $label),
+            Constants::BULK => $this->bulk($name, $label),
+            Constants::INLINE => $this->inline($name, $label),
+            Constants::PAGE => $this->page($name, $label),
             default => static::throwInvalidActionException($type),
         };
     }
