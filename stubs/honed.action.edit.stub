@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
+use Inertia\Inertia;
 
-final class {{ class }} implements Action
+final class {{ class }} implements Actionable
 {
     /**
      * Handle the action.
      */
     public function handle({{ model }} ${{ modelVariable }}): \Inertia\Response
     {
-        return inertia('{{ model }}/Edit', [
+        // @phpstan-ignore-next-line
+        return Inertia::render('{{ model }}/Edit', [
             '{{ modelVariable }}' => ${{ modelVariable }},
         ]);
     }

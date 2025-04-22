@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
+use Inertia\Inertia;
 
-final class {{ class }} implements Action
+final class {{ class }} implements Actionable
 {
     /**
      * Show the confirmation page to delete the {{ modelVariable }}.
      */
     public function handle({{ model }} ${{ modelVariable }}): \Inertia\Response
     {
-        return inertia('{{ model }}/Delete', [
+        // @phpstan-ignore-next-line
+        return Inertia::modal('{{ model }}/Delete', [
             '{{ modelVariable }}' => ${{ modelVariable }},
         ]);
     }

@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Honed\Action\Contracts\Actionable;
 use Illuminate\Support\ValidatedInput;
 
-final class {{ class }} implements Action
+final class {{ class }} implements Actionable
 {
     /**
      * Handle the action.
      */
-    public function handle(ValidatedInput $input, {{ model }} ${{ modelVariable }}): void
+    public function handle({{ model }} ${{ modelVariable }}, ValidatedInput $input): void
     {
         DB::transaction(
             fn () => $this->update($input, ${{ modelVariable }})
@@ -23,7 +23,7 @@ final class {{ class }} implements Action
     /**
      * Update the {{ modelVariable }} in the database.
      */
-    public function update(ValidatedInput $input, {{ model }} ${{ modelVariable }}): void
+    public function update({{ model }} ${{ modelVariable }}, ValidatedInput $input): void
     {
         ${{ modelVariable }}->update($input->all());
     }

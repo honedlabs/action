@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
+use Inertia\Inertia;
 
-final class {{ class }} implements Action
+final class {{ class }} implements Actionable
 {
     /**
      * Display a listing of {{ modelVariable }}s.
      */
     public function handle(): \Inertia\Response
     {
-        return inertia('{{ model }}/Index', [
+        return Inertia::render('{{ model }}/Index', [
             '{{ modelVariable }}s' => null,
         ]);
     }

@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Honed\Action\Contracts\Actionable;
+use Inertia\Inertia;
 
-final class {{ class }} implements Action
+final class {{ class }} implements Actionable
 {
     /**
      * Show the form to create a new {{ modelVariable }}.
      */
     public function handle(): \Inertia\Response
     {
-        return inertia('{{ model }}/Create', [
+        return Inertia::render('{{ model }}/Create', [
             
         ]);
     }

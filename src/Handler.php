@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Honed\Action\Exceptions\ActionNotAllowedException;
+use Honed\Action\Exceptions\ActionNotFoundException;
+use Honed\Action\Exceptions\InvalidActionException;
 use Honed\Action\Http\Data\ActionData;
 use Honed\Action\Http\Data\BulkData;
 use Honed\Action\Http\Data\InlineData;
@@ -124,12 +127,15 @@ class Handler
 
         [$action, $query] = $this->resolveAction($type, $data);
 
-        abort_unless($action && $query, 404);
+        if (! $action || ! $query) {
+            ActionNotFoundException::throw($data->name);
+        }
 
         [$named, $typed] = Parameters::builder($query);
 
-        // Page, Bulk will already pass this. Additional check for Inline.
-        abort_unless($action->isAllowed($named, $typed), 403);
+        if (! $action->isAllowed($named, $typed)) {
+            ActionNotAllowedException::throw($data->name);
+        }
 
         /** @var TModel|TBuilder $query */
         $result = $action->execute($query);
@@ -155,7 +161,7 @@ class Handler
             Constants::INLINE => $this->resolveInlineAction(type($data)->as(InlineData::class)),
             Constants::BULK => $this->resolveBulkAction(type($data)->as(BulkData::class)),
             Constants::PAGE => $this->resolvePageAction($data),
-            default => static::throwInvalidActionTypeException($type),
+            default => InvalidActionException::throw($type),
         };
     }
 
