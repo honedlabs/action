@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Controllers;
 
 use Honed\Action\ActionGroup;
+use Honed\Action\Exceptions\CouldNotResolveHandlerException;
 use Honed\Action\Http\Requests\DispatchableRequest;
 use Honed\Action\Http\Requests\InvokableRequest;
 use Illuminate\Routing\Controller;
@@ -19,6 +20,10 @@ class ActionController extends Controller
      *
      * @param  \Honed\Action\ActionGroup<TModel, TBuilder>  $action
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws \Honed\Action\Exceptions\ActionNotFoundException
+     * @throws \Honed\Action\Exceptions\ActionNotAllowedException
+     * @throws \Honed\Action\Exceptions\InvalidActionException
      */
     public function invoke(InvokableRequest $request, ActionGroup $action)
     {
@@ -29,6 +34,11 @@ class ActionController extends Controller
      * Find and execute the appropriate action from the request input.
      *
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @throws \Honed\Action\Exceptions\CouldNotResolveHandlerException
+     * @throws \Honed\Action\Exceptions\ActionNotFoundException
+     * @throws \Honed\Action\Exceptions\ActionNotAllowedException
+     * @throws \Honed\Action\Exceptions\InvalidActionException
      */
     public function dispatch(DispatchableRequest $request)
     {
@@ -38,7 +48,9 @@ class ActionController extends Controller
         /** @var \Honed\Action\Contracts\Handles|null */
         $action = $this->baseClass()::tryFrom($key);
 
-        abort_unless((bool) $action, 404);
+        if (! $action) {
+            CouldNotResolveHandlerException::throw();
+        }
 
         return $action->handle($request);
     }
