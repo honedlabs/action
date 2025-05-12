@@ -12,14 +12,14 @@ beforeEach(function () {
 it('has data', function () {
     expect($this->request)
         ->getData()->scoped(fn ($data) => $data
-        ->toBeArray()
-        ->toHaveKeys(['type', 'id', 'name'])
-        ->{'type'}->toBe(Constants::PAGE)
+            ->toBeArray()
+            ->toHaveKeys(['type', 'id', 'name'])
+            ->{'type'}->toBe(Constants::PAGE)
         )
         ->data(['type' => 'test'])->toBe($this->request)
         ->getData()->scoped(fn ($data) => $data
-        ->toBeArray()
-        ->toHaveKeys(['type', 'id', 'name'])
-        ->{'type'}->toBe('test')
+            ->toBeArray()
+            ->toHaveKeys(['type', 'id', 'name'])
+            ->{'type'}->toBe('test')
         );
 });

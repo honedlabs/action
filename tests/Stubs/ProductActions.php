@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Tests\Fixtures;
+namespace Honed\Action\Tests\Stubs;
 
 use Honed\Action\ActionGroup;
-use Honed\Action\Tests\Stubs\Product;
 
 class ProductActions extends ActionGroup
 {

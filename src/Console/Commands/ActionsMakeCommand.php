@@ -75,6 +75,8 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
         /** @var string|null */
         $path = $this->option('path');
 
+        $force = (bool) $this->option('force');
+
         foreach ($this->actions as $action => $verb) {
             /** @var string */
             $model = $this->argument('model');
@@ -91,6 +93,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
                 'name' => $name,
                 '--model' => $this->argument('model'),
                 '--action' => $action,
+                '--force' => $force,
             ]);
         }
 

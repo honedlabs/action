@@ -75,7 +75,7 @@ trait HasEndpoint
     }
 
     /**
-     * Set the instance to execute server actions.
+     * Set whether the instance should execute server actions.
      *
      * @param  bool  $executes
      * @return $this
@@ -85,6 +85,36 @@ trait HasEndpoint
         $this->execute = $executes;
 
         return $this;
+    }
+
+    /**
+     * Set the instance to execute server actions.
+     *
+     * @return $this
+     */
+    public function shouldExecute()
+    {
+        return $this->executes(true);
+    }
+
+    /**
+     * Set the instance to not execute server actions.
+     *
+     * @return $this
+     */
+    public function shouldNotExecute()
+    {
+        return $this->executes(false);
+    }
+
+    /**
+     * Set the instance to not execute server actions.
+     *
+     * @return $this
+     */
+    public function shouldntExecute()
+    {
+        return $this->shouldNotExecute();
     }
 
     /**
@@ -109,8 +139,19 @@ trait HasEndpoint
      * @param  class-string|null  $class
      * @return bool
      */
-    public function isntExecutable($class = null)
+    public function isNotExecutable($class = null)
     {
         return ! $this->isExecutable($class);
+    }
+
+    /**
+     * Determine if the instance cannot execute server actions.
+     *
+     * @param  class-string|null  $class
+     * @return bool
+     */
+    public function isntExecutable($class = null)
+    {
+        return $this->isNotExecutable($class);
     }
 }

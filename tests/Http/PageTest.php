@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Pest\Handler;
 
 use Honed\Action\Testing\PageRequest;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
 
 use function Pest\Laravel\post;

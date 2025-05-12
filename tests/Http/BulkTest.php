@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\BulkRequest;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
 
 use function Pest\Laravel\post;

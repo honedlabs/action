@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\ActionGroup;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 
 // beforeEach(function () {
 //     $this->test = ActionGroup::make('test');

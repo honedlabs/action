@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Honed\Action\ActionGroup;
 use Honed\Action\Concerns\HasEncoder;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
 
 beforeEach(function () {

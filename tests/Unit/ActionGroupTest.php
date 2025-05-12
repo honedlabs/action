@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Honed\Action\ActionGroup;
 use Honed\Action\PageAction;
 use Honed\Action\Testing\RequestFactory;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
 use Illuminate\Http\RedirectResponse;
 
@@ -64,6 +64,31 @@ it('resolves route binding', function () {
     expect($actions)
         ->resolveChildRouteBinding(ProductActions::class, $actions->getRouteKey())
         ->toBeInstanceOf(ProductActions::class);
+});
+
+it('resolves action group', function () {
+    ActionGroup::useNamespace('');
+
+    ProductActions::guessActionGroupNamesUsing(function ($class) {
+        return $class.'Actions';
+    });
+
+    expect(ProductActions::resolveActionGroupName(Product::class))
+        ->toBe('Honed\\Action\\Tests\\Stubs\\ProductActions');
+
+    expect(ProductActions::actionGroupForModel(Product::class))
+        ->toBeInstanceOf(ProductActions::class);
+
+    ProductActions::flushState();
+});
+
+it('uses namespace', function () {
+    ActionGroup::useNamespace('');
+
+    expect(ProductActions::resolveActionGroupName(Product::class))
+        ->toBe('Honed\\Action\\Tests\\Stubs\\ProductActions');
+
+    ProductActions::flushState();
 });
 
 it('has array representation', function () {

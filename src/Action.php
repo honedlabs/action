@@ -52,6 +52,37 @@ abstract class Action extends Primitive implements ResolvesArrayable
     abstract public function execute($record);
 
     /**
+     * Set the route.
+     *
+     * @param  string|\Closure(...mixed):string  $route
+     * @param  mixed  $parameters
+     * @return $this
+     */
+    public function route($route, $parameters = [])
+    {
+        $this->route = match (true) {
+            $route instanceof \Closure => $route,
+            $this->isBindingParameter($parameters) => fn ($model) => route($route, $model, true),
+            default => route($route, $parameters, true),
+        };
+
+        return $this;
+    }
+
+    /**
+     * Determine if the parameters are implicit route-model bindings to be evaluated.
+     *
+     * @param  mixed  $parameters
+     * @return bool
+     */
+    protected function isBindingParameter($parameters)
+    {
+        return \is_string($parameters) 
+            && \str_starts_with($parameters, '{') 
+            && \str_ends_with($parameters, '}');
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toArray()

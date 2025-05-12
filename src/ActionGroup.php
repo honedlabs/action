@@ -138,7 +138,7 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
      * @param  class-string<TClass>  $modelName
      * @return \Honed\Action\ActionGroup<TClass>
      */
-    public static function actionsForModel($modelName)
+    public static function actionGroupForModel($modelName)
     {
         $table = static::resolveActionGroupName($modelName);
 
@@ -200,7 +200,7 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
      * @param  \Closure(class-string):class-string<\Honed\Action\ActionGroup>  $callback
      * @return void
      */
-    public static function guessTableNamesUsing($callback)
+    public static function guessActionGroupNamesUsing($callback)
     {
         static::$actionGroupNameResolver = $callback;
     }

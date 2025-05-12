@@ -10,16 +10,16 @@ beforeEach(function () {
 
 it('makes inline action', function () {
     $this->artisan('make:inline-action', [
-        'name' => 'View',
+        'name' => 'ViewAction',
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Inline/View.php'));
+    $this->assertFileExists(app_path('Actions/Inline/ViewAction.php'));
 });
 
 it('prompts for a inline action name', function () {
-    $this->artisan('make:action-group')
-        ->expectsQuestion('What should the action group be named?', 'View')
+    $this->artisan('make:inline-action')
+        ->expectsQuestion('What should the inline action be named?', 'ViewAction')
         ->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Inline/View.php'));
+    $this->assertFileExists(app_path('Actions/Inline/ViewAction.php'));
 });

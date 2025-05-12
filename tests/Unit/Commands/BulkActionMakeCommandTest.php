@@ -10,16 +10,16 @@ beforeEach(function () {
 
 it('makes bulk action', function () {
     $this->artisan('make:bulk-action', [
-        'name' => 'Delete',
+        'name' => 'DeleteAction',
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Bulk/Delete.php'));
+    $this->assertFileExists(app_path('Actions/Bulk/DeleteAction.php'));
 });
 
 it('prompts for a bulk action name', function () {
-    $this->artisan('make:action-group')
-        ->expectsQuestion('What should the action group be named?', 'Delete')
+    $this->artisan('make:bulk-action')
+        ->expectsQuestion('What should the bulk action be named?', 'DeleteAction')
         ->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Bulk/Delete.php'));
+    $this->assertFileExists(app_path('Actions/Bulk/DeleteAction.php'));
 });

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Table\Console\Commands;
+namespace Honed\Action\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -86,7 +86,7 @@ class PageActionMakeCommand extends GeneratorCommand
         return [
             'name' => [
                 'What should the '.\strtolower($this->type).' be named?',
-                'E.g. Delete',
+                'E.g. DeleteAction',
             ],
         ];
     }

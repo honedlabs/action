@@ -10,16 +10,16 @@ beforeEach(function () {
 
 it('makes page action', function () {
     $this->artisan('make:page-action', [
-        'name' => 'Create',
+        'name' => 'CreateAction',
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Page/Create.php'));
+    $this->assertFileExists(app_path('Actions/Page/CreateAction.php'));
 });
 
 it('prompts for a page action name', function () {
-    $this->artisan('make:action-group')
-        ->expectsQuestion('What should the action group be named?', 'Create')
+    $this->artisan('make:page-action')
+        ->expectsQuestion('What should the page action be named?', 'CreateAction')
         ->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Page/Create.php'));
+    $this->assertFileExists(app_path('Actions/Page/CreateAction.php'));
 });

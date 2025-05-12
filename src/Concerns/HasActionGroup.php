@@ -8,7 +8,7 @@ use Honed\Action\ActionGroup;
 use Honed\Action\Attributes\Actions;
 
 /**
- * @template TActions of \Honed\Action\ActionGroup
+ * @template TActionGroup of \Honed\Action\ActionGroup
  *
  * @property string $actions
  */
@@ -22,13 +22,13 @@ trait HasActionGroup
     public static function actions()
     {
         return static::newActions()
-            ?? ActionGroup::actionsForModel(static::class);
+            ?? ActionGroup::actionGroupForModel(static::class);
     }
 
     /**
      * Create a new action group instance for the model.
      *
-     * @return TActions
+     * @return TActionGroup
      */
     protected static function newActions()
     {
@@ -44,11 +44,11 @@ trait HasActionGroup
     }
 
     /**
-     * Get the table from the Table class attribute.
+     * Get the actions from the Actions class attribute.
      *
-     * @return class-string<\Honed\Table\Table>|null
+     * @return class-string<\Honed\Action\ActionGroup>|null
      */
-    protected static function getTableAttribute()
+    protected static function getActionsAttribute()
     {
         $attributes = (new \ReflectionClass(static::class))
             ->getAttributes(Actions::class);

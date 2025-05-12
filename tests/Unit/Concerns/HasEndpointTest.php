@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Honed\Action\ActionGroup;
 use Honed\Action\Concerns\HasEndpoint;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 
 beforeEach(function () {
     $this->test = new class
@@ -30,6 +30,7 @@ it('is executable', function () {
     $class = ActionGroup::class;
 
     expect($this->test)
+        // Executes by default
         ->isExecutable()->toBeTrue()
         ->isExecutable($class)->toBeFalse()
         ->isntExecutable($class)->toBeTrue()
@@ -45,4 +46,14 @@ it('is executable', function () {
         ->executes(false)->toBe($actions)
         ->isExecutable(ActionGroup::class)->toBeFalse()
         ->isntExecutable(ActionGroup::class)->toBeTrue();
+});
+
+it('should be executable', function () {
+    expect($this->test)
+        ->shouldNotExecute()->toBe($this->test)
+        ->isExecutable()->toBeFalse()
+        ->shouldExecute()->toBe($this->test)
+        ->isExecutable()->toBeTrue()
+        ->shouldntExecute()->toBe($this->test)
+        ->isExecutable()->toBeFalse();
 });

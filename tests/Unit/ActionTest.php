@@ -8,12 +8,28 @@ use Honed\Action\InlineAction;
 use Honed\Action\Support\Constants;
 use Honed\Action\Tests\Fixtures\DestroyAction;
 use Honed\Action\Tests\Stubs\Product;
+use Honed\Core\Parameters;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request;
 
 beforeEach(function () {
     // Using inline action for testing base class
     $this->action = InlineAction::make('test');
+});
+
+it('has implicit route bindings', function () {
+    $product = product();
+
+    [$named, $typed] = Parameters::model($product);
+
+    $this->action->route('products.show', '{product}');
+
+    expect($this->action->resolveToArray($named, $typed))
+        ->toHaveKey('route')
+        ->{'route'}->scoped(fn ($route) => $route
+            ->toHaveKey('url')
+            ->{'url'}->toBe(route('products.show', $product))
+        );
 });
 
 it('has array representation', function () {

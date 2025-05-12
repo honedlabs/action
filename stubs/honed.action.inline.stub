@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Tables\Actions\Inline;
+
+use Honed\Action\InlineAction;
+
+class {{ class }} extends InlineAction
+{
+    /**
+     * Create a new inline action instance.
+     * 
+     * @return self
+     */
+    public static function new()
+    {
+        return new self();
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        //
+    }
+}

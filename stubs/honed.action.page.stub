@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Tables\Actions\Page;
+
+use Honed\Action\PageAction;
+
+class {{ class }} extends PageAction
+{
+    /**
+     * Create a new page action instance.
+     * 
+     * @return self
+     */
+    public static function new()
+    {
+        return new self();
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function setUp()
+    {
+        //
+    }
+}

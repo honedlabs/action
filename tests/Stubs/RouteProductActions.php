@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Tests\Fixtures;
+namespace Honed\Action\Tests\Stubs;
 
 class RouteProductActions extends ProductActions
 {

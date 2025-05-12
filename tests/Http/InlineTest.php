@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\InlineRequest;
-use Honed\Action\Tests\Fixtures\ProductActions;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Support\Str;
 
 use function Pest\Laravel\post;
