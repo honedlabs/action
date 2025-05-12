@@ -6,7 +6,6 @@ namespace Honed\Action\Tests\Stubs;
 
 use Honed\Action\Attributes\Actions;
 use Honed\Action\Concerns\HasActionGroup;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
