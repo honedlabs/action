@@ -77,8 +77,8 @@ abstract class Action extends Primitive implements ResolvesArrayable
      */
     protected function isBindingParameter($parameters)
     {
-        return \is_string($parameters) 
-            && \str_starts_with($parameters, '{') 
+        return \is_string($parameters)
+            && \str_starts_with($parameters, '{')
             && \str_ends_with($parameters, '}');
     }
 
