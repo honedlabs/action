@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\InlineRequest;
-use Honed\Action\Tests\Stubs\Product;
 use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\RouteProductActions;
+use Honed\Action\Tests\Stubs\Product;
 
 use function Pest\Laravel\post;
 
