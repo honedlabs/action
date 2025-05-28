@@ -32,7 +32,7 @@ class ActionServiceProvider extends ServiceProvider
         $this->registerRoutesMacro();
 
         if ($this->app->runningInConsole()) {
-            
+
             $this->offerPublishing();
 
             $this->commands([
@@ -68,7 +68,7 @@ class ActionServiceProvider extends ServiceProvider
     private function registerRoutesMacro(): void
     {
         Router::macro('actions', function () {
-            /** @var \Illuminate\Routing\Router $this */
+            /** @var Router $this */
             $endpoint = type(config('action.endpoint', '/actions'))->asString();
 
             $methods = ['post', 'patch', 'put'];

@@ -6,7 +6,6 @@ namespace Honed\Action\Tests\Stubs;
 
 use Honed\Action\Attributes\Actions;
 use Honed\Action\Concerns\HasActionGroup;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -17,6 +16,10 @@ class Product extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'status' => Status::class,
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -25,10 +28,6 @@ class Product extends Model
             $product->public_id = Str::uuid();
         });
     }
-
-    protected $casts = [
-        'status' => Status::class,
-    ];
 
     /**
      * Get the public ID of the product.

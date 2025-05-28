@@ -6,6 +6,8 @@ namespace Honed\Action\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+use function sprintf;
+
 class ActionNotAllowedException extends AccessDeniedHttpException
 {
     /**
@@ -16,7 +18,7 @@ class ActionNotAllowedException extends AccessDeniedHttpException
     public function __construct($name)
     {
         parent::__construct(
-            \sprintf(
+            sprintf(
                 'The action [%s] is not allowed.',
                 $name
             )

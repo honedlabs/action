@@ -6,6 +6,8 @@ namespace Honed\Action\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+use function sprintf;
+
 class InvalidActionException extends BadRequestHttpException
 {
     /**
@@ -16,7 +18,7 @@ class InvalidActionException extends BadRequestHttpException
     public function __construct($type)
     {
         parent::__construct(
-            \sprintf(
+            sprintf(
                 'The provided action type [%s] is invalid.',
                 $type
             )
@@ -29,7 +31,7 @@ class InvalidActionException extends BadRequestHttpException
      * @param  string  $type
      * @return never
      *
-     * @throws \Honed\Action\Exceptions\InvalidActionException
+     * @throws InvalidActionException
      */
     public static function throw($type)
     {

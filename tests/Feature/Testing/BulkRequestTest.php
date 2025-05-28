@@ -6,7 +6,7 @@ use Honed\Action\Support\Constants;
 use Honed\Action\Testing\BulkRequest;
 
 beforeEach(function () {
-    $this->request = new BulkRequest;
+    $this->request = new BulkRequest();
 });
 
 it('has all', function () {

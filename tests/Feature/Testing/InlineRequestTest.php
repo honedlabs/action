@@ -6,7 +6,7 @@ use Honed\Action\Support\Constants;
 use Honed\Action\Testing\InlineRequest;
 
 beforeEach(function () {
-    $this->request = new InlineRequest;
+    $this->request = new InlineRequest();
 });
 
 it('has record', function () {

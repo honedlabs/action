@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Honed\Action\ActionGroup;
 use Honed\Action\Concerns\HasEncoder;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
+use Honed\Action\Tests\Stubs\ProductActions;
 
 beforeEach(function () {
-    $this->test = new class
+    $this->test = new class()
     {
         use HasEncoder;
 

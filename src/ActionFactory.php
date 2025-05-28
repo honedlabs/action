@@ -4,25 +4,47 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Closure;
 use Honed\Action\Support\Constants;
+use InvalidArgumentException;
+
+use function sprintf;
 
 class ActionFactory
 {
-    const INLINE = 'inline';
+    public const INLINE = 'inline';
 
-    const BULK = 'bulk';
+    public const BULK = 'bulk';
 
-    const PAGE = 'page';
+    public const PAGE = 'page';
+
+    /**
+     * Throw an invalid argument exception.
+     *
+     * @param  string  $type
+     * @return never
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function throwInvalidActionException($type)
+    {
+        throw new InvalidArgumentException(
+            sprintf(
+                'Action type [%s] is invalid.',
+                $type
+            )
+        );
+    }
 
     /**
      * Create a new action.
      *
      * @param  'bulk'|'inline'|'page'|string  $type
      * @param  string  $name
-     * @param  string|\Closure|null  $label
-     * @return \Honed\Action\Action
+     * @param  string|Closure|null  $label
+     * @return Action
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function new($type, $name, $label = null)
     {
@@ -38,8 +60,8 @@ class ActionFactory
      * Create a new bulk action.
      *
      * @param  string  $name
-     * @param  string|\Closure|null  $label
-     * @return \Honed\Action\BulkAction
+     * @param  string|Closure|null  $label
+     * @return BulkAction
      */
     public function bulk($name, $label = null)
     {
@@ -50,8 +72,8 @@ class ActionFactory
      * Create a new inline action.
      *
      * @param  string  $name
-     * @param  string|\Closure|null  $label
-     * @return \Honed\Action\InlineAction
+     * @param  string|Closure|null  $label
+     * @return InlineAction
      */
     public function inline($name, $label = null)
     {
@@ -62,8 +84,8 @@ class ActionFactory
      * Create a new page action.
      *
      * @param  string  $name
-     * @param  string|\Closure|null  $label
-     * @return \Honed\Action\PageAction
+     * @param  string|Closure|null  $label
+     * @return PageAction
      */
     public function page($name, $label = null)
     {
@@ -73,29 +95,11 @@ class ActionFactory
     /**
      * Create a new action group.
      *
-     * @param  \Honed\Action\Action|iterable<int, \Honed\Action\Action>  ...$actions
-     * @return \Honed\Action\ActionGroup<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
+     * @param  Action|iterable<int, Action>  ...$actions
+     * @return ActionGroup<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>>
      */
     public function group(...$actions)
     {
         return ActionGroup::make(...$actions);
-    }
-
-    /**
-     * Throw an invalid argument exception.
-     *
-     * @param  string  $type
-     * @return never
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function throwInvalidActionException($type)
-    {
-        throw new \InvalidArgumentException(
-            \sprintf(
-                'Action type [%s] is invalid.',
-                $type
-            )
-        );
     }
 }

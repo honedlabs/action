@@ -7,7 +7,7 @@ use Honed\Action\Concerns\HasEndpoint;
 use Honed\Action\Tests\Stubs\ProductActions;
 
 beforeEach(function () {
-    $this->test = new class
+    $this->test = new class()
     {
         use HasEndpoint;
 

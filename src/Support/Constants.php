@@ -6,9 +6,9 @@ namespace Honed\Action\Support;
 
 class Constants
 {
-    const INLINE = 'inline';
+    public const INLINE = 'inline';
 
-    const BULK = 'bulk';
+    public const BULK = 'bulk';
 
-    const PAGE = 'page';
+    public const PAGE = 'page';
 }

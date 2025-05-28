@@ -13,12 +13,29 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Finder\Finder;
 
+use function in_array;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 
 #[AsCommand(name: 'make:actions')]
 class ActionsMakeCommand extends Command implements PromptsForMissingInput
 {
+    /**
+     * The actions that can be used in the action.
+     *
+     * @var array<string,string>
+     */
+    public $actions = [
+        'index' => 'Index',
+        'create' => 'Create',
+        'store' => 'Store',
+        'show' => 'Show',
+        'edit' => 'Edit',
+        'update' => 'Update',
+        'delete' => 'Delete',
+        'destroy' => 'Destroy',
+    ];
+
     /**
      * The console command name.
      *
@@ -41,22 +58,6 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
     protected $type = 'Actions';
 
     /**
-     * The actions that can be used in the action.
-     *
-     * @var array<string,string>
-     */
-    public $actions = [
-        'index' => 'Index',
-        'create' => 'Create',
-        'store' => 'Store',
-        'show' => 'Show',
-        'edit' => 'Edit',
-        'update' => 'Update',
-        'delete' => 'Delete',
-        'destroy' => 'Destroy',
-    ];
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -66,7 +67,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
         /** @var string */
         $model = $this->argument('model');
 
-        if (! \in_array($model, $this->possibleModels())) {
+        if (! in_array($model, $this->possibleModels())) {
             error('The model '.$model.' does not exist.');
 
             return 1;
@@ -108,7 +109,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
     protected function getArguments()
     {
         return [
-            ['model', InputArgument::REQUIRED, 'The model for the '.\strtolower($this->type)],
+            ['model', InputArgument::REQUIRED, 'The model for the '.\mb_strtolower($this->type)],
         ];
     }
 
@@ -121,7 +122,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
     {
         return [
             'model' => fn () => select(
-                'What model should the '.strtolower($this->type).' be for?',
+                'What model should the '.mb_strtolower($this->type).' be for?',
                 $this->possibleModels()
             ),
         ];

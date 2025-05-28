@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Closure;
 use Honed\Core\Primitive;
 
 class Confirm extends Primitive
 {
-    const CONSTRUCTIVE = 'constructive';
+    public const CONSTRUCTIVE = 'constructive';
 
-    const DESTRUCTIVE = 'destructive';
+    public const DESTRUCTIVE = 'destructive';
 
-    const INFORMATIVE = 'informative';
+    public const INFORMATIVE = 'informative';
 
     /**
      * The title of the confirm.
      *
-     * @var string|\Closure(mixed...):string|null
+     * @var string|Closure(mixed...):string|null
      */
     protected $title;
 
     /**
      * The description of the confirm
      *
-     * @var string|\Closure(mixed...):string|null
+     * @var string|Closure(mixed...):string|null
      */
     protected $description;
 
@@ -52,8 +53,8 @@ class Confirm extends Primitive
     /**
      * Create a new confirm instance.
      *
-     * @param  string|\Closure(mixed...):string|null  $title
-     * @param  string|\Closure(mixed...):string|null  $description
+     * @param  string|Closure(mixed...):string|null  $title
+     * @param  string|Closure(mixed...):string|null  $description
      * @return static
      */
     public static function make($title = null, $description = null)
@@ -64,9 +65,29 @@ class Confirm extends Primitive
     }
 
     /**
+     * Get the submit message for the confirm from the config.
+     *
+     * @return string
+     */
+    public static function getDefaultSubmit()
+    {
+        return type(config('action.submit', 'Confirm'))->asString();
+    }
+
+    /**
+     * Get the dismiss message for the confirm from the config.
+     *
+     * @return string
+     */
+    public static function getDefaultDismiss()
+    {
+        return type(config('action.dismiss', 'Cancel'))->asString();
+    }
+
+    /**
      * Set the title of the confirm.
      *
-     * @param  string|\Closure(mixed...):string|null  $title
+     * @param  string|Closure(mixed...):string|null  $title
      * @return $this
      */
     public function title($title)
@@ -91,7 +112,7 @@ class Confirm extends Primitive
     /**
      * Set the description of the confirm.
      *
-     * @param  string|\Closure(mixed...):string|null  $description
+     * @param  string|Closure(mixed...):string|null  $description
      * @return $this
      */
     public function description($description)
@@ -200,16 +221,6 @@ class Confirm extends Primitive
     }
 
     /**
-     * Get the submit message for the confirm from the config.
-     *
-     * @return string
-     */
-    public static function getDefaultSubmit()
-    {
-        return type(config('action.submit', 'Confirm'))->asString();
-    }
-
-    /**
      * Set the dismiss message for the confirm.
      *
      * @param  string|null  $dismiss
@@ -230,16 +241,6 @@ class Confirm extends Primitive
     public function getDismiss()
     {
         return $this->dismiss ?? static::getDefaultDismiss();
-    }
-
-    /**
-     * Get the dismiss message for the confirm from the config.
-     *
-     * @return string
-     */
-    public static function getDefaultDismiss()
-    {
-        return type(config('action.dismiss', 'Cancel'))->asString();
     }
 
     /**

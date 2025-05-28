@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Concerns\HasBulkActions;
-use Honed\Action\Support\Constants;
+
+use function array_merge;
 
 class BulkAction extends Action
 {
@@ -51,7 +52,7 @@ class BulkAction extends Action
      */
     public function toArray($named = [], $typed = [])
     {
-        return \array_merge(parent::toArray($named, $typed), [
+        return array_merge(parent::toArray($named, $typed), [
             'keepSelected' => $this->keepsSelected(),
         ]);
     }

@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+use Closure;
 use Honed\Action\Confirm;
+
+use function is_null;
 
 trait HasConfirm
 {
     /**
-     * @var \Honed\Action\Confirm|null
+     * @var Confirm|null
      */
     protected $confirm;
 
     /**
      * Set the confirm for the instance.
      *
-     * @param  \Honed\Action\Confirm|\Closure|string|null  $confirm
+     * @param  Confirm|Closure|string|null  $confirm
      * @param  string|null  $description
      * @return $this
      */
     public function confirm($confirm, $description = null)
     {
         match (true) {
-            \is_null($confirm) => null,
+            is_null($confirm) => null,
             $confirm instanceof Confirm => $this->confirm = $confirm,
-            $confirm instanceof \Closure => $this->evaluate($confirm),
+            $confirm instanceof Closure => $this->evaluate($confirm),
             default => $this->confirmInstance()
                 ->title($confirm)
                 ->description($description)
@@ -37,7 +40,7 @@ trait HasConfirm
     /**
      * Retrieve the confirm for the instance.
      *
-     * @return \Honed\Action\Confirm|null
+     * @return Confirm|null
      */
     public function getConfirm()
     {
@@ -57,7 +60,7 @@ trait HasConfirm
     /**
      * Access the confirm for this instance.
      *
-     * @return \Honed\Action\Confirm
+     * @return Confirm
      */
     protected function confirmInstance()
     {

@@ -4,16 +4,10 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+use function is_subclass_of;
+
 trait HasEndpoint
 {
-    /**
-     * Handle the incoming action request.
-     *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    abstract public function handle($request);
-
     /**
      * The endpoint to execute server actions.
      *
@@ -29,6 +23,35 @@ trait HasEndpoint
     protected $execute = true;
 
     /**
+     * Handle the incoming action request.
+     *
+     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
+     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    abstract public function handle($request);
+
+    /**
+     * Define the endpoint to execute server actions.
+     *
+     * @return string|null
+     */
+    public static function defineEndpoint()
+    {
+        return null;
+    }
+
+    /**
+     * Get the default endpoint to execute server actions.
+     *
+     * @return string|null
+     */
+    public static function getDefaultEndpoint()
+    {
+        /** @var string|null */
+        return config('action.endpoint', '/actions');
+    }
+
+    /**
      * Set the endpoint to execute server actions.
      *
      * @param  string|null  $endpoint
@@ -42,16 +65,6 @@ trait HasEndpoint
     }
 
     /**
-     * Define the endpoint to execute server actions.
-     *
-     * @return string|null
-     */
-    public static function defineEndpoint()
-    {
-        return null;
-    }
-
-    /**
      * Get the endpoint to execute server actions.
      *
      * @return string|null
@@ -61,17 +74,6 @@ trait HasEndpoint
         $endpoint = $this->endpoint ?? static::defineEndpoint();
 
         return $endpoint ?? static::getDefaultEndpoint();
-    }
-
-    /**
-     * Get the default endpoint to execute server actions.
-     *
-     * @return string|null
-     */
-    public static function getDefaultEndpoint()
-    {
-        /** @var string|null */
-        return config('action.endpoint', '/actions');
     }
 
     /**
@@ -130,7 +132,7 @@ trait HasEndpoint
         }
 
         // @phpstan-ignore-next-line
-        return $this->execute && \is_subclass_of($this::class, $class);
+        return $this->execute && is_subclass_of($this::class, $class);
     }
 
     /**

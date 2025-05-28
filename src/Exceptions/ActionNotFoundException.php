@@ -6,6 +6,8 @@ namespace Honed\Action\Exceptions;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use function sprintf;
+
 class ActionNotFoundException extends NotFoundHttpException
 {
     /**
@@ -16,7 +18,7 @@ class ActionNotFoundException extends NotFoundHttpException
     public function __construct($name)
     {
         parent::__construct(
-            \sprintf(
+            sprintf(
                 'No action named [%s] exists for the provided handler.',
                 $name
             )

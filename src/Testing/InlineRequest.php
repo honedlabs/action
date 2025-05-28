@@ -6,6 +6,8 @@ namespace Honed\Action\Testing;
 
 use Honed\Action\Support\Constants;
 
+use function array_merge;
+
 class InlineRequest extends FakeRequest
 {
     /**
@@ -43,7 +45,7 @@ class InlineRequest extends FakeRequest
      */
     public function getData()
     {
-        return \array_merge([
+        return array_merge([
             'type' => Constants::INLINE,
             'record' => $this->getRecord(),
         ], parent::getData());

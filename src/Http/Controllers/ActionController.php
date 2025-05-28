@@ -18,7 +18,7 @@ class ActionController extends Controller
      * @template TModel of \Illuminate\Database\Eloquent\Model
      * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
      *
-     * @param  \Honed\Action\ActionGroup<TModel, TBuilder>  $action
+     * @param  ActionGroup<TModel, TBuilder>  $action
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \Honed\Action\Exceptions\ActionNotFoundException
@@ -35,7 +35,7 @@ class ActionController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @throws \Honed\Action\Exceptions\CouldNotResolveHandlerException
+     * @throws CouldNotResolveHandlerException
      * @throws \Honed\Action\Exceptions\ActionNotFoundException
      * @throws \Honed\Action\Exceptions\ActionNotAllowedException
      * @throws \Honed\Action\Exceptions\InvalidActionException

@@ -35,4 +35,4 @@ arch('commands')
 
 arch('exceptions')
     ->expect('Honed\Action\Exceptions')
-    ->toExtend(\Exception::class);
+    ->toExtend(Exception::class);

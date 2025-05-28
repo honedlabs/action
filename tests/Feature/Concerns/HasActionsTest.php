@@ -10,7 +10,7 @@ use Honed\Action\PageAction;
 use Honed\Core\Primitive;
 
 beforeEach(function () {
-    $this->test = new class extends Primitive
+    $this->test = new class() extends Primitive
     {
         use HasActions;
 

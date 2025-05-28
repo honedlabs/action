@@ -6,7 +6,7 @@ use Honed\Action\Concerns\HasBulkActions;
 use Honed\Action\Contracts\ShouldChunk;
 
 beforeEach(function () {
-    $this->test = new class
+    $this->test = new class()
     {
         use HasBulkActions;
     };
@@ -19,7 +19,7 @@ it('chunks', function () {
         ->isChunked()->toBeTrue()
         ->isChunkedByDefault()->toBe(config('action.chunk'));
 
-    $test = new class implements ShouldChunk
+    $test = new class() implements ShouldChunk
     {
         use HasBulkActions;
     };

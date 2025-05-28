@@ -7,7 +7,7 @@ use Honed\Action\Contracts\Actionable;
 use Honed\Action\Tests\Fixtures\DestroyAction;
 
 beforeEach(function () {
-    $this->test = new class
+    $this->test = new class()
     {
         use HasAction;
     };
@@ -19,7 +19,7 @@ it('has action', function () {
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
         ->isActionable()->toBeTrue()
-        ->getAction()->toBeInstanceOf(\Closure::class);
+        ->getAction()->toBeInstanceOf(Closure::class);
 });
 
 it('has parameters', function () {
@@ -35,13 +35,13 @@ it('has handler', function () {
     expect($this->test)
         ->getHandler()->toBeNull()
         ->action(fn () => 'test')->toBe($this->test)
-        ->getHandler()->toBeInstanceOf(\Closure::class)
+        ->getHandler()->toBeInstanceOf(Closure::class)
         ->action(DestroyAction::class)->toBe($this->test)
-        ->getHandler()->toBeInstanceOf(\Closure::class);
+        ->getHandler()->toBeInstanceOf(Closure::class);
 });
 
 it('has actionable', function () {
-    $test = new class implements Actionable
+    $test = new class() implements Actionable
     {
         use HasAction;
 
@@ -56,5 +56,5 @@ it('has actionable', function () {
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
         ->isActionable()->toBeTrue()
-        ->getHandler()->toBeInstanceOf(\Closure::class);
+        ->getHandler()->toBeInstanceOf(Closure::class);
 });

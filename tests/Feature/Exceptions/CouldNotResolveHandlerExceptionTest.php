@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Honed\Action\Exceptions\CouldNotResolveHandlerException;
 
 it('constructs', function () {
-    $exception = new CouldNotResolveHandlerException;
+    $exception = new CouldNotResolveHandlerException();
 
     expect($exception->getStatusCode())->toBe(404);
 });

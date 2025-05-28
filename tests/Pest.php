@@ -53,7 +53,7 @@ function params(Product $product): array
 /**
  * Get the testing actions.
  *
- * @return \Illuminate\Support\Collection<int,\Honed\Action\Action>
+ * @return Illuminate\Support\Collection<int,Honed\Action\Action>
  */
 function actions()
 {

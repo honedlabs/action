@@ -30,4 +30,4 @@ it('has key', function () {
 
 it('throws invalid argument exception', function () {
     $this->handler->throwInvalidActionTypeException('invalid');
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);

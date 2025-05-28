@@ -24,6 +24,16 @@ class InvokableRequest extends FormRequest
     ];
 
     /**
+     * Create a new fake action request factory.
+     *
+     * @return RequestFactory
+     */
+    public static function fake()
+    {
+        return RequestFactory::make();
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string,array<int,mixed>>
@@ -95,15 +105,5 @@ class InvokableRequest extends FormRequest
         }
 
         return [];
-    }
-
-    /**
-     * Create a new fake action request factory.
-     *
-     * @return \Honed\Action\Testing\RequestFactory
-     */
-    public static function fake()
-    {
-        return RequestFactory::make();
     }
 }

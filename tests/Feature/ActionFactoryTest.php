@@ -40,4 +40,4 @@ it('makes group', function () {
 
 it('throws exception for invalid type', function () {
     Action::new('invalid', 'test');
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);

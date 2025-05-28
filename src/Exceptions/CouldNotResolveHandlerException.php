@@ -27,6 +27,6 @@ class CouldNotResolveHandlerException extends NotFoundHttpException
      */
     public static function throw()
     {
-        throw new self;
+        throw new self();
     }
 }

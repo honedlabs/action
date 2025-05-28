@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Honed\Action\Attributes\ActionGroup;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
+use Honed\Action\Tests\Stubs\ProductActions;
 
 it('has attribute', function () {
     $attribute = new ActionGroup(ProductActions::class);

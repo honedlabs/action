@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+use Closure;
 use Honed\Action\Contracts\Actionable;
 use Illuminate\Support\Facades\App;
+
+use function is_string;
 
 trait HasAction
 {
     /**
      * The action handler.
      *
-     * @var \Closure|class-string<\Honed\Action\Contracts\Actionable>|null
+     * @var Closure|class-string<Actionable>|null
      */
     protected $action;
 
@@ -26,7 +29,7 @@ trait HasAction
     /**
      * Set the action handler.
      *
-     * @param  \Closure|class-string<\Honed\Action\Contracts\Actionable>  $action
+     * @param  Closure|class-string<Actionable>  $action
      * @param  array<string,mixed>  $parameters
      * @return $this
      */
@@ -41,7 +44,7 @@ trait HasAction
     /**
      * Get the action handler.
      *
-     * @return \Closure|class-string<\Honed\Action\Contracts\Actionable>|null
+     * @return Closure|class-string<Actionable>|null
      */
     public function getAction()
     {
@@ -84,17 +87,17 @@ trait HasAction
     /**
      * Get the handler for the actionable class.
      *
-     * @return \Closure|null
+     * @return Closure|null
      */
     public function getHandler()
     {
         $action = $this->getAction();
 
         return match (true) {
-            \is_string($action) => \Closure::fromCallable([
+            is_string($action) => Closure::fromCallable([
                 type(App::make($action))->as(Actionable::class), 'handle',
             ]),
-            $this instanceof Actionable => \Closure::fromCallable([
+            $this instanceof Actionable => Closure::fromCallable([
                 $this, 'handle',
             ]),
             default => $action,

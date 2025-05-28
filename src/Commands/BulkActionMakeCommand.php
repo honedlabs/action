@@ -8,6 +8,9 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
+use function mb_strtolower;
+use function mb_trim;
+
 #[AsCommand(name: 'make:bulk-action')]
 class BulkActionMakeCommand extends GeneratorCommand
 {
@@ -50,7 +53,7 @@ class BulkActionMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(mb_trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }
@@ -85,7 +88,7 @@ class BulkActionMakeCommand extends GeneratorCommand
     {
         return [
             'name' => [
-                'What should the '.\strtolower($this->type).' be named?',
+                'What should the '.mb_strtolower($this->type).' be named?',
                 'E.g. DeleteAction',
             ],
         ];

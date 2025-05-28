@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
+use function array_merge;
+use function is_string;
+
 class FakeRequest
 {
     /**
@@ -74,6 +77,17 @@ class FakeRequest
     }
 
     /**
+     * Whether all action requests should fill by default.
+     *
+     * @param  bool  $shouldFill
+     * @return void
+     */
+    public static function shouldFill($shouldFill = true)
+    {
+        static::$shouldFill = $shouldFill;
+    }
+
+    /**
      * Set the ID of the handler.
      *
      * @param  string  $id
@@ -94,7 +108,7 @@ class FakeRequest
      */
     public function for($class)
     {
-        if (! \is_string($class)) {
+        if (! is_string($class)) {
             $class = $class::class;
         }
 
@@ -195,17 +209,6 @@ class FakeRequest
     }
 
     /**
-     * Whether all action requests should fill by default.
-     *
-     * @param  bool  $shouldFill
-     * @return void
-     */
-    public static function shouldFill($shouldFill = true)
-    {
-        static::$shouldFill = $shouldFill;
-    }
-
-    /**
      * @param  array<string,mixed>  $data
      * @return $this
      */
@@ -223,7 +226,7 @@ class FakeRequest
      */
     public function getData()
     {
-        return \array_merge([
+        return array_merge([
             'id' => $this->getId(),
             'name' => $this->getName(),
         ], $this->data);
@@ -232,7 +235,7 @@ class FakeRequest
     /**
      * Create the fake request.
      *
-     * @return \Illuminate\Http\Request
+     * @return Request
      */
     public function create()
     {
@@ -246,13 +249,13 @@ class FakeRequest
     /**
      * Resolve the request and validate it.
      *
-     * @return \Honed\Action\Http\Requests\InvokableRequest
+     * @return InvokableRequest
      */
     public function validate()
     {
         app()->instance('request', $this->create());
 
-        /** @var \Honed\Action\Http\Requests\InvokableRequest */
+        /** @var InvokableRequest */
         $request = app()->make(InvokableRequest::class);
 
         $request->setContainer(app());

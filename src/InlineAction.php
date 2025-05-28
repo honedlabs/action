@@ -7,6 +7,8 @@ namespace Honed\Action;
 use Honed\Core\Concerns\IsDefault;
 use Honed\Core\Parameters;
 
+use function array_merge;
+
 class InlineAction extends Action
 {
     use IsDefault;
@@ -21,7 +23,7 @@ class InlineAction extends Action
      */
     public function toArray($named = [], $typed = [])
     {
-        return \array_merge(parent::toArray($named, $typed), [
+        return array_merge(parent::toArray($named, $typed), [
             'default' => $this->isDefault(),
         ]);
     }

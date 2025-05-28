@@ -8,7 +8,7 @@ use Honed\Action\ActionFactory;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Honed\Action\ActionFactory
+ * @see ActionFactory
  *
  * @method static \Honed\Action\Action new(string $type, string $name, string|\Closure $label = null)
  * @method static \Honed\Action\BulkAction bulk(string $name, string|\Closure $label = null)
@@ -21,7 +21,7 @@ class Action extends Facade
     /**
      * Get the root object behind the facade.
      *
-     * @return \Honed\Action\ActionFactory
+     * @return ActionFactory
      */
     public static function getFacadeRoot()
     {

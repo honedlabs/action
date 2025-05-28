@@ -15,7 +15,10 @@ use Honed\Core\Concerns\HasResource;
 use Honed\Core\Parameters;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+
+use function sprintf;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -31,7 +34,7 @@ class Handler
     /**
      * List of the available actions.
      *
-     * @var array<int,\Honed\Action\Action>
+     * @var array<int,Action>
      */
     protected $actions = [];
 
@@ -46,7 +49,7 @@ class Handler
      * Make a new handler instance.
      *
      * @param  TBuilder  $builder
-     * @param  array<int,\Honed\Action\Action>  $actions
+     * @param  array<int,Action>  $actions
      * @param  string|null  $key
      * @return static
      */
@@ -59,9 +62,27 @@ class Handler
     }
 
     /**
+     * Throw an invalid argument exception.
+     *
+     * @param  string  $type
+     * @return never
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function throwInvalidActionTypeException($type)
+    {
+        throw new InvalidArgumentException(
+            sprintf(
+                'Action type [%s] is invalid.',
+                $type
+            )
+        );
+    }
+
+    /**
      * Set the actions for the handler.
      *
-     * @param  array<int,\Honed\Action\Action>  $actions
+     * @param  array<int,Action>  $actions
      * @return $this
      */
     public function actions($actions)
@@ -74,7 +95,7 @@ class Handler
     /**
      * Get the actions for the handler.
      *
-     * @return array<int,\Honed\Action\Action>
+     * @return array<int,Action>
      */
     public function getActions()
     {
@@ -110,8 +131,8 @@ class Handler
     /**
      * Handle the incoming action request using the actions from the source, and the resource provided.
      *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @param  Http\Requests\InvokableRequest  $request
+     * @return Responsable|RedirectResponse
      */
     public function handle($request)
     {
@@ -141,7 +162,7 @@ class Handler
         $result = $action->execute($query);
 
         if ($this->isResponsable($result)) {
-            /** @var \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse */
+            /** @var Responsable|RedirectResponse */
             return $result;
         }
 
@@ -152,8 +173,8 @@ class Handler
      * Retrieve the action and query based on the type and data.
      *
      * @param  string  $type
-     * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{\Honed\Action\Action|null,TModel|TBuilder|null}
+     * @param  ActionData  $data
+     * @return array{Action|null,TModel|TBuilder|null}
      */
     public function resolveAction($type, $data)
     {
@@ -166,29 +187,10 @@ class Handler
     }
 
     /**
-     * Resolve the inline action.
-     *
-     * @param  \Honed\Action\Http\Data\InlineData  $data
-     * @return array{\Honed\Action\Action|null, TModel|null}
-     */
-    protected function resolveInlineAction($data)
-    {
-        $resource = $this->getResource();
-        $key = $this->getKey($resource);
-
-        return [
-            $this->getAction($data->name, InlineAction::class),
-            $resource
-                ->where($key, $data->record)
-                ->first(),
-        ];
-    }
-
-    /**
      * Resolve the bulk action.
      *
-     * @param  \Honed\Action\Http\Data\BulkData  $data
-     * @return array{\Honed\Action\Action|null, TBuilder}
+     * @param  BulkData  $data
+     * @return array{Action|null, TBuilder}
      */
     public function resolveBulkAction($data)
     {
@@ -209,8 +211,8 @@ class Handler
     /**
      * Resolve the page action.
      *
-     * @param  \Honed\Action\Http\Data\ActionData  $data
-     * @return array{\Honed\Action\Action|null, TBuilder}
+     * @param  ActionData  $data
+     * @return array{Action|null, TBuilder}
      */
     public function resolvePageAction($data)
     {
@@ -224,8 +226,8 @@ class Handler
      * Find the action by name and type.
      *
      * @param  string  $name
-     * @param  class-string<\Honed\Action\Action>  $type
-     * @return \Honed\Action\Action|null
+     * @param  class-string<Action>  $type
+     * @return Action|null
      */
     public function getAction($name, $type)
     {
@@ -234,6 +236,25 @@ class Handler
             static fn (Action $action) => $action instanceof $type
                 && $action->getName() === $name
         );
+    }
+
+    /**
+     * Resolve the inline action.
+     *
+     * @param  InlineData  $data
+     * @return array{Action|null, TModel|null}
+     */
+    protected function resolveInlineAction($data)
+    {
+        $resource = $this->getResource();
+        $key = $this->getKey($resource);
+
+        return [
+            $this->getAction($data->name, InlineAction::class),
+            $resource
+                ->where($key, $data->record)
+                ->first(),
+        ];
     }
 
     /**
@@ -247,23 +268,5 @@ class Handler
         return $result instanceof Responsable ||
             $result instanceof RedirectResponse ||
             $result instanceof \Inertia\ResponseFactory;
-    }
-
-    /**
-     * Throw an invalid argument exception.
-     *
-     * @param  string  $type
-     * @return never
-     *
-     * @throws \InvalidArgumentException
-     */
-    public static function throwInvalidActionTypeException($type)
-    {
-        throw new \InvalidArgumentException(
-            \sprintf(
-                'Action type [%s] is invalid.',
-                $type
-            )
-        );
     }
 }

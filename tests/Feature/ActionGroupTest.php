@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Honed\Action\ActionGroup;
 use Honed\Action\PageAction;
 use Honed\Action\Testing\RequestFactory;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Http\RedirectResponse;
 
 beforeEach(function () {
@@ -32,7 +32,7 @@ it('requires builder to handle requests', function () {
 
     expect($this->group->handle($request))
         ->toBeInstanceOf(RedirectResponse::class);
-})->throws(\RuntimeException::class);
+})->throws(RuntimeException::class);
 
 it('handles requests with model', function () {
 

@@ -33,7 +33,7 @@ test('with callback', function () {
     });
 
     expect($this->test->execute($this->product))
-        ->toBeInstanceOf(\Inertia\Response::class);
+        ->toBeInstanceOf(Inertia\Response::class);
 
     $this->assertDatabaseHas('products', [
         'id' => $this->product->id,
@@ -42,7 +42,7 @@ test('with callback', function () {
 });
 
 test('with handler', function () {
-    $action = new DestroyAction;
+    $action = new DestroyAction();
 
     $named = ['product' => $this->product];
 

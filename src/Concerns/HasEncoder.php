@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+use Closure;
+use Throwable;
+
+use function call_user_func;
+use function class_exists;
+use function is_subclass_of;
+
 /**
  * @phpstan-require-implements \Honed\Action\Contracts\Handles
  * @phpstan-require-implements \Illuminate\Contracts\Routing\UrlRoutable
@@ -13,14 +20,14 @@ trait HasEncoder
     /**
      * The encoding closure.
      *
-     * @var \Closure(mixed):string|null
+     * @var Closure(mixed):string|null
      */
     protected static $encoder;
 
     /**
      * The decoding closure.
      *
-     * @var \Closure(string):mixed|null
+     * @var Closure(string):mixed|null
      */
     protected static $decoder;
 
@@ -34,7 +41,7 @@ trait HasEncoder
     /**
      * Set the encoder.
      *
-     * @param  (\Closure(mixed):string)|null  $encoder
+     * @param  (Closure(mixed):string)|null  $encoder
      * @return void
      */
     public static function encoder($encoder = null)
@@ -45,7 +52,7 @@ trait HasEncoder
     /**
      * Set the decoder.
      *
-     * @param  (\Closure(string):mixed)|null  $decoder
+     * @param  (Closure(string):mixed)|null  $decoder
      * @return void
      */
     public static function decoder($decoder = null)
@@ -62,7 +69,7 @@ trait HasEncoder
     public static function encode($value)
     {
         return isset(static::$encoder)
-            ? \call_user_func(static::$encoder, $value)
+            ? call_user_func(static::$encoder, $value)
             : encrypt($value);
     }
 
@@ -76,8 +83,30 @@ trait HasEncoder
     {
         // @phpstan-ignore-next-line
         return isset(static::$decoder)
-            ? \call_user_func(static::$decoder, $value)
+            ? call_user_func(static::$decoder, $value)
             : decrypt($value);
+    }
+
+    /**
+     * Decode and retrieve a primitive class.
+     *
+     * @param  string  $value
+     * @return mixed
+     */
+    public static function tryFrom($value)
+    {
+        try {
+            $primitive = static::decode($value);
+
+            // @phpstan-ignore-next-line
+            if (class_exists($primitive) && is_subclass_of($primitive, static::baseClass())) {
+                return $primitive::make();
+            }
+
+            return null;
+        } catch (Throwable $th) {
+            return null;
+        }
     }
 
     /**
@@ -114,27 +143,5 @@ trait HasEncoder
     {
         /** @var static|null */
         return static::tryFrom($value);
-    }
-
-    /**
-     * Decode and retrieve a primitive class.
-     *
-     * @param  string  $value
-     * @return mixed
-     */
-    public static function tryFrom($value)
-    {
-        try {
-            $primitive = static::decode($value);
-
-            // @phpstan-ignore-next-line
-            if (\class_exists($primitive) && \is_subclass_of($primitive, static::baseClass())) {
-                return $primitive::make();
-            }
-
-            return null;
-        } catch (\Throwable $th) {
-            return null;
-        }
     }
 }

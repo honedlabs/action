@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Tests;
 
-use Honed\Action\ActionServiceProvider;
 use Honed\Action\Tests\Stubs\Status;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,7 +11,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
-use Inertia\ServiceProvider as InertiaServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -33,6 +31,19 @@ class TestCase extends Orchestra
 
         config()->set('inertia.testing.ensure_pages_exist', false);
         config()->set('inertia.testing.page_paths', [realpath(__DIR__)]);
+    }
+
+    /**
+     * Define the environment setup.
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    public function getEnvironmentSetUp($app)
+    {
+        config()->set('action', require __DIR__.'/../config/action.php');
+        config()->set('database.default', 'testing');
+        config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
 
     /**
@@ -71,18 +82,5 @@ class TestCase extends Orchestra
                 $router->actions();
             }
             );
-    }
-
-    /**
-     * Define the environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
-     */
-    public function getEnvironmentSetUp($app)
-    {
-        config()->set('action', require __DIR__.'/../config/action.php');
-        config()->set('database.default', 'testing');
-        config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
 }

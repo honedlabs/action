@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Honed\Action\Concerns\HasActionGroup;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Honed\Action\Tests\Stubs\Product;
+use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Database\Eloquent\Model;
 
 class ActionGroupModel extends Model

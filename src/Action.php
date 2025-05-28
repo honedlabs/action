@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
+use Closure;
 use Honed\Action\Concerns\HasAction;
 use Honed\Action\Concerns\HasConfirm;
 use Honed\Core\Concerns\Allowable;
@@ -15,6 +16,10 @@ use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\HasType;
 use Honed\Core\Primitive;
 use Illuminate\Support\Facades\App;
+
+use function is_string;
+use function str_ends_with;
+use function str_starts_with;
 
 abstract class Action extends Primitive
 {
@@ -29,10 +34,18 @@ abstract class Action extends Primitive
     use HasType;
 
     /**
+     * Execute the action on a resource.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $record
+     * @return mixed
+     */
+    abstract public function execute($record);
+
+    /**
      * Create a new action instance.
      *
      * @param  string  $name
-     * @param  string|\Closure(mixed...):string|null  $label
+     * @param  string|Closure(mixed...):string|null  $label
      * @return static
      */
     public static function make($name, $label = null)
@@ -43,42 +56,21 @@ abstract class Action extends Primitive
     }
 
     /**
-     * Execute the action on a resource.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $record
-     * @return mixed
-     */
-    abstract public function execute($record);
-
-    /**
      * Set the route.
      *
-     * @param  string|\Closure(mixed...):string  $route
+     * @param  string|Closure(mixed...):string  $route
      * @param  mixed  $parameters
      * @return $this
      */
     public function route($route, $parameters = [])
     {
         $this->route = match (true) {
-            $route instanceof \Closure => $route,
+            $route instanceof Closure => $route,
             $this->isBindingParameter($parameters) => fn ($model) => route($route, $model, true),
             default => route($route, $parameters, true),
         };
 
         return $this;
-    }
-
-    /**
-     * Determine if the parameters are implicit route-model bindings to be evaluated.
-     *
-     * @param  mixed  $parameters
-     * @return bool
-     */
-    protected function isBindingParameter($parameters)
-    {
-        return \is_string($parameters) 
-            && \str_starts_with($parameters, '{') 
-            && \str_ends_with($parameters, '}');
     }
 
     /**
@@ -122,5 +114,18 @@ abstract class Action extends Primitive
             Confirm::class => [$this->confirmInstance()],
             default => [App::make($parameterType)],
         };
+    }
+
+    /**
+     * Determine if the parameters are implicit route-model bindings to be evaluated.
+     *
+     * @param  mixed  $parameters
+     * @return bool
+     */
+    protected function isBindingParameter($parameters)
+    {
+        return is_string($parameters)
+            && str_starts_with($parameters, '{')
+            && str_ends_with($parameters, '}');
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 beforeEach(function () {
     FakeRequest::shouldFill(false);
 
-    $this->request = new FakeRequest;
+    $this->request = new FakeRequest();
 });
 
 it('has id', function () {
