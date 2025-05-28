@@ -29,6 +29,10 @@ arch('contracts')
     ->toBeInterfaces();
 
 arch('commands')
-    ->expect('Honed\Action\Console\Commands')
+    ->expect('Honed\Action\Commands')
     ->toBeClasses()
     ->toExtend(Command::class);
+
+arch('exceptions')
+    ->expect('Honed\Action\Exceptions')
+    ->toExtend(\Exception::class);

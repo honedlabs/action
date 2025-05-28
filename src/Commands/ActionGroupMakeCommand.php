@@ -2,35 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Console\Commands;
+namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-#[AsCommand(name: 'make:inline-action')]
-class InlineActionMakeCommand extends GeneratorCommand
+#[AsCommand(name: 'make:action-group')]
+class ActionGroupMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:inline-action';
+    protected $name = 'make:action-group';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Create a new action group class.';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $description = 'Create a new inline action class';
-
-    /**
-     * The type of class being generated.
-     *
-     * @var string
-     */
-    protected $type = 'Inline Action';
+    protected $type = 'Action Group';
 
     /**
      * Get the stub file for the generator.
@@ -39,7 +39,7 @@ class InlineActionMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->resolveStubPath('/stubs/honed.action.inline.stub');
+        return $this->resolveStubPath('/stubs/honed.action-group.stub');
     }
 
     /**
@@ -52,7 +52,7 @@ class InlineActionMakeCommand extends GeneratorCommand
     {
         return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
-            : __DIR__.'/../../..'.$stub;
+            : __DIR__.'/../..'.$stub;
     }
 
     /**
@@ -63,16 +63,26 @@ class InlineActionMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Actions\Inline';
+        return $rootNamespace.'\Actions\Groups';
     }
 
     /**
+     * Get the console command options
+     *
      * @return array<int,array<int,mixed>>
      */
-    protected function getOptions(): array
+    protected function getOptions()
     {
         return [
-            ['force', 'f', InputOption::VALUE_NONE, 'Create the class even if the inline action already exists'],
+            [
+                'force',
+                null,
+                InputOption::VALUE_NONE,
+                \sprintf(
+                    'Create the class even if the %s already exists',
+                    \strtolower($this->type)
+                ),
+            ],
         ];
     }
 
@@ -86,7 +96,7 @@ class InlineActionMakeCommand extends GeneratorCommand
         return [
             'name' => [
                 'What should the '.strtolower($this->type).' be named?',
-                'E.g. ViewAction',
+                'E.g. UserActions',
             ],
         ];
     }

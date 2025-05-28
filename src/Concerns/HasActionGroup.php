@@ -8,7 +8,7 @@ use Honed\Action\ActionGroup;
 use Honed\Action\Attributes\Actions;
 
 /**
- * @template TActionGroup of \Honed\Action\ActionGroup
+ * @template TActionGroup of \Honed\Action\ActionGroup = \Honed\Action\ActionGroup
  *
  * @property string $actions
  */
@@ -46,7 +46,7 @@ trait HasActionGroup
     /**
      * Get the actions from the Actions class attribute.
      *
-     * @return class-string<\Honed\Action\ActionGroup>|null
+     * @return class-string<TActionGroup>|null
      */
     protected static function getActionsAttribute()
     {

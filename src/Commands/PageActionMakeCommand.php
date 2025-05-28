@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Console\Commands;
+namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -52,7 +52,7 @@ class PageActionMakeCommand extends GeneratorCommand
     {
         return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
-            : __DIR__.'/../../..'.$stub;
+            : __DIR__.'/../..'.$stub;
     }
 
     /**

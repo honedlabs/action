@@ -72,7 +72,7 @@ it('resolves to array', function () {
         fn (Product $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
     );
 
-    expect($confirm->resolveToArray(...params($product)))
+    expect($confirm->toArray(...params($product)))
         ->toEqual([
             'title' => $product->name,
             'description' => \sprintf('Are you sure you want to delete %s?', $product->name),

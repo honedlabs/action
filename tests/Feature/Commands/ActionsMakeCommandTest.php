@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Console\Commands\ActionsMakeCommand;
+use Honed\Action\Commands\ActionsMakeCommand;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {

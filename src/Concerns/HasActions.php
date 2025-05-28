@@ -302,7 +302,7 @@ trait HasActions
 
         return \array_map(
             static fn (InlineAction $action) => $action
-                ->resolveToArray($named, $typed),
+                ->toArray($named, $typed),
             \array_values(
                 \array_filter(
                     $this->getInlineActions(),

@@ -55,7 +55,7 @@ it('resolves to array', function () {
         ->destructive()
     );
 
-    expect($test->getConfirm()->resolveToArray(...params($product)))
+    expect($test->getConfirm()->toArray(...params($product)))
         ->toEqual([
             'title' => \sprintf('Delete %s', $product->name),
             'description' => \sprintf('Are you sure you want to delete %s?', $product->name),

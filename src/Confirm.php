@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Core\Contracts\ResolvesArrayable;
 use Honed\Core\Primitive;
 
-class Confirm extends Primitive implements ResolvesArrayable
+class Confirm extends Primitive
 {
     const CONSTRUCTIVE = 'constructive';
 
@@ -246,19 +245,11 @@ class Confirm extends Primitive implements ResolvesArrayable
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
-        return $this->resolveToArray();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resolveToArray($parameters = [], $typed = [])
+    public function toArray($named = [], $typed = [])
     {
         return [
-            'title' => $this->getTitle($parameters, $typed),
-            'description' => $this->getDescription($parameters, $typed),
+            'title' => $this->getTitle($named, $typed),
+            'description' => $this->getDescription($named, $typed),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),
             'intent' => $this->getIntent(),

@@ -13,11 +13,10 @@ use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\HasType;
-use Honed\Core\Contracts\ResolvesArrayable;
 use Honed\Core\Primitive;
 use Illuminate\Support\Facades\App;
 
-abstract class Action extends Primitive implements ResolvesArrayable
+abstract class Action extends Primitive
 {
     use Allowable;
     use HasAction;
@@ -54,7 +53,7 @@ abstract class Action extends Primitive implements ResolvesArrayable
     /**
      * Set the route.
      *
-     * @param  string|\Closure(...mixed):string  $route
+     * @param  string|\Closure(mixed...):string  $route
      * @param  mixed  $parameters
      * @return $this
      */
@@ -77,33 +76,25 @@ abstract class Action extends Primitive implements ResolvesArrayable
      */
     protected function isBindingParameter($parameters)
     {
-        return \is_string($parameters)
-            && \str_starts_with($parameters, '{')
+        return \is_string($parameters) 
+            && \str_starts_with($parameters, '{') 
             && \str_ends_with($parameters, '}');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
-        return $this->resolveToArray();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resolveToArray($parameters = [], $typed = [])
+    public function toArray($named = [], $typed = [])
     {
         return [
             'name' => $this->getName(),
-            'label' => $this->getLabel($parameters, $typed),
+            'label' => $this->getLabel($named, $typed),
             'type' => $this->getType(),
-            'icon' => $this->getIcon($parameters, $typed),
-            'extra' => $this->getExtra($parameters, $typed),
+            'icon' => $this->getIcon($named, $typed),
+            'extra' => $this->getExtra($named, $typed),
             'actionable' => $this->isActionable(),
-            'confirm' => $this->getConfirm()?->resolveToArray($parameters, $typed),
-            'route' => $this->routeToArray($parameters, $typed),
+            'confirm' => $this->getConfirm()?->toArray($named, $typed),
+            'route' => $this->routeToArray($named, $typed),
         ];
     }
 

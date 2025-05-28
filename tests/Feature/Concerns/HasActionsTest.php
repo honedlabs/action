@@ -14,7 +14,7 @@ beforeEach(function () {
     {
         use HasActions;
 
-        public function toArray()
+        public function toArray($named = [], $typed = [])
         {
             return [];
         }

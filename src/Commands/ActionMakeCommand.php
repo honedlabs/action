@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Console\Commands;
+namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
@@ -164,7 +164,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     {
         return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
-            : __DIR__.'/../../..'.$stub;
+            : __DIR__.'/../..'.$stub;
     }
 
     /**

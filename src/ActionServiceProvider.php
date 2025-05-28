@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Console\Commands\ActionGroupMakeCommand;
-use Honed\Action\Console\Commands\ActionMakeCommand;
-use Honed\Action\Console\Commands\ActionsMakeCommand;
-use Honed\Action\Console\Commands\BulkActionMakeCommand;
-use Honed\Action\Console\Commands\InlineActionMakeCommand;
-use Honed\Action\Console\Commands\PageActionMakeCommand;
+use Honed\Action\Commands\ActionGroupMakeCommand;
+use Honed\Action\Commands\ActionMakeCommand;
+use Honed\Action\Commands\ActionsMakeCommand;
+use Honed\Action\Commands\BulkActionMakeCommand;
+use Honed\Action\Commands\InlineActionMakeCommand;
+use Honed\Action\Commands\PageActionMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +32,9 @@ class ActionServiceProvider extends ServiceProvider
         $this->registerRoutesMacro();
 
         if ($this->app->runningInConsole()) {
+            
+            $this->offerPublishing();
+
             $this->commands([
                 ActionMakeCommand::class,
                 ActionsMakeCommand::class,
@@ -40,15 +43,23 @@ class ActionServiceProvider extends ServiceProvider
                 BulkActionMakeCommand::class,
                 PageActionMakeCommand::class,
             ]);
-
-            $this->publishes([
-                __DIR__.'/../config/action.php' => config_path('action.php'),
-            ], 'action-config');
-
-            $this->publishes([
-                __DIR__.'/../stubs' => base_path('stubs'),
-            ], 'action-stubs');
         }
+    }
+
+    /**
+     * Register the publishing for the package.
+     *
+     * @return void
+     */
+    protected function offerPublishing()
+    {
+        $this->publishes([
+            __DIR__.'/../config/action.php' => config_path('action.php'),
+        ], 'action-config');
+
+        $this->publishes([
+            __DIR__.'/../stubs' => base_path('stubs'),
+        ], 'action-stubs');
     }
 
     /**

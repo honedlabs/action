@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Support\Constants;
 use Honed\Core\Concerns\IsDefault;
 use Honed\Core\Parameters;
 
@@ -15,27 +14,14 @@ class InlineAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function defineType()
-    {
-        return Constants::INLINE;
-    }
+    protected $type = 'inline';
 
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray($named = [], $typed = [])
     {
-        return \array_merge(parent::toArray(), [
-            'default' => $this->isDefault(),
-        ]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function resolveToArray($parameters = [], $typed = [])
-    {
-        return \array_merge(parent::resolveToArray($parameters, $typed), [
+        return \array_merge(parent::toArray($named, $typed), [
             'default' => $this->isDefault(),
         ]);
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Closure;
 use Honed\Action\Contracts\Actionable;
 use Illuminate\Support\Facades\App;
 
@@ -92,10 +91,10 @@ trait HasAction
         $action = $this->getAction();
 
         return match (true) {
-            \is_string($action) => Closure::fromCallable([
+            \is_string($action) => \Closure::fromCallable([
                 type(App::make($action))->as(Actionable::class), 'handle',
             ]),
-            $this instanceof Actionable => Closure::fromCallable([
+            $this instanceof Actionable => \Closure::fromCallable([
                 $this, 'handle',
             ]),
             default => $action,

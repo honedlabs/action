@@ -14,8 +14,5 @@ class PageAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function defineType()
-    {
-        return Constants::PAGE;
-    }
+    protected $type = 'page';
 }

@@ -21,10 +21,7 @@ class BulkAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function defineType()
-    {
-        return Constants::BULK;
-    }
+    protected $type = 'bulk';
 
     /**
      * Set the action to keep the records selected.
@@ -52,9 +49,9 @@ class BulkAction extends Action
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray($named = [], $typed = [])
     {
-        return \array_merge(parent::toArray(), [
+        return \array_merge(parent::toArray($named, $typed), [
             'keepSelected' => $this->keepsSelected(),
         ]);
     }

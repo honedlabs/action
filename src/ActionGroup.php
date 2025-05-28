@@ -219,7 +219,7 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function toArray($named = [], $typed = [])
     {
         $actions = [
             Constants::INLINE => $this->inlineActionsToArray($this->getModel()),

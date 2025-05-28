@@ -7,15 +7,20 @@ namespace Honed\Action\Tests;
 use Honed\Action\ActionServiceProvider;
 use Honed\Action\Tests\Stubs\Status;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 use Inertia\ServiceProvider as InertiaServiceProvider;
+use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    use RefreshDatabase;
+    use WithWorkbench;
+
     /**
      * Setup the test environment.
      */
@@ -28,20 +33,6 @@ class TestCase extends Orchestra
 
         config()->set('inertia.testing.ensure_pages_exist', false);
         config()->set('inertia.testing.page_paths', [realpath(__DIR__)]);
-    }
-
-    /**
-     * Get the package providers.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return array<int,class-string>
-     */
-    protected function getPackageProviders($app)
-    {
-        return [
-            ActionServiceProvider::class,
-            InertiaServiceProvider::class,
-        ];
     }
 
     /**
