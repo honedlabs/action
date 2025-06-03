@@ -74,6 +74,36 @@ abstract class Action extends Primitive
     }
 
     /**
+     * Determine if the action is an inline action.
+     *
+     * @return bool
+     */
+    public function isInline()
+    {
+        return $this instanceof InlineAction;
+    }
+
+    /**
+     * Determine if the action is a bulk action.
+     *
+     * @return bool
+     */
+    public function isBulk()
+    {
+        return $this instanceof BulkAction;
+    }
+
+    /**
+     * Determine if the action is a page action.
+     *
+     * @return bool
+     */
+    public function isPage()
+    {
+        return $this instanceof PageAction;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function toArray($named = [], $typed = [])

@@ -1,11 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Illuminate\Routing {
 
     /**
-     * @method void action() Register the action route macro.
+     * @method void actions() Register the routes to handle actions.
      */
     class Router { }
+}
+
+namespace Illuminate\Support\Facades {
+
+    /**
+     * @method void actions() Register the routes to handle actions.
+     */
+    class Route { }
 }

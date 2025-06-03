@@ -3,40 +3,40 @@
 declare(strict_types=1);
 
 use Honed\Action\InlineAction;
-use Honed\Action\Support\Constants;
-use Honed\Action\Tests\Fixtures\DestroyAction;
-use Honed\Action\Tests\Fixtures\DestroyProduct;
-use Honed\Action\Tests\Stubs\Product;
+use Honed\Core\Parameters;
 use Illuminate\Http\RedirectResponse;
+use Workbench\App\Actions\DestroyUser;
+use Workbench\App\Actions\Inline\DestroyAction;
+use Workbench\App\Models\User;
 
 beforeEach(function () {
     $this->test = InlineAction::make('test');
-    $this->product = product();
+    $this->user = User::factory()->create();
 });
 
 test('not without action', function () {
-    expect($this->test->execute(product()))
+    expect($this->test->execute($this->user))
         ->toBeNull();
 
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseHas('users', [
+        'id' => $this->user->id,
     ]);
 });
 
 test('with callback', function () {
-    $this->test->action(function (Product $product) {
-        $product->update(['name' => 'test']);
+    $this->test->action(function (User $user) {
+        $user->update(['name' => 'test']);
 
-        return inertia('Products/Show', [
-            'product' => $product,
+        return inertia('Users/Show', [
+            'user' => $user,
         ]);
     });
 
-    expect($this->test->execute($this->product))
+    expect($this->test->execute($this->user))
         ->toBeInstanceOf(Inertia\Response::class);
 
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseHas('users', [
+        'id' => $this->user->id,
         'name' => 'test',
     ]);
 });
@@ -44,29 +44,25 @@ test('with callback', function () {
 test('with handler', function () {
     $action = new DestroyAction();
 
-    $named = ['product' => $this->product];
-
-    $typed = [Product::class => $this->product];
-
     expect($action)
         ->getName()->toBe('destroy')
-        ->getLabel(...params($this->product))->toBe('Destroy '.$this->product->name)
-        ->getType()->toBe(Constants::INLINE)
+        ->getLabel(...Parameters::model($this->user))->toBe('Destroy '.$this->user->name)
+        ->getType()->toBe('inline')
         ->isActionable()->toBeTrue();
 
-    $action->execute($this->product);
+    $action->execute($this->user);
 
-    $this->assertDatabaseMissing('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseMissing('users', [
+        'id' => $this->user->id,
     ]);
 });
 
 test('with class-string action', function () {
-    expect($this->test->action(DestroyProduct::class))
-        ->execute($this->product)
+    expect($this->test->action(DestroyUser::class))
+        ->execute($this->user)
         ->toBeInstanceOf(RedirectResponse::class);
 
-    $this->assertDatabaseMissing('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseMissing('users', [
+        'id' => $this->user->id,
     ]);
 });

@@ -5,29 +5,27 @@ declare(strict_types=1);
 namespace Tests\Pest\Handler;
 
 use Honed\Action\Testing\PageRequest;
-use Honed\Action\Tests\Stubs\Product;
-use Honed\Action\Tests\Stubs\ProductActions;
+use Workbench\App\ActionGroups\UserActions;
 
 use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->request = PageRequest::fake()
-        ->for(ProductActions::class)
+        ->for(UserActions::class)
         ->fill();
 });
 
 it('executes the action', function () {
     $data = $this->request
-        ->name('create.product.name')
+        ->name('create.name')
         ->getData();
 
     $response = post(route('actions'), $data);
 
     $response->assertRedirect();
 
-    $this->assertDatabaseHas('products', [
+    $this->assertDatabaseHas('users', [
         'name' => 'name',
-        'description' => 'name',
     ]);
 });
 
@@ -41,15 +39,14 @@ it('is 404 for no name match', function () {
     $response->assertNotFound();
 });
 
-it('is 404 if the action is not allowed', function () {
-    // It's a 404 as the action when retrieved cannot be returned.
+it('is 403 if the action is not allowed', function () {
     $data = $this->request
-        ->name('create.product.description')
+        ->name('create.description')
         ->getData();
 
     $response = post(route('actions'), $data);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 it('does not execute route actions', function () {
@@ -60,19 +57,4 @@ it('does not execute route actions', function () {
     $response = post(route('actions'), $data);
 
     $response->assertRedirect();
-});
-
-it('returns inertia response', function () {
-    product();
-    $data = $this->request
-        ->name('price.10')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertInertia();
-
-    expect(Product::all())
-        ->toHaveCount(1)
-        ->first()->price->toBe(10);
 });

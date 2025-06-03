@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Honed\Action\Tests\Stubs;
 
-use Honed\Action\Attributes\Actions;
+use Honed\Action\Attributes\ActionGroup;
 use Honed\Action\Concerns\HasActionGroup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-#[Actions(ProductActions::class)]
+#[ActionGroup(ProductActions::class)]
 class Product extends Model
 {
     use HasActionGroup;

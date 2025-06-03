@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Honed\Action\BulkAction;
-use Honed\Action\Support\Constants;
 
 beforeEach(function () {
     $this->action = BulkAction::make('test');
@@ -11,7 +10,8 @@ beforeEach(function () {
 
 it('has bulk type', function () {
     expect($this->action)
-        ->getType()->toBe(Constants::BULK);
+        ->getType()->toBe('bulk')
+        ->isBulk()->toBeTrue();
 });
 
 it('keeps selected', function () {

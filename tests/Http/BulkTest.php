@@ -3,19 +3,17 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\BulkRequest;
-use Honed\Action\Tests\Stubs\Product;
-use Honed\Action\Tests\Stubs\ProductActions;
+use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Models\User;
 
 use function Pest\Laravel\post;
 
 beforeEach(function () {
-    foreach (range(1, 10) as $i) {
-        product();
-    }
+    User::factory()->count(10)->create();
 
     $this->request = BulkRequest::make()
         ->fill()
-        ->for(ProductActions::class);
+        ->for(UserActions::class);
 });
 
 it('executes the action', function () {
@@ -28,9 +26,9 @@ it('executes the action', function () {
 
     $response->assertRedirect();
 
-    expect(Product::all())
-        ->each(fn ($product) => $product
-            ->description->toBe('test')
+    expect(User::all())
+        ->each(fn ($user) => $user
+            ->name->toBe('description')
         );
 });
 
@@ -45,8 +43,7 @@ it('is 404 for no name match', function () {
     $response->assertNotFound();
 });
 
-it('is 404 if the action is not allowed', function () {
-    // It's a 404 as the action when retrieved cannot be returned.
+it('is 403 if the action is not allowed', function () {
     $data = $this->request
         ->all()
         ->name('update.name')
@@ -54,34 +51,18 @@ it('is 404 if the action is not allowed', function () {
 
     $response = post(route('actions'), $data);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 it('does not mix action types', function () {
     $data = $this->request
         ->all()
-        ->name('create.product.name')
+        ->name('create.name')
         ->getData();
 
     $response = post(route('actions'), $data);
 
     $response->assertNotFound();
-});
-
-it('returns inertia response', function () {
-    $data = $this->request
-        ->all()
-        ->name('price.50')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertInertia();
-
-    expect(Product::all())
-        ->each(fn ($product) => $product
-            ->price->toBe(50)
-        );
 });
 
 it('applies only to selected records', function () {
@@ -95,14 +76,14 @@ it('applies only to selected records', function () {
 
     $response->assertRedirect();
 
-    expect(Product::query()->whereIn('id', $ids)->get())
-        ->each(fn ($product) => $product
-            ->description->toBe('test')
+    expect(User::query()->whereIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->toBe('description')
         );
 
-    expect(Product::query()->whereNotIn('id', $ids)->get())
-        ->each(fn ($product) => $product
-            ->description->not->toBe('test')
+    expect(User::query()->whereNotIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->not->toBe('description')
         );
 
 });
@@ -120,13 +101,13 @@ it('applies all excepted records', function () {
 
     $response->assertRedirect();
 
-    expect(Product::query()->whereIn('id', $ids)->get())
-        ->each(fn ($product) => $product
-            ->description->not->toBe('test')
+    expect(User::query()->whereIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->not->toBe('description')
         );
 
-    expect(Product::query()->whereNotIn('id', $ids)->get())
-        ->each(fn ($product) => $product
-            ->description->toBe('test')
+    expect(User::query()->whereNotIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->toBe('description')
         );
 });

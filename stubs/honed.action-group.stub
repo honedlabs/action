@@ -4,6 +4,9 @@ namespace {{ namespace }};
 
 use Honed\Action\ActionGroup;
 use Honed\Action\Contracts\ShouldExecute;
+use Honed\Action\InlineAction;
+use Honed\Action\BulkAction;
+use Honed\Action\PageAction;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
-    File::cleanDirectory(app_path('Actions/Groups'));
+    File::cleanDirectory(app_path('ActionGroups'));
 });
 
 it('makes action group', function () {
@@ -13,7 +13,7 @@ it('makes action group', function () {
         'name' => 'UserActions',
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Groups/UserActions.php'));
+    $this->assertFileExists(app_path('ActionGroups/UserActions.php'));
 });
 
 it('prompts for a action group name', function () {
@@ -21,5 +21,5 @@ it('prompts for a action group name', function () {
         ->expectsQuestion('What should the action group be named?', 'UserActions')
         ->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/Groups/UserActions.php'));
+    $this->assertFileExists(app_path('ActionGroups/UserActions.php'));
 });

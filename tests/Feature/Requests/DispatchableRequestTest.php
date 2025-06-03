@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Honed\Action\Http\Requests\DispatchableRequest;
-use Honed\Action\Support\Constants;
 use Honed\Action\Testing\RequestFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -16,7 +15,7 @@ beforeEach(function () {
 it('requires id', function () {
     $httpRequest = Request::create('/', 'POST', [
         'name' => 'edit',
-        'type' => Constants::INLINE,
+        'type' => 'inline',
     ]);
 
     $this->app->instance('request', $httpRequest);
@@ -30,7 +29,7 @@ it('validates inline', function () {
     $httpRequest = Request::create('/', 'POST', [
         'id' => $this->id,
         'name' => 'edit',
-        'type' => Constants::INLINE,
+        'type' => 'inline',
         'record' => '1',
     ]);
 
@@ -49,7 +48,7 @@ it('validates bulk', function () {
     $httpRequest = Request::create('/', 'POST', [
         'id' => $this->id,
         'name' => 'edit',
-        'type' => Constants::BULK,
+        'type' => 'bulk',
         'only' => [1, 2, 3],
         'all' => false,
         'except' => [],
@@ -70,7 +69,7 @@ it('validates page', function () {
     $httpRequest = Request::create('/', 'POST', [
         'id' => $this->id,
         'name' => 'edit',
-        'type' => Constants::PAGE,
+        'type' => 'page',
     ]);
 
     $this->app->instance('request', $httpRequest);

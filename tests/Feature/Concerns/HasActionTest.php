@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Honed\Action\Concerns\HasAction;
 use Honed\Action\Contracts\Actionable;
-use Honed\Action\Tests\Fixtures\DestroyAction;
+use Workbench\App\Actions\Inline\DestroyAction;
 
 beforeEach(function () {
     $this->test = new class()

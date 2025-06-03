@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Tests\Fixtures;
+namespace Workbench\App\Actions\Inline;
 
 use Honed\Action\Contracts\Actionable;
 use Honed\Action\InlineAction;
-use Honed\Action\Tests\Stubs\Product;
+use Workbench\App\Models\User;
 
 class DestroyAction extends InlineAction implements Actionable
 {
@@ -15,11 +15,11 @@ class DestroyAction extends InlineAction implements Actionable
         parent::setUp();
 
         $this->name('destroy');
-        $this->label(fn (Product $product) => 'Destroy '.$product->name);
+        $this->label(fn (User $user) => 'Destroy '.$user->name);
     }
 
-    public function handle($product)
+    public function handle($user)
     {
-        $product->delete();
+        $user->delete();
     }
 }

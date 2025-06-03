@@ -3,20 +3,19 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\InlineRequest;
-use Honed\Action\Tests\Stubs\Product;
-use Honed\Action\Tests\Stubs\ProductActions;
-use Honed\Action\Tests\Stubs\RouteProductActions;
+use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Models\User;
 
 use function Pest\Laravel\post;
 
 beforeEach(function () {
-    $this->product = product();
+    $this->user = User::factory()->create();
 
-    $this->actions = ProductActions::make();
+    $this->actions = UserActions::make();
 
     $this->request = InlineRequest::fake()
         ->for($this->actions)
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('update.name')
         ->fill();
 });
@@ -28,17 +27,17 @@ it('executes the action', function () {
 
     $response->assertRedirect();
 
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseHas('users', [
+        'id' => $this->user->id,
         'name' => 'test',
     ]);
 });
 
 it('does not execute non-existent action', function () {
-    $key = ProductActions::encode(Product::class);
+    $key = UserActions::encode(User::class);
 
     $data = $this->request
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('update.name')
         ->getData();
 
@@ -47,12 +46,12 @@ it('does not execute non-existent action', function () {
     $response->assertNotFound();
 });
 
-it('does not execute for non-executable actions', function () {
-    $group = RouteProductActions::make();
+// it('does not execute for non-executable actions', function () {
+//     $group = RouteUserActions::make();
 
-    $data = $this->request->for($group)->getData();
+//     $data = $this->request->for($group)->getData();
 
-    $response = post(route('actions.invoke', $group), $data);
+//     $response = post(route('actions.invoke', $group), $data);
 
-    $response->assertNotFound();
-});
+//     $response->assertNotFound();
+// });

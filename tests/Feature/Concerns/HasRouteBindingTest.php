@@ -42,7 +42,7 @@ use Honed\Action\Tests\Stubs\ProductActions;
 //     expect($this->group)
 //         ->resolveRouteBinding($id)->toBeInstanceOf(ProductActions::class);
 
-//     expect(product())
+//     expect(User::factory()->create())
 //         ->resolveRouteBinding($id)->toBeNull();
 // });
 

@@ -12,6 +12,7 @@ use Honed\Action\Commands\InlineActionMakeCommand;
 use Honed\Action\Commands\PageActionMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class ActionServiceProvider extends ServiceProvider
@@ -22,6 +23,8 @@ class ActionServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/action.php', 'action');
+
+        $this->registerRoutesMacro();
     }
 
     /**
@@ -29,7 +32,6 @@ class ActionServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerRoutesMacro();
 
         if ($this->app->runningInConsole()) {
 

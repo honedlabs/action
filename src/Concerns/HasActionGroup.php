@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\ActionGroup;
-use Honed\Action\Attributes\Actions;
+use Honed\Action\Attributes\ActionGroup as ActionGroupAttribute;
 use ReflectionClass;
 
 /**
@@ -52,12 +52,12 @@ trait HasActionGroup
     protected static function getActionsAttribute()
     {
         $attributes = (new ReflectionClass(static::class))
-            ->getAttributes(Actions::class);
+            ->getAttributes(ActionGroupAttribute::class);
 
         if ($attributes !== []) {
             $group = $attributes[0]->newInstance();
 
-            return $group->actions;
+            return $group->getGroup();
         }
 
         return null;

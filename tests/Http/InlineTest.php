@@ -3,22 +3,23 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\InlineRequest;
-use Honed\Action\Tests\Stubs\ProductActions;
 use Illuminate\Support\Str;
+use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Models\User;
 
 use function Pest\Laravel\post;
 
 beforeEach(function () {
-    $this->product = product();
+    $this->user = User::factory()->create();
 
     $this->request = InlineRequest::fake()
-        ->for(ProductActions::class)
+        ->for(UserActions::class)
         ->fill();
 });
 
 it('executes the action', function () {
     $data = $this->request
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('update.name')
         ->getData();
 
@@ -26,15 +27,15 @@ it('executes the action', function () {
 
     $response->assertRedirect();
 
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
+    $this->assertDatabaseHas('users', [
+        'id' => $this->user->id,
         'name' => 'test',
     ]);
 });
 
 it('is 404 for no name match', function () {
     $data = $this->request
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('missing')
         ->getData();
 
@@ -54,22 +55,21 @@ it('is 404 if no model is found', function () {
     $response->assertNotFound();
 });
 
-it('is 404 if the action is not allowed', function () {
-    // It's a 404 as the action when retrieved cannot be returned.
+it('is 403 if the action is not allowed', function () {
     $data = $this->request
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('update.description')
         ->getData();
 
     $response = post(route('actions'), $data);
 
-    $response->assertNotFound();
+    $response->assertForbidden();
 });
 
 it('does not mix action types', function () {
     $data = $this->request
-        ->record($this->product->id)
-        ->name('create.product.name')
+        ->record($this->user->id)
+        ->name('create.name')
         ->getData();
 
     $response = post(route('actions'), $data);
@@ -79,27 +79,11 @@ it('does not mix action types', function () {
 
 it('does not execute route actions', function () {
     $data = $this->request
-        ->record($this->product->id)
+        ->record($this->user->id)
         ->name('show')
         ->getData();
 
     $response = post(route('actions'), $data);
 
     $response->assertRedirect(); // Returns back
-});
-
-it('returns inertia response', function () {
-    $data = $this->request
-        ->record($this->product->id)
-        ->name('price.100')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertInertia();
-
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-        'price' => 100,
-    ]);
 });

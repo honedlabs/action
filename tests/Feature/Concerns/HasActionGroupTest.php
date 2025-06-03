@@ -2,19 +2,10 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\HasActionGroup;
-use Honed\Action\Tests\Stubs\Product;
-use Honed\Action\Tests\Stubs\ProductActions;
-use Illuminate\Database\Eloquent\Model;
+use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Models\User;
 
-class ActionGroupModel extends Model
-{
-    use HasActionGroup;
-
-    protected static $actions = ProductActions::class;
-}
-
-it('has a cache', function () {
-    expect(Product::actions())
-        ->toBeInstanceOf(ProductActions::class);
+it('has action group', function () {
+    expect(User::actions())
+        ->toBeInstanceOf(UserActions::class);
 });

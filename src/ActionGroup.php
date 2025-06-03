@@ -9,14 +9,12 @@ use Honed\Action\Concerns\HasActions;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Concerns\HasEndpoint;
 use Honed\Action\Contracts\Handles;
-use Honed\Action\Support\Constants;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Support\Str;
-use RuntimeException;
 use Throwable;
 
 use function array_merge;
@@ -70,7 +68,7 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     public static function make(...$actions)
     {
         return resolve(static::class)
-            ->actions($actions);
+            ->withActions($actions);
     }
 
     /**
@@ -193,16 +191,12 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
             abort(404);
         }
 
-        try {
-            $resource = $this->getResource();
+        $resource = $this->getResource();
 
-            return Handler::make(
-                $resource,
-                $this->getActions()
-            )->handle($request);
-        } catch (RuntimeException $e) {
-            abort(404);
-        }
+        return Handler::make(
+            $resource,
+            $this->getActions()
+        )->handle($request);
     }
 
     /**
@@ -211,9 +205,9 @@ class ActionGroup extends Primitive implements Handles, UrlRoutable
     public function toArray($named = [], $typed = [])
     {
         $actions = [
-            Constants::INLINE => $this->inlineActionsToArray($this->getModel()),
-            Constants::BULK => $this->bulkActionsToArray(),
-            Constants::PAGE => $this->pageActionsToArray(),
+            'inline' => $this->inlineActionsToArray($this->getModel()),
+            'bulk' => $this->bulkActionsToArray(),
+            'page' => $this->pageActionsToArray(),
         ];
 
         if ($this->isExecutable(self::class)) {

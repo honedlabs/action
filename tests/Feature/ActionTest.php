@@ -5,12 +5,11 @@ declare(strict_types=1);
 use Honed\Action\Action;
 use Honed\Action\Confirm;
 use Honed\Action\InlineAction;
-use Honed\Action\Support\Constants;
-use Honed\Action\Tests\Fixtures\DestroyAction;
-use Honed\Action\Tests\Stubs\Product;
 use Honed\Core\Parameters;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request;
+use Workbench\App\Actions\Inline\DestroyAction;
+use Workbench\App\Models\User;
 
 beforeEach(function () {
     // Using inline action for testing base class
@@ -18,17 +17,17 @@ beforeEach(function () {
 });
 
 it('has implicit route bindings', function () {
-    $product = product();
+    $user = User::factory()->create();
 
-    [$named, $typed] = Parameters::model($product);
+    [$named, $typed] = Parameters::model($user);
 
-    $this->action->route('products.show', '{product}');
+    $this->action->route('users.show', '{user}');
 
     expect($this->action->toArray($named, $typed))
         ->toHaveKey('route')
         ->{'route'}->scoped(fn ($route) => $route
         ->toHaveKey('url')
-        ->{'url'}->toBe(route('products.show', $product))
+        ->{'url'}->toBe(route('users.show', $user))
         );
 });
 
@@ -48,32 +47,35 @@ it('has array representation', function () {
 });
 
 it('has array representation with route', function () {
-    expect($this->action->route('products.index')->toArray())
+    expect($this->action->route('users.index')->toArray())
         ->toBeArray()
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => Constants::INLINE,
+            'type' => 'inline',
             'icon' => null,
             'extra' => null,
             'actionable' => false,
             'confirm' => null,
             'default' => false,
             'route' => [
-                'url' => route('products.index'),
+                'url' => route('users.index'),
                 'method' => Request::METHOD_GET,
+                'external' => false,
             ],
         ]);
 });
 
 it('resolves to array', function () {
-    $product = product();
+    $user = User::factory()->create();
 
-    expect((new DestroyAction())->toArray(...params($product)))
+    [$named, $typed] = Parameters::model($user);
+
+    expect((new DestroyAction())->toArray($named, $typed))
         ->toEqual([
             'name' => 'destroy',
-            'label' => 'Destroy '.$product->name,
-            'type' => Constants::INLINE,
+            'label' => 'Destroy '.$user->name,
+            'type' => 'inline',
             'icon' => null,
             'extra' => null,
             'actionable' => true,
@@ -94,11 +96,11 @@ it('evaluates names', function () {
 });
 
 it('evaluates types', function () {
-    expect($this->action->evaluate(fn (Confirm $c) => $c->title('test')))
+    expect($this->action->evaluate(fn (Confirm $confirm) => $confirm->title('test')))
         ->toBeInstanceOf(Confirm::class)
         ->getTitle()->toBe('test');
 
     // Dependency injection
-    expect($this->action->evaluate(fn (Product $product) => $product))
-        ->toBeInstanceOf(Product::class);
+    expect($this->action->evaluate(fn (User $user) => $user))
+        ->toBeInstanceOf(User::class);
 });

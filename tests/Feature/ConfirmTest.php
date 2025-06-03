@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use Honed\Action\Confirm;
-use Honed\Action\Tests\Stubs\Product;
+use Honed\Core\Parameters;
+use Workbench\App\Models\User;
 
 beforeEach(function () {
     $this->test = Confirm::make();
@@ -65,17 +66,17 @@ it('has array representation', function () {
 });
 
 it('resolves to array', function () {
-    $product = product();
+    $user = User::factory()->create();
 
     $confirm = Confirm::make(
-        fn (Product $p) => $p->name,
-        fn (Product $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
+        fn (User $p) => $p->name,
+        fn (User $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
     );
 
-    expect($confirm->toArray(...params($product)))
+    expect($confirm->toArray(...Parameters::model($user)))
         ->toEqual([
-            'title' => $product->name,
-            'description' => \sprintf('Are you sure you want to delete %s?', $product->name),
+            'title' => $user->name,
+            'description' => \sprintf('Are you sure you want to delete %s?', $user->name),
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
             'intent' => null,

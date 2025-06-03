@@ -56,7 +56,7 @@ class Handler
     public static function make($builder, $actions = [], $key = null)
     {
         return resolve(static::class)
-            ->resource($builder)
+            ->withResource($builder)
             ->actions($actions)
             ->key($key);
     }
@@ -140,9 +140,9 @@ class Handler
         $type = $request->validated('type');
 
         $data = match ($type) {
-            Constants::INLINE => InlineData::from($request),
-            Constants::BULK => BulkData::from($request),
-            Constants::PAGE => ActionData::from($request),
+            'inline' => InlineData::from($request),
+            'bulk' => BulkData::from($request),
+            'page' => ActionData::from($request),
             default => abort(400),
         };
 
