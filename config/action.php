@@ -16,6 +16,5 @@ return [
 
     'endpoint' => '/actions',
 
-
-    'handler' => \Honed\Action\ActionHandler::class,
+    'handler' => Honed\Action\ActionHandler::class,
 ];

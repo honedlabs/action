@@ -8,8 +8,8 @@ use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
+use function mb_trim;
 use function sprintf;
-use function trim;
 
 #[AsCommand(name: 'make:action-group')]
 class ActionGroupMakeCommand extends GeneratorCommand
@@ -53,7 +53,7 @@ class ActionGroupMakeCommand extends GeneratorCommand
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(mb_trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }
