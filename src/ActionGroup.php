@@ -5,23 +5,18 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Closure;
-use Throwable;
-use function array_merge;
-use Honed\Core\Primitive;
-use Illuminate\Support\Str;
-use Honed\Action\Contracts\Handler;
-use Honed\Action\Contracts\Handles;
-use Illuminate\Container\Container;
-use Illuminate\Support\Facades\App;
-use Honed\Core\Concerns\HasResource;
-use Honed\Action\Concerns\HasEncoder;
-use Honed\Action\Concerns\HasHandler;
-use Honed\Action\Concerns\HasEndpoint;
 use Honed\Action\Concerns\HandlesActions;
-
-use Honed\Action\Concerns\HasTypedActions;
-use Illuminate\Contracts\Routing\UrlRoutable;
+use Honed\Action\Concerns\HasHandler;
+use Honed\Action\Contracts\Handler;
+use Honed\Core\Concerns\HasResource;
+use Honed\Core\Primitive;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
+use Throwable;
+
+use function array_merge;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model = \Illuminate\Database\Eloquent\Model
@@ -42,18 +37,18 @@ class ActionGroup extends Primitive implements Handler
     use HasResource;
 
     /**
-     * The model to be used to resolve inline actions.
-     *
-     * @var TModel|null
-     */
-    protected $model;
-
-    /**
      * The default namespace where action groups reside.
      *
      * @var string
      */
     public static $namespace = 'App\\ActionGroups\\';
+
+    /**
+     * The model to be used to resolve inline actions.
+     *
+     * @var TModel|null
+     */
+    protected $model;
 
     /**
      * How to resolve the action group for the given model name.
@@ -76,12 +71,12 @@ class ActionGroup extends Primitive implements Handler
 
     /**
      * The root parent class, indicating an anonymous class.
-     * 
-     * @return class-string<\Honed\Action\Contracts\HandlesActions>
+     *
+     * @return class-string<Contracts\HandlesActions>
      */
     public static function anonymous()
     {
-        return ActionGroup::class;
+        return self::class;
     }
 
     /**
