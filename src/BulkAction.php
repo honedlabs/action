@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Concerns\HasBulkActions;
+use Honed\Action\Concerns\HandlesBulkActions;
 
 use function array_merge;
 
 class BulkAction extends Action
 {
-    use HasBulkActions;
+    use HandlesBulkActions;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $type = 'bulk';
 
     /**
      * Whether the action keeps the records selected after successful execution.
@@ -18,11 +23,6 @@ class BulkAction extends Action
      * @var bool
      */
     protected $keepSelected = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $type = 'bulk';
 
     /**
      * Set the action to keep the records selected.
@@ -45,6 +45,18 @@ class BulkAction extends Action
     public function keepsSelected()
     {
         return $this->keepSelected;
+    }
+
+    /**
+     * Flush the global configuration state.
+     *
+     * @return void
+     */
+    public static function flushState()
+    {
+        static::$shouldChunk = false;
+        static::$shouldChunkById = true;
+        static::$useChunkSize = 500;
     }
 
     /**

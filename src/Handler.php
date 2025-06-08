@@ -53,7 +53,7 @@ class Handler
      * @param  string|null  $key
      * @return static
      */
-    public static function make($builder, $actions = [], $key = null)
+    public static function make($instance, $actions = [], $key = null)
     {
         return resolve(static::class)
             ->withResource($builder)
@@ -72,10 +72,7 @@ class Handler
     public static function throwInvalidActionTypeException($type)
     {
         throw new InvalidArgumentException(
-            sprintf(
-                'Action type [%s] is invalid.',
-                $type
-            )
+            "Action type [{$type}] is invalid."
         );
     }
 
@@ -179,9 +176,9 @@ class Handler
     public function resolveAction($type, $data)
     {
         return match ($type) {
-            Constants::INLINE => $this->resolveInlineAction(type($data)->as(InlineData::class)),
-            Constants::BULK => $this->resolveBulkAction(type($data)->as(BulkData::class)),
-            Constants::PAGE => $this->resolvePageAction($data),
+            'inline' => $this->resolveInlineAction(type($data)->as(InlineData::class)),
+            'bulk' => $this->resolveBulkAction(type($data)->as(BulkData::class)),
+            'page' => $this->resolvePageAction($data),
             default => InvalidActionException::throw($type),
         };
     }

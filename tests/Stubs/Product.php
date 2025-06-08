@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Honed\Action\Tests\Stubs;
 
-use Honed\Action\Attributes\ActionGroup;
-use Honed\Action\Concerns\HasActionGroup;
+use Honed\Action\Concerns\HasActions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-#[ActionGroup(ProductActions::class)]
 class Product extends Model
 {
-    use HasActionGroup;
+    use HasActions;
 
     protected $guarded = [];
 
     protected $casts = [
         'status' => Status::class,
     ];
+
+    protected $actions = ProductActions::class;
 
     public static function boot()
     {

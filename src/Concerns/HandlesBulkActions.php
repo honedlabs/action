@@ -6,6 +6,7 @@ namespace Honed\Action\Concerns;
 
 use Closure;
 use Honed\Action\Contracts\ShouldChunk;
+use Honed\Action\Contracts\ShouldChunkById;
 use Honed\Core\Concerns\HasQuery;
 use Honed\Core\Parameters;
 use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
@@ -16,7 +17,7 @@ use RuntimeException;
 
 use function array_merge;
 
-trait HasBulkActions
+trait HandlesBulkActions
 {
     /** @use HasQuery<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
     use HasQuery;
@@ -29,11 +30,25 @@ trait HasBulkActions
     protected $chunk;
 
     /**
+     * Whether actions should be chunked by default.
+     *
+     * @var bool
+     */
+    protected static $shouldChunk = false;
+
+    /**
      * Whether the bulk action should chunk the records by id.
      *
      * @var bool|null
      */
     protected $chunkById;
+
+    /**
+     * Whether actions should be chunked by id by default.
+     *
+     * @var bool
+     */
+    protected static $shouldChunkById = true;
 
     /**
      * The size of the chunk to use when chunking the records.
@@ -43,34 +58,11 @@ trait HasBulkActions
     protected $chunkSize;
 
     /**
-     * Determine if the action should be chunked from the config.
+     * The default size of the chunk to use when chunking the records.
      *
-     * @return bool
+     * @var int
      */
-    public static function isChunkedByDefault()
-    {
-        return (bool) config('action.chunk', false);
-    }
-
-    /**
-     * Determine if the action should chunk the records by id from the config.
-     *
-     * @return bool
-     */
-    public static function isChunkedByIdByDefault()
-    {
-        return (bool) config('action.chunk_by_id', true);
-    }
-
-    /**
-     * Get the size of the chunk to use when chunking the records from the config.
-     *
-     * @return int
-     */
-    public static function getDefaultChunkSize()
-    {
-        return type(config('action.chunk_size', 1000))->asInt();
-    }
+    protected static $useChunkSize = 500;
 
     /**
      * Throw an exception for a chunked handler.
@@ -92,25 +84,36 @@ trait HasBulkActions
      * @param  bool|null  $chunks
      * @return $this
      */
-    public function chunks($chunks = true)
+    public function chunk($chunk = true)
     {
-        $this->chunk = $chunks;
+        $this->chunk = $chunk;
 
         return $this;
     }
 
     /**
-     * Determine if the action should be chunked.
+     * Determine if the action should use chunking.
      *
      * @return bool
      */
-    public function isChunked()
+    public function chunks()
     {
         if ($this instanceof ShouldChunk) {
             return true;
         }
 
-        return (bool) ($this->chunk ?? static::isChunkedByDefault());
+        return $this->chunk ?? static::$shouldChunk;
+    }
+
+    /**
+     * Set whether the action should use chunking by default.
+     * 
+     * @param  bool  $chunk
+     * @return void
+     */
+    public static function shouldChunk($chunk = true)
+    {
+        static::$shouldChunk = $chunk;
     }
 
     /**
@@ -119,12 +122,11 @@ trait HasBulkActions
      * @param  bool|null  $chunksById
      * @return $this
      */
-    public function chunksById($chunksById = true)
+    public function chunkById($byId = true)
     {
-        $this->chunks();
-        $this->chunkById = $chunksById;
+        $this->chunkById = $byId;
 
-        return $this;
+        return $this->chunk();
     }
 
     /**
@@ -134,7 +136,22 @@ trait HasBulkActions
      */
     public function isChunkedById()
     {
-        return (bool) ($this->chunkById ?? static::isChunkedByIdByDefault());
+        if ($this instanceof ShouldChunkById) {
+            return true;
+        }
+
+        return $this->chunkById ?? static::$shouldChunkById;
+    }
+
+    /**
+     * Set whether the action should chunk the records by id by default.
+     *
+     * @param  bool  $byId
+     * @return void
+     */
+    public static function shouldChunkById($byId = true)
+    {
+        static::$shouldChunkById = $byId;
     }
 
     /**
@@ -157,7 +174,18 @@ trait HasBulkActions
      */
     public function getChunkSize()
     {
-        return $this->chunkSize ?? static::getDefaultChunkSize();
+        return $this->chunkSize ?? static::$useChunkSize;
+    }
+
+    /**
+     * Set the default size of the chunk to use when chunking the records.
+     *
+     * @param  int  $size
+     * @return void
+     */
+    public static function useChunkSize($size)
+    {
+        static::$useChunkSize = $size;
     }
 
     /**

@@ -10,6 +10,10 @@ beforeEach(function () {
     $this->test = Confirm::make();
 });
 
+afterEach(function () {
+    Confirm::flushState();
+});
+
 it('has title', function () {
     expect($this->test)
         ->getTitle()->toBeNull()
@@ -26,22 +30,41 @@ it('has description', function () {
 
 it('has dismiss', function () {
     expect($this->test)
-        ->getDismiss()->toBe(config('action.dismiss'))
+        ->getDismiss()->toBe('Cancel')
         ->dismiss('Back')->toBe($this->test)
+        ->getDismiss()->toBe('Back');
+});
+
+it('set global dismiss message', function () {
+    expect($this->test)
+        ->getDismiss()->toBe('Cancel');
+
+    Confirm::useDismiss('Back');
+
+    expect($this->test)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
     expect($this->test)
-        ->getSubmit()->toBe(config('action.submit'))
+        ->getSubmit()->toBe('Confirm')
         ->submit('Accept')->toBe($this->test)
+        ->getSubmit()->toBe('Accept');
+});
+
+it('set global submit message', function () {
+    expect($this->test)
+        ->getSubmit()->toBe('Confirm');
+
+    Confirm::useSubmit('Accept');
+
+    expect($this->test)
         ->getSubmit()->toBe('Accept');
 });
 
 it('has intent', function () {
     expect($this->test)
         ->getIntent()->toBeNull()
-        ->hasIntent()->toBeFalse()
         ->intent('danger')->toBe($this->test)
         ->getIntent()->toBe('danger')
         ->constructive()->toBe($this->test)
@@ -49,8 +72,7 @@ it('has intent', function () {
         ->destructive()->toBe($this->test)
         ->getIntent()->toBe(Confirm::DESTRUCTIVE)
         ->informative()->toBe($this->test)
-        ->getIntent()->toBe(Confirm::INFORMATIVE)
-        ->hasIntent()->toBeTrue();
+        ->getIntent()->toBe(Confirm::INFORMATIVE);
 });
 
 it('has array representation', function () {

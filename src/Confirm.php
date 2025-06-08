@@ -44,11 +44,25 @@ class Confirm extends Primitive
     protected $submit;
 
     /**
+     * The default message to display on the submit button.
+     *
+     * @var string
+     */
+    protected static $useSubmit = 'Confirm';
+
+    /**
      * The message to display on the dismiss button.
      *
      * @var string|null
      */
     protected $dismiss;
+
+    /**
+     * The default message to display on the dismiss button.
+     *
+     * @var string
+     */
+    protected static $useDismiss = 'Cancel';
 
     /**
      * Create a new confirm instance.
@@ -65,23 +79,25 @@ class Confirm extends Primitive
     }
 
     /**
-     * Get the submit message for the confirm from the config.
+     * Set the default submit message for the confirm.
      *
-     * @return string
+     * @param  string  $submit
+     * @return void
      */
-    public static function getDefaultSubmit()
+    public static function useSubmit($submit)
     {
-        return type(config('action.submit', 'Confirm'))->asString();
+        static::$useSubmit = $submit;
     }
 
     /**
-     * Get the dismiss message for the confirm from the config.
+     * Set the default dismiss message for the confirm.
      *
-     * @return string
+     * @param  string  $dismiss
+     * @return void
      */
-    public static function getDefaultDismiss()
+    public static function useDismiss($dismiss)
     {
-        return type(config('action.dismiss', 'Cancel'))->asString();
+        static::$useDismiss = $dismiss;
     }
 
     /**
@@ -188,16 +204,6 @@ class Confirm extends Primitive
     }
 
     /**
-     * Determine if the confirm has an intent set.
-     *
-     * @return bool
-     */
-    public function hasIntent()
-    {
-        return isset($this->intent);
-    }
-
-    /**
      * Set the submit message for the confirm.
      *
      * @param  string|null  $submit
@@ -217,7 +223,7 @@ class Confirm extends Primitive
      */
     public function getSubmit()
     {
-        return $this->submit ?? static::getDefaultSubmit();
+        return $this->submit ?? static::$useSubmit;
     }
 
     /**
@@ -240,7 +246,18 @@ class Confirm extends Primitive
      */
     public function getDismiss()
     {
-        return $this->dismiss ?? static::getDefaultDismiss();
+        return $this->dismiss ?? static::$useDismiss;
+    }
+
+    /**
+     * Flush the global configuration state.
+     * 
+     * @return void
+     */
+    public static function flushState()
+    {
+        static::$useSubmit = 'Confirm';
+        static::$useDismiss = 'Cancel';
     }
 
     /**

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\HasBulkActions;
+use Honed\Action\Concerns\HandlesBulkActions;
 use Honed\Action\Contracts\ShouldChunk;
 
 beforeEach(function () {
     $this->test = new class()
     {
-        use HasBulkActions;
+        use HandlesBulkActions;
     };
 });
 
@@ -21,7 +21,7 @@ it('chunks', function () {
 
     $test = new class() implements ShouldChunk
     {
-        use HasBulkActions;
+        use HandlesBulkActions;
     };
 
     expect($test)

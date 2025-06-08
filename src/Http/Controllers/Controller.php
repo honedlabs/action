@@ -53,7 +53,7 @@ abstract class Controller extends BaseController
         $key = $request->validated('id');
 
         /** @var \Honed\Action\Contracts\Handles|null */
-        $action = $this->from()::tryFrom($key);
+        $action = $this->from()::find($key);
 
         if (! $action) {
             CouldNotResolveHandlerException::throw();
