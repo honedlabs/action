@@ -25,6 +25,18 @@ class BulkAction extends Action
     protected $keepSelected = false;
 
     /**
+     * Flush the global configuration state.
+     *
+     * @return void
+     */
+    public static function flushState()
+    {
+        static::$shouldChunk = false;
+        static::$shouldChunkById = true;
+        static::$useChunkSize = 500;
+    }
+
+    /**
      * Set the action to keep the records selected.
      *
      * @param  bool  $keep
@@ -45,18 +57,6 @@ class BulkAction extends Action
     public function keepsSelected()
     {
         return $this->keepSelected;
-    }
-
-    /**
-     * Flush the global configuration state.
-     *
-     * @return void
-     */
-    public static function flushState()
-    {
-        static::$shouldChunk = false;
-        static::$shouldChunkById = true;
-        static::$useChunkSize = 500;
     }
 
     /**

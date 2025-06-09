@@ -101,6 +101,17 @@ class Confirm extends Primitive
     }
 
     /**
+     * Flush the global configuration state.
+     *
+     * @return void
+     */
+    public static function flushState()
+    {
+        static::$useSubmit = 'Confirm';
+        static::$useDismiss = 'Cancel';
+    }
+
+    /**
      * Set the title of the confirm.
      *
      * @param  string|Closure(mixed...):string|null  $title
@@ -247,17 +258,6 @@ class Confirm extends Primitive
     public function getDismiss()
     {
         return $this->dismiss ?? static::$useDismiss;
-    }
-
-    /**
-     * Flush the global configuration state.
-     * 
-     * @return void
-     */
-    public static function flushState()
-    {
-        static::$useSubmit = 'Confirm';
-        static::$useDismiss = 'Cancel';
     }
 
     /**
