@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Workbench\App\Models;
 
+use Honed\Action\Attributes\ActionGroup;
 use Honed\Action\Attributes\UseActions;
 use Honed\Action\Concerns\HasActions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
