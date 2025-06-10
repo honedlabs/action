@@ -79,39 +79,6 @@ trait HandlesBulkActions
     }
 
     /**
-     * Set whether the action should use chunking by default.
-     *
-     * @param  bool  $chunk
-     * @return void
-     */
-    public static function shouldChunk($chunk = true)
-    {
-        static::$shouldChunk = $chunk;
-    }
-
-    /**
-     * Set whether the action should chunk the records by id by default.
-     *
-     * @param  bool  $byId
-     * @return void
-     */
-    public static function shouldChunkById($byId = true)
-    {
-        static::$shouldChunkById = $byId;
-    }
-
-    /**
-     * Set the default size of the chunk to use when chunking the records.
-     *
-     * @param  int  $size
-     * @return void
-     */
-    public static function useChunkSize($size)
-    {
-        static::$useChunkSize = $size;
-    }
-
-    /**
      * Set the action to chunk the records.
      *
      * @param  bool|null  $chunks
@@ -136,6 +103,17 @@ trait HandlesBulkActions
         }
 
         return $this->chunk ?? static::$shouldChunk;
+    }
+
+    /**
+     * Set whether the action should use chunking by default.
+     * 
+     * @param  bool  $chunk
+     * @return void
+     */
+    public static function shouldChunk($chunk = true)
+    {
+        static::$shouldChunk = $chunk;
     }
 
     /**
@@ -166,6 +144,17 @@ trait HandlesBulkActions
     }
 
     /**
+     * Set whether the action should chunk the records by id by default.
+     *
+     * @param  bool  $byId
+     * @return void
+     */
+    public static function shouldChunkById($byId = true)
+    {
+        static::$shouldChunkById = $byId;
+    }
+
+    /**
      * Set the size of the chunk to use when chunking the records.
      *
      * @param  int|null  $size
@@ -186,6 +175,17 @@ trait HandlesBulkActions
     public function getChunkSize()
     {
         return $this->chunkSize ?? static::$useChunkSize;
+    }
+
+    /**
+     * Set the default size of the chunk to use when chunking the records.
+     *
+     * @param  int  $size
+     * @return void
+     */
+    public static function useChunkSize($size)
+    {
+        static::$useChunkSize = $size;
     }
 
     /**
