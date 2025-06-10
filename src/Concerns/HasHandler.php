@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Closure;
+use Throwable;
 
 /**
  * @phpstan-require-extends \Honed\Action\Contracts\HandlesActions
@@ -41,14 +42,14 @@ trait HasHandler
 
     /**
      * The key to use for selecting records.
-     * 
+     *
      * @var string|null
      */
     protected $key;
 
     /**
      * The root parent class, indicating an anonymous class.
-     * 
+     *
      * @return class-string<\Honed\Action\Contracts\HandlesActions>
      */
     abstract public static function anonymous();
@@ -60,40 +61,6 @@ trait HasHandler
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     abstract public function handle($request);
-
-    /**
-     * Set the endpoint to execute server actions.
-     *
-     * @param  string|null  $endpoint
-     * @return $this
-     */
-    public function endpoint($endpoint)
-    {
-        $this->endpoint = $endpoint;
-
-        return $this;
-    }
-
-    /**
-     * Get the endpoint to execute server actions.
-     *
-     * @return string
-     */
-    public function getEndpoint()
-    {
-        return $this->endpoint ?? static::defaultEndpoint();
-    }
-
-    /**
-     * Get the default endpoint to execute server actions.
-     *
-     * @return string
-     */
-    protected static function defaultEndpoint()
-    {
-        /** @var string|null */
-        return config('action.endpoint', 'actions');
-    }
 
     /**
      * Set the encoder.
@@ -146,7 +113,7 @@ trait HasHandler
 
     /**
      * Find a primitive class from the encoded value.
-     * 
+     *
      * @param  string  $value
      * @return mixed
      */
@@ -156,16 +123,39 @@ trait HasHandler
             $primitive = static::decode($value);
 
             // @phpstan-ignore-next-line
-            if (class_exists($primitive) 
+            if (class_exists($primitive)
                 && is_subclass_of($primitive, static::anonymous())
             ) {
                 return $primitive::make();
             }
 
             return null;
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return null;
         }
+    }
+
+    /**
+     * Set the endpoint to execute server actions.
+     *
+     * @param  string|null  $endpoint
+     * @return $this
+     */
+    public function endpoint($endpoint)
+    {
+        $this->endpoint = $endpoint;
+
+        return $this;
+    }
+
+    /**
+     * Get the endpoint to execute server actions.
+     *
+     * @return string
+     */
+    public function getEndpoint()
+    {
+        return $this->endpoint ?? static::defaultEndpoint();
     }
 
     /**
@@ -225,5 +215,16 @@ trait HasHandler
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * Get the default endpoint to execute server actions.
+     *
+     * @return string
+     */
+    protected static function defaultEndpoint()
+    {
+        /** @var string|null */
+        return config('action.endpoint', 'actions');
     }
 }
