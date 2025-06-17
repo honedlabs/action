@@ -23,4 +23,4 @@ class SyncUsers extends SyncAction
     {
         return 'users';
     }
-} 
+}

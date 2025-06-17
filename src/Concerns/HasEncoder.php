@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Closure;
-use Throwable;
 
 use function call_user_func;
-use function class_exists;
-use function is_subclass_of;
 
 /**
  * @phpstan-require-implements \Honed\Action\Contracts\Handles

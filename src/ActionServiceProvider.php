@@ -74,7 +74,6 @@ class ActionServiceProvider extends ServiceProvider
     {
         Router::macro('actions', function () {
             /** @var Router $this */
-
             $methods = ['post', 'patch', 'put'];
 
             $endpoint = ActionGroup::getDefaultEndpoint();

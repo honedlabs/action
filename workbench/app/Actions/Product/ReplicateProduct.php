@@ -14,4 +14,4 @@ use Honed\Action\Presets\ReplicateAction;
 class ReplicateProduct extends ReplicateAction
 {
     //
-} 
+}

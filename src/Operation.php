@@ -8,9 +8,6 @@ abstract class Operation
 {
     /**
      * Configure the action.
-     * 
-     * @param  Action  $action
-     * @return Action
      */
     abstract protected function definition(Action $action): Action;
 

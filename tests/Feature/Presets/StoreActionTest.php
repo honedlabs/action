@@ -80,7 +80,8 @@ it('stores a model with all fillable attributes', function () {
 });
 
 it('stores a model with FormRequest', function () {
-    $formRequest = new class extends FormRequest {
+    $formRequest = new class() extends FormRequest
+    {
         public function authorize(): bool
         {
             return true;

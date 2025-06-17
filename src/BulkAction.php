@@ -11,7 +11,7 @@ use function array_merge;
 class BulkAction extends Action
 {
     use HandlesBulkActions;
-    
+
     /**
      * Whether the action keeps the records selected after successful execution.
      *

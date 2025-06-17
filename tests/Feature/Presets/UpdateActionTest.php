@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Workbench\App\Actions\Product\UpdateProduct;
@@ -39,7 +38,7 @@ it('updates a model with a form request', function () {
     ]);
 
     $this->app->instance('request', $request);
-    
+
     $request = $this->app->make(NameRequest::class);
 
     $request->setContainer($this->app);

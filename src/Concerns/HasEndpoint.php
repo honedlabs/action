@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use function is_subclass_of;
-
 trait HasEndpoint
 {
     /**

@@ -23,4 +23,4 @@ class StoreProduct extends StoreAction
     {
         return Product::class;
     }
-} 
+}

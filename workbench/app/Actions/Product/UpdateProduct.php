@@ -14,4 +14,4 @@ use Honed\Action\Presets\UpdateAction;
 class UpdateProduct extends UpdateAction
 {
     //
-} 
+}

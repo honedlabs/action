@@ -23,4 +23,4 @@ class ToggleUsers extends ToggleAction
     {
         return 'users';
     }
-} 
+}

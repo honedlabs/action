@@ -6,11 +6,8 @@ namespace Honed\Action;
 
 use Closure;
 use Honed\Action\Concerns\CanResolveActions;
-use Honed\Action\Concerns\HandlesActions;
-use Honed\Action\Concerns\HasHandler;
 use Honed\Action\Contracts\Handler;
 use Honed\Action\Handler as ActionHandler;
-use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;

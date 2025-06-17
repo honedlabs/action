@@ -23,4 +23,4 @@ class DissociateUser extends DissociateAction
     {
         return 'product';
     }
-} 
+}

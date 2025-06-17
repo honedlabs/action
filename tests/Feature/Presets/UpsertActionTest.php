@@ -204,7 +204,7 @@ it('updates existing record from ValidatedInput', function () {
 it('upserts from FormRequest', function () {
     $this->assertDatabaseEmpty('products');
 
-    $request = new class extends \Illuminate\Foundation\Http\FormRequest
+    $request = new class() extends Illuminate\Foundation\Http\FormRequest
     {
         public function authorize(): bool
         {
@@ -220,7 +220,7 @@ it('upserts from FormRequest', function () {
             ];
         }
 
-        public function safe(array $keys = null): ValidatedInput
+        public function safe(?array $keys = null): ValidatedInput
         {
             return new ValidatedInput([
                 'name' => 'Form Request Product',
@@ -251,7 +251,7 @@ it('updates existing record from FormRequest', function () {
         'price' => 50.00,
     ]);
 
-    $request = new class extends \Illuminate\Foundation\Http\FormRequest
+    $request = new class() extends Illuminate\Foundation\Http\FormRequest
     {
         public function authorize(): bool
         {
@@ -267,7 +267,7 @@ it('updates existing record from FormRequest', function () {
             ];
         }
 
-        public function safe(array $keys = null): ValidatedInput
+        public function safe(?array $keys = null): ValidatedInput
         {
             return new ValidatedInput([
                 'name' => 'Form Request Product',
