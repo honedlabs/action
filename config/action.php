@@ -14,7 +14,5 @@ return [
     |
     */
 
-    'endpoint' => '/actions',
-
-    'handler' => Honed\Action\ActionHandler::class,
+    'endpoint' => 'actions',
 ];

@@ -11,12 +11,7 @@ use function array_merge;
 class BulkAction extends Action
 {
     use HandlesBulkActions;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected $type = 'bulk';
-
+    
     /**
      * Whether the action keeps the records selected after successful execution.
      *
@@ -25,15 +20,15 @@ class BulkAction extends Action
     protected $keepSelected = false;
 
     /**
-     * Flush the global configuration state.
+     * Provide the instance with any necessary setup.
      *
      * @return void
      */
-    public static function flushState()
+    protected function setUp()
     {
-        static::$shouldChunk = false;
-        static::$shouldChunkById = true;
-        static::$useChunkSize = 500;
+        parent::setUp();
+
+        $this->type(Action::BULK);
     }
 
     /**

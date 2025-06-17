@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Controllers;
 
 use Honed\Action\ActionGroup;
-use Honed\Action\Exceptions\CouldNotResolveHandlerException;
-use Honed\Action\Http\Requests\DispatchableRequest;
 use Honed\Action\Http\Requests\InvokableRequest;
-use Illuminate\Routing\Controller;
 
 class ActionController extends Controller
 {
@@ -31,36 +28,11 @@ class ActionController extends Controller
     }
 
     /**
-     * Find and execute the appropriate action from the request input.
+     * Get the class containing the action handler.
      *
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
-     *
-     * @throws CouldNotResolveHandlerException
-     * @throws \Honed\Action\Exceptions\ActionNotFoundException
-     * @throws \Honed\Action\Exceptions\ActionNotAllowedException
-     * @throws \Honed\Action\Exceptions\InvalidActionException
+     * @return class-string<\Honed\Action\Contracts\HandlesActions>
      */
-    public function dispatch(DispatchableRequest $request)
-    {
-        /** @var string */
-        $key = $request->validated('id');
-
-        /** @var \Honed\Action\Contracts\Handles|null */
-        $action = $this->baseClass()::tryFrom($key);
-
-        if (! $action) {
-            CouldNotResolveHandlerException::throw();
-        }
-
-        return $action->handle($request);
-    }
-
-    /**
-     * Get the class to use to handle the actions.
-     *
-     * @return class-string<\Honed\Action\Contracts\Handles>
-     */
-    public function baseClass()
+    protected function from()
     {
         return ActionGroup::class;
     }

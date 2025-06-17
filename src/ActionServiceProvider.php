@@ -7,9 +7,7 @@ namespace Honed\Action;
 use Honed\Action\Commands\ActionGroupMakeCommand;
 use Honed\Action\Commands\ActionMakeCommand;
 use Honed\Action\Commands\ActionsMakeCommand;
-use Honed\Action\Commands\BulkActionMakeCommand;
-use Honed\Action\Commands\InlineActionMakeCommand;
-use Honed\Action\Commands\PageActionMakeCommand;
+use Honed\Action\Commands\OperationMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +24,7 @@ class ActionServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/action.php', 'action');
 
-        // $this->app->bind()
+        // $this->app->bind(ActionGroupHandler::class, ActionHandler::class)
 
         $this->registerRoutesMacro();
     }
@@ -46,9 +44,7 @@ class ActionServiceProvider extends ServiceProvider
                 ActionMakeCommand::class,
                 ActionsMakeCommand::class,
                 ActionGroupMakeCommand::class,
-                InlineActionMakeCommand::class,
-                BulkActionMakeCommand::class,
-                PageActionMakeCommand::class,
+                OperationMakeCommand::class,
             ]);
         }
     }
@@ -78,9 +74,10 @@ class ActionServiceProvider extends ServiceProvider
     {
         Router::macro('actions', function () {
             /** @var Router $this */
-            $endpoint = type(config('action.endpoint', '/actions'))->asString();
 
             $methods = ['post', 'patch', 'put'];
+
+            $endpoint = ActionGroup::getDefaultEndpoint();
 
             $this->match($methods, $endpoint, [ActionController::class, 'dispatch'])
                 ->name('actions');

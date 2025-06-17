@@ -11,19 +11,14 @@ class PageAction extends Action
     use HandlesBulkActions;
 
     /**
-     * {@inheritdoc}
-     */
-    protected $type = 'page';
-
-    /**
-     * Flush the global configuration state.
+     * Provide the instance with any necessary setup.
      *
      * @return void
      */
-    public static function flushState()
+    protected function setUp()
     {
-        static::$shouldChunk = false;
-        static::$shouldChunkById = true;
-        static::$useChunkSize = 500;
+        parent::setUp();
+
+        $this->type(Action::PAGE);
     }
 }

@@ -58,7 +58,7 @@ trait HasAction
      */
     public function isActionable()
     {
-        return isset($this->action) || $this instanceof Actionable;
+        return (bool) $this->action || $this instanceof Actionable;
     }
 
     /**
@@ -95,7 +95,7 @@ trait HasAction
 
         return match (true) {
             is_string($action) => Closure::fromCallable([
-                type(App::make($action))->as(Actionable::class),
+                App::make($action),
                 'handle',
             ]),
             $this instanceof Actionable => Closure::fromCallable([

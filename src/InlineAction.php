@@ -14,9 +14,16 @@ class InlineAction extends Action
     use IsDefault;
 
     /**
-     * {@inheritdoc}
+     * Provide the instance with any necessary setup.
+     *
+     * @return void
      */
-    protected $type = 'inline';
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->type(Action::INLINE);
+    }
 
     /**
      * {@inheritdoc}

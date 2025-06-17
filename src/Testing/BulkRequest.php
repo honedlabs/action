@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
+use Honed\Action\Action;
 use Honed\Action\Support\Constants;
 
 use function array_merge;
@@ -106,7 +107,7 @@ class BulkRequest extends FakeRequest
     public function getData()
     {
         return array_merge([
-            'type' => Constants::BULK,
+            'type' => Action::BULK,
             'only' => $this->getOnly(),
             'except' => $this->getExcept(),
             'all' => $this->isAll(),

@@ -15,17 +15,13 @@ abstract class Controller extends BaseController
     /**
      * Get the class containing the action handler.
      *
-     * @return class-string<\Honed\Action\Contracts\Handles>
+     * @return class-string<\Honed\Action\Contracts\HandleActions>
      */
-    abstract public function from();
+    abstract protected function from();
 
     /**
      * Find and execute the appropriate action from route binding.
      *
-     * @template TModel of \Illuminate\Database\Eloquent\Model
-     * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
-     *
-     * @param  ActionGroup<TModel, TBuilder>  $action
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \Honed\Action\Exceptions\ActionNotFoundException
@@ -52,7 +48,7 @@ abstract class Controller extends BaseController
         /** @var string */
         $key = $request->validated('id');
 
-        /** @var \Honed\Action\Contracts\Handles|null */
+        /** @var \Honed\Action\Contracts\HandlesActions|null */
         $action = $this->from()::find($key);
 
         if (! $action) {

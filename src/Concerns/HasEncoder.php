@@ -32,13 +32,6 @@ trait HasEncoder
     protected static $decoder;
 
     /**
-     * The root parent class.
-     *
-     * @return class-string
-     */
-    abstract public static function baseClass();
-
-    /**
      * Set the encoder.
      *
      * @param  (Closure(mixed):string)|null  $encoder
@@ -85,63 +78,5 @@ trait HasEncoder
         return isset(static::$decoder)
             ? call_user_func(static::$decoder, $value)
             : decrypt($value);
-    }
-
-    /**
-     * Decode and retrieve a primitive class.
-     *
-     * @param  string  $value
-     * @return mixed
-     */
-    public static function tryFrom($value)
-    {
-        try {
-            $primitive = static::decode($value);
-
-            // @phpstan-ignore-next-line
-            if (class_exists($primitive) && is_subclass_of($primitive, static::baseClass())) {
-                return $primitive::make();
-            }
-
-            return null;
-        } catch (Throwable $th) {
-            return null;
-        }
-    }
-
-    /**
-     * Retrieve the child model for a bound value.
-     *
-     * @param  string  $childType
-     * @param  string  $value
-     * @param  string|null  $field
-     * @return static|null
-     */
-    public function resolveChildRouteBinding($childType, $value, $field = null)
-    {
-        return $this->resolveRouteBinding($value, $field);
-    }
-
-    /**
-     * Get the value of the model's route key.
-     *
-     * @return string
-     */
-    public function getRouteKey()
-    {
-        return static::encode(static::class);
-    }
-
-    /**
-     * Retrieve the model for a bound value.
-     *
-     * @param  string  $value
-     * @param  string|null  $field
-     * @return static|null
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        /** @var static|null */
-        return static::tryFrom($value);
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Closure;
+use Honed\Action\Concerns\CanResolveActions;
 use Honed\Action\Concerns\HandlesActions;
 use Honed\Action\Concerns\HasHandler;
 use Honed\Action\Contracts\Handler;
+use Honed\Action\Handler as ActionHandler;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
 use Illuminate\Container\Container;
@@ -22,19 +24,9 @@ use function array_merge;
  * @template TModel of \Illuminate\Database\Eloquent\Model = \Illuminate\Database\Eloquent\Model
  * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel> = \Illuminate\Database\Eloquent\Builder<TModel>
  */
-class ActionGroup extends Primitive implements Handler
+class ActionGroup extends Primitive
 {
-    /**
-     * @use \Honed\Action\Concerns\HandlesActions<TModel, TBuilder>
-     */
-    use HandlesActions;
-
-    use HasHandler;
-
-    /**
-     * @use \Honed\Core\Concerns\HasResource<TModel, TBuilder>
-     */
-    use HasResource;
+    use CanResolveActions;
 
     /**
      * The default namespace where action groups reside.
@@ -42,13 +34,6 @@ class ActionGroup extends Primitive implements Handler
      * @var string
      */
     public static $namespace = 'App\\ActionGroups\\';
-
-    /**
-     * The model to be used to resolve inline actions.
-     *
-     * @var TModel|null
-     */
-    protected $model;
 
     /**
      * How to resolve the action group for the given model name.
@@ -60,23 +45,13 @@ class ActionGroup extends Primitive implements Handler
     /**
      * Create a new action group instance.
      *
-     * @param  Action|iterable<int, Action>  ...$actions
+     * @param  Action|ActionGroup|array<int, Action|ActionGroup>  $actions
      * @return static
      */
-    public static function make(...$actions)
+    public static function make($actions = [])
     {
         return resolve(static::class)
-            ->withActions($actions);
-    }
-
-    /**
-     * The root parent class, indicating an anonymous class.
-     *
-     * @return class-string<Contracts\HandlesActions>
-     */
-    public static function anonymous()
-    {
-        return self::class;
+            ->actions($actions);
     }
 
     /**
@@ -150,26 +125,14 @@ class ActionGroup extends Primitive implements Handler
     }
 
     /**
-     * Set the model to be used to resolve inline actions.
+     * Define the actions for the action group.
      *
-     * @param  TModel|null  $model
+     * @param  $this  $actions
      * @return $this
      */
-    public function for($model)
+    public function definition(self $actions): self
     {
-        $this->model = $model;
-
-        return $this;
-    }
-
-    /**
-     * Get the model to be used to resolve inline actions.
-     *
-     * @return TModel|null
-     */
-    public function getModel()
-    {
-        return $this->model;
+        return $actions;
     }
 
     /**
@@ -178,6 +141,11 @@ class ActionGroup extends Primitive implements Handler
     public function getRouteKeyName()
     {
         return 'action';
+    }
+
+    public function getHandler()
+    {
+        return config('action.handler', ActionHandler::class);
     }
 
     /**

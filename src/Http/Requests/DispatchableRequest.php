@@ -14,7 +14,7 @@ class DispatchableRequest extends InvokableRequest
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'id' => ['required'],
+            'id' => ['required', 'string'],
         ]);
     }
 }

@@ -29,7 +29,7 @@ trait HasConfirm
             is_null($confirm) => null,
             $confirm instanceof Confirm => $this->confirm = $confirm,
             $confirm instanceof Closure => $this->evaluate($confirm),
-            default => $this->confirmInstance()
+            default => $this->newConfirm()
                 ->title($confirm)
                 ->description($description)
         };
@@ -48,21 +48,11 @@ trait HasConfirm
     }
 
     /**
-     * Determine if the instance has a confirm.
-     *
-     * @return bool
-     */
-    public function hasConfirm()
-    {
-        return isset($this->confirm);
-    }
-
-    /**
      * Access the confirm for this instance.
      *
      * @return Confirm
      */
-    protected function confirmInstance()
+    protected function newConfirm()
     {
         return $this->confirm ??= Confirm::make();
     }

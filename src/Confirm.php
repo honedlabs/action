@@ -39,23 +39,16 @@ class Confirm extends Primitive
     /**
      * The message to display on the submit button.
      *
-     * @var string|null
-     */
-    protected $submit;
-
-    /**
-     * The default message to display on the submit button.
-     *
      * @var string
      */
-    protected static $useSubmit = 'Confirm';
+    protected $submit = 'Confirm';
 
     /**
      * The message to display on the dismiss button.
      *
      * @var string|null
      */
-    protected $dismiss;
+    protected $dismiss = 'Cancel';
 
     /**
      * The default message to display on the dismiss button.
@@ -74,41 +67,8 @@ class Confirm extends Primitive
     public static function make($title = null, $description = null)
     {
         return resolve(static::class)
-            ->title($title)
-            ->description($description);
-    }
-
-    /**
-     * Set the default submit message for the confirm.
-     *
-     * @param  string  $submit
-     * @return void
-     */
-    public static function useSubmit($submit)
-    {
-        static::$useSubmit = $submit;
-    }
-
-    /**
-     * Set the default dismiss message for the confirm.
-     *
-     * @param  string  $dismiss
-     * @return void
-     */
-    public static function useDismiss($dismiss)
-    {
-        static::$useDismiss = $dismiss;
-    }
-
-    /**
-     * Flush the global configuration state.
-     *
-     * @return void
-     */
-    public static function flushState()
-    {
-        static::$useSubmit = 'Confirm';
-        static::$useDismiss = 'Cancel';
+            ->when($title, fn ($confirm, $title) => $confirm->title($title))
+            ->when($description, fn ($confirm, $description) => $confirm->description($description));
     }
 
     /**
@@ -234,7 +194,7 @@ class Confirm extends Primitive
      */
     public function getSubmit()
     {
-        return $this->submit ?? static::$useSubmit;
+        return $this->submit;
     }
 
     /**
@@ -257,7 +217,7 @@ class Confirm extends Primitive
      */
     public function getDismiss()
     {
-        return $this->dismiss ?? static::$useDismiss;
+        return $this->dismiss;
     }
 
     /**
