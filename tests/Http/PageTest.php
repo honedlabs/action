@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Pest\Handler;
 
 use Honed\Action\Testing\PageRequest;
-use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Batches\UserBatch;
 
 use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->request = PageRequest::fake()
-        ->for(UserActions::class)
+        ->for(UserBatch::class)
         ->fill();
 });
 

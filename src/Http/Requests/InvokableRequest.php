@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Honed\Action\Http\Requests;
 
 use Honed\Action\Action;
+use Honed\Action\Http\Data\BulkData;
+use Honed\Action\Http\Data\InlineData;
+use Honed\Action\Http\Data\PageData;
+use Honed\Action\Operations\Operation;
 use Honed\Action\Testing\RequestFactory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
@@ -18,9 +22,9 @@ class InvokableRequest extends FormRequest
      * @var list<string>
      */
     protected $types = [
-        Action::INLINE,
-        Action::BULK,
-        Action::PAGE,
+        Operation::INLINE,
+        Operation::BULK,
+        Operation::PAGE,
     ];
 
     /**
@@ -64,7 +68,7 @@ class InvokableRequest extends FormRequest
      */
     public function isInline()
     {
-        return $this->validated('type') === Action::INLINE;
+        return $this->validated('type') === Operation::INLINE;
     }
 
     /**
@@ -74,7 +78,7 @@ class InvokableRequest extends FormRequest
      */
     public function isBulk()
     {
-        return $this->validated('type') === Action::BULK;
+        return $this->validated('type') === Operation::BULK;
     }
 
     /**
@@ -84,13 +88,13 @@ class InvokableRequest extends FormRequest
      */
     public function isPage()
     {
-        return $this->validated('type') === Action::PAGE;
+        return $this->validated('type') === Operation::PAGE;
     }
 
     /**
      * Get the type of the action.
      *
-     * @return 'inline'|'bulk'|'page'
+     * @return 'inline'|'bulk'|'page'|null
      */
     public function type()
     {
@@ -115,5 +119,20 @@ class InvokableRequest extends FormRequest
         }
 
         return [];
+    }
+
+    /**
+     * Convert the request to a data object.
+     *
+     * @return PageData|null
+     */
+    public function toData()
+    {
+        return match ($this->type()) {
+            Operation::INLINE => InlineData::from($this),
+            Operation::BULK => BulkData::from($this),
+            Operation::PAGE => PageData::from($this),
+            default => null
+        };
     }
 }

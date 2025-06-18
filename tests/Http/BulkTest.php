@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\BulkRequest;
-use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Batches\UserBatch;
 use Workbench\App\Models\User;
 
 use function Pest\Laravel\post;
@@ -13,7 +13,7 @@ beforeEach(function () {
 
     $this->request = BulkRequest::make()
         ->fill()
-        ->for(UserActions::class);
+        ->for(UserBatch::class);
 });
 
 it('executes the action', function () {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Controllers;
 
-use Honed\Action\ActionGroup;
+use Honed\Action\Batch;
 use Honed\Action\Http\Requests\InvokableRequest;
 
 class ActionController extends Controller
@@ -15,14 +15,14 @@ class ActionController extends Controller
      * @template TModel of \Illuminate\Database\Eloquent\Model
      * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel>
      *
-     * @param  ActionGroup<TModel, TBuilder>  $action
+     * @param  Batch<TModel, TBuilder>  $action
      * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws \Honed\Action\Exceptions\ActionNotFoundException
      * @throws \Honed\Action\Exceptions\ActionNotAllowedException
      * @throws \Honed\Action\Exceptions\InvalidActionException
      */
-    public function invoke(InvokableRequest $request, ActionGroup $action)
+    public function invoke(InvokableRequest $request, Batch $action)
     {
         return $action->handle($request);
     }
@@ -34,6 +34,6 @@ class ActionController extends Controller
      */
     protected function from()
     {
-        return ActionGroup::class;
+        return Batch::class;
     }
 }

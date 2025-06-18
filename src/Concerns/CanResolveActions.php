@@ -10,9 +10,9 @@ use Throwable;
 trait CanResolveActions
 {
     use CanBeExecutable;
-    use HasActions;
     use HasEncoder;
     use HasEndpoint;
+    use HasOperations;
 
     /**
      * Get the handler for the instance.

@@ -16,7 +16,7 @@ return new class() extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->uuid('public_id')->unique();
+            $table->uuid('public_id')->nullable();
             $table->foreignId('user_id')->nullable()->constrained();
             $table->string('name');
             $table->text('description')->nullable();

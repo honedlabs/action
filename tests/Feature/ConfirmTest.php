@@ -10,10 +10,6 @@ beforeEach(function () {
     $this->test = Confirm::make();
 });
 
-afterEach(function () {
-    Confirm::flushState();
-});
-
 it('has title', function () {
     expect($this->test)
         ->getTitle()->toBeNull()
@@ -35,30 +31,10 @@ it('has dismiss', function () {
         ->getDismiss()->toBe('Back');
 });
 
-it('set global dismiss message', function () {
-    expect($this->test)
-        ->getDismiss()->toBe('Cancel');
-
-    Confirm::useDismiss('Back');
-
-    expect($this->test)
-        ->getDismiss()->toBe('Back');
-});
-
 it('has submit', function () {
     expect($this->test)
         ->getSubmit()->toBe('Confirm')
         ->submit('Accept')->toBe($this->test)
-        ->getSubmit()->toBe('Accept');
-});
-
-it('set global submit message', function () {
-    expect($this->test)
-        ->getSubmit()->toBe('Confirm');
-
-    Confirm::useSubmit('Accept');
-
-    expect($this->test)
         ->getSubmit()->toBe('Accept');
 });
 

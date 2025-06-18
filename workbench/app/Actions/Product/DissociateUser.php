@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Workbench\App\Actions\Product;
 
-use Honed\Action\Presets\DissociateAction;
+use Honed\Action\Actions\DissociateAction;
 
 /**
  * @template TModel of \Workbench\App\Models\User
  * @template TParent of \Workbench\App\Models\Product
  *
- * @extends \Honed\Action\Presets\DissociateAction<TModel, TParent>
+ * @extends \Honed\Action\Actions\DissociateAction<TModel, TParent>
  */
 class DissociateUser extends DissociateAction
 {
@@ -19,7 +19,7 @@ class DissociateUser extends DissociateAction
      *
      * @return string
      */
-    protected function relationship()
+    public function relationship()
     {
         return 'product';
     }

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Honed\Action\Action;
-
-use function array_merge;
+use Honed\Action\Operations\Operation;
 
 class InlineRequest extends FakeRequest
 {
@@ -45,9 +43,10 @@ class InlineRequest extends FakeRequest
      */
     public function getData()
     {
-        return array_merge([
-            'type' => Action::INLINE,
+        return [
+            'type' => Operation::INLINE,
             'record' => $this->getRecord(),
-        ], parent::getData());
+            ...parent::getData(),
+        ];
     }
 }

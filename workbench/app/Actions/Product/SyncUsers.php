@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Workbench\App\Actions\Product;
 
-use Honed\Action\Presets\SyncAction;
+use Honed\Action\Actions\SyncAction;
 
 /**
  * @template TModel of \Workbench\App\Models\Product
  * @template TUser of \Workbench\App\Models\User
  *
- * @extends \Honed\Action\Presets\SyncAction<TModel, TUser>
+ * @extends \Honed\Action\Actions\SyncAction<TModel, TUser>
  */
 class SyncUsers extends SyncAction
 {
@@ -19,7 +19,7 @@ class SyncUsers extends SyncAction
      *
      * @return string
      */
-    protected function relationship()
+    public function relationship()
     {
         return 'users';
     }

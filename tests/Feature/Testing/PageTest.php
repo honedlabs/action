@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Support\Constants;
+use Honed\Action\Operations\Operation;
 use Honed\Action\Testing\PageRequest;
 
 beforeEach(function () {
@@ -11,15 +11,17 @@ beforeEach(function () {
 
 it('has data', function () {
     expect($this->request)
-        ->getData()->scoped(fn ($data) => $data
-        ->toBeArray()
-        ->toHaveKeys(['type', 'id', 'name'])
-        ->{'type'}->toBe(Constants::PAGE)
+        ->getData()
+        ->scoped(fn ($data) => $data
+            ->toBeArray()
+            ->toHaveKeys(['type', 'id', 'name'])
+            ->{'type'}->toBe(Operation::PAGE)
         )
         ->data(['type' => 'test'])->toBe($this->request)
-        ->getData()->scoped(fn ($data) => $data
-        ->toBeArray()
-        ->toHaveKeys(['type', 'id', 'name'])
-        ->{'type'}->toBe('test')
+        ->getData()
+        ->scoped(fn ($data) => $data
+            ->toBeArray()
+            ->toHaveKeys(['type', 'id', 'name'])
+            ->{'type'}->toBe('test')
         );
 });

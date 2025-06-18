@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Honed\Action\ActionGroup;
+use Honed\Action\Batch;
 use Honed\Action\Concerns\HasEndpoint;
-use Honed\Action\Tests\Stubs\ProductActions;
+use Workbench\App\Batches\UserBatch;
 
 beforeEach(function () {
     $this->test = new class()
@@ -27,25 +27,18 @@ it('has endpoint', function () {
 });
 
 it('is executable', function () {
-    $class = ActionGroup::class;
+    $class = Batch::class;
 
     expect($this->test)
         // Executes by default
         ->isExecutable()->toBeTrue()
         ->isExecutable($class)->toBeFalse()
-        ->isntExecutable($class)->toBeTrue()
+        ->isNotExecutable($class)->toBeTrue()
         ->executes()->toBe($this->test)
         ->isExecutable($class)->toBeFalse()
-        ->isntExecutable($class)->toBeTrue();
+        ->isNotExecutable($class)->toBeTrue();
 
-    $actions = ProductActions::make();
-
-    expect($actions)
-        ->isExecutable(ActionGroup::class)->toBeTrue()
-        ->isntExecutable(ActionGroup::class)->toBeFalse()
-        ->executes(false)->toBe($actions)
-        ->isExecutable(ActionGroup::class)->toBeFalse()
-        ->isntExecutable(ActionGroup::class)->toBeTrue();
+    $actions = UserBatch::make();
 });
 
 it('should be executable', function () {

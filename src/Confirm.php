@@ -7,6 +7,9 @@ namespace Honed\Action;
 use Closure;
 use Honed\Core\Primitive;
 
+/**
+ * @extends \Honed\Core\Primitive<string, mixed>
+ */
 class Confirm extends Primitive
 {
     public const CONSTRUCTIVE = 'constructive';
@@ -49,13 +52,6 @@ class Confirm extends Primitive
      * @var string|null
      */
     protected $dismiss = 'Cancel';
-
-    /**
-     * The default message to display on the dismiss button.
-     *
-     * @var string
-     */
-    protected static $useDismiss = 'Cancel';
 
     /**
      * Create a new confirm instance.

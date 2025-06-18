@@ -95,12 +95,12 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
         $model = str_replace('/', '\\', $model);
 
         if (str_starts_with($model, '\\')) {
-            $namespacedModel = mb_trim($model, '\\');
+            $namespacedModel = trim($model, '\\');
         } else {
             $namespacedModel = $this->qualifyModel($model);
         }
 
-        $model = class_basename(mb_trim($model, '\\'));
+        $model = class_basename(trim($model, '\\'));
 
         $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
@@ -120,13 +120,13 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
             array_keys($replace), array_values($replace), $stub
         );
 
-        $contract = "use Honed\Action\Contracts\Actionable;\r\n";
+        $contract = "use Honed\Action\Contracts\Action;\r\n";
 
         /** @var string */
         return preg_replace(
             '/'.preg_quote($contract, '/').'/',
             vsprintf("use %s;\r\nuse %s;\r\n", [
-                'Honed\Action\Contracts\Actionable',
+                'Honed\Action\Contracts\Action',
                 $namespacedModel,
             ]),
             $stub
@@ -164,7 +164,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(\mb_trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }

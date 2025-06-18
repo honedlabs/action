@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Honed\Action\Handler;
-use Honed\Action\InlineAction;
-use Honed\Action\Tests\Stubs\Product;
+use Honed\Action\Operations\InlineOperation;
+use Workbench\App\Models\Product;
 
 beforeEach(function () {
     $this->builder = Product::query();
@@ -15,7 +15,7 @@ it('sets actions', function () {
     expect($this->handler)
         ->getActions()->toBeEmpty()
         ->actions([
-            InlineAction::make('update'),
+            InlineOperation::make('update'),
         ])->getActions()->toHaveCount(1);
 });
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Workbench\App\Actions\Product;
 
-use Honed\Action\Presets\ToggleAction;
+use Honed\Action\Actions\ToggleAction;
 
 /**
  * @template TModel of \Workbench\App\Models\Product
  * @template TUser of \Workbench\App\Models\User
  *
- * @extends \Honed\Action\Presets\ToggleAction<TModel, TUser>
+ * @extends \Honed\Action\Actions\ToggleAction<TModel, TUser>
  */
 class ToggleUsers extends ToggleAction
 {
@@ -19,7 +19,7 @@ class ToggleUsers extends ToggleAction
      *
      * @return string
      */
-    protected function relationship()
+    public function relationship()
     {
         return 'users';
     }

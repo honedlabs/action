@@ -4,37 +4,32 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Commands\ActionGroupMakeCommand;
 use Honed\Action\Commands\ActionMakeCommand;
 use Honed\Action\Commands\ActionsMakeCommand;
+use Honed\Action\Commands\AssemblerMakeCommand;
+use Honed\Action\Commands\BatchMakeCommand;
 use Honed\Action\Commands\OperationMakeCommand;
+use Honed\Action\Commands\ProcessMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class ActionServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/action.php', 'action');
-
-        // $this->app->bind(ActionGroupHandler::class, ActionHandler::class)
 
         $this->registerRoutesMacro();
     }
 
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
 
@@ -43,40 +38,38 @@ class ActionServiceProvider extends ServiceProvider
             $this->commands([
                 ActionMakeCommand::class,
                 ActionsMakeCommand::class,
-                ActionGroupMakeCommand::class,
+                AssemblerMakeCommand::class,
+                BatchMakeCommand::class,
                 OperationMakeCommand::class,
+                ProcessMakeCommand::class,
             ]);
         }
     }
 
     /**
      * Register the publishing for the package.
-     *
-     * @return void
      */
-    protected function offerPublishing()
+    protected function offerPublishing(): void
     {
         $this->publishes([
             __DIR__.'/../config/action.php' => config_path('action.php'),
-        ], 'action-config');
+        ], 'config');
 
         $this->publishes([
             __DIR__.'/../stubs' => base_path('stubs'),
-        ], 'action-stubs');
+        ], 'stubs');
     }
 
     /**
      * Register the route macro for the action handler.
-     *
-     * @return void
      */
-    private function registerRoutesMacro()
+    private function registerRoutesMacro(): void
     {
         Router::macro('actions', function () {
             /** @var Router $this */
             $methods = ['post', 'patch', 'put'];
 
-            $endpoint = ActionGroup::getDefaultEndpoint();
+            $endpoint = Batch::getDefaultEndpoint();
 
             $this->match($methods, $endpoint, [ActionController::class, 'dispatch'])
                 ->name('actions');

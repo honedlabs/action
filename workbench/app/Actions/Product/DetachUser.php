@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Workbench\App\Actions\Product;
 
-use Honed\Action\Presets\DetachAction;
+use Honed\Action\Actions\DetachAction;
 
 /**
  * @template TModel of \Workbench\App\Models\Product
  * @template TUser of \Workbench\App\Models\User
  *
- * @extends \Honed\Action\Presets\DetachAction<TModel, TUser>
+ * @extends \Honed\Action\Actions\DetachAction<TModel, TUser>
  */
 class DetachUser extends DetachAction
 {
@@ -19,7 +19,7 @@ class DetachUser extends DetachAction
      *
      * @return string
      */
-    protected function relationship()
+    public function relationship()
     {
         return 'users';
     }

@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Process;
+
+/**
+ * @template TPayload
+ * @template TResult
+ * 
+ * @extends Honed\Command\Process<TPayload, TResult>
+ */
+class {{ class }} extends Process
+{
+    /**
+     * The tasks to be sequentially executed.
+     *
+     * @return array<int, class-string>
+     */
+    protected function tasks()
+    {
+        return [
+
+        ];
+    }
+}

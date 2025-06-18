@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-use Honed\Action\ActionGroup;
+use Honed\Action\Batch;
 use Honed\Action\Tests\Stubs\ProductActions;
 
 // beforeEach(function () {
-//     $this->test = ActionGroup::make('test');
+//     $this->test = Batch::make('test');
 //     $this->group = ProductActions::make();
 // });
 
 // it('has primitive', function () {
 //     expect($this->test)
-//         ->primitive()->toBe(ActionGroup::class);
+//         ->primitive()->toBe(Batch::class);
 
 //     expect($this->group)
-//         ->primitive()->toBe(ActionGroup::class);
+//         ->primitive()->toBe(Batch::class);
 // });
 
 // it('has route key', function () {
 //     $key = $this->test->getRouteKey();
 
 //     expect($this->test)
-//         ->decode($key)->toBe(ActionGroup::class);
+//         ->decode($key)->toBe(Batch::class);
 
 //     $key = $this->group->getRouteKey();
 
@@ -51,10 +51,10 @@ use Honed\Action\Tests\Stubs\ProductActions;
 
 //     // Not a subclass
 //     expect($this->test)
-//         ->resolveChildRouteBinding(ActionGroup::class, $id)->toBeNull();
+//         ->resolveChildRouteBinding(Batch::class, $id)->toBeNull();
 
 //     $id = $this->group->getRouteKey();
 
 //     expect($this->group)
-//         ->resolveChildRouteBinding(ActionGroup::class, $id)->toBeInstanceOf(ProductActions::class);
+//         ->resolveChildRouteBinding(Batch::class, $id)->toBeInstanceOf(ProductActions::class);
 // });

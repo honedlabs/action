@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Attributes\UseActions;
-use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Batchs\UserActions;
 use Workbench\App\Models\User;
 
 it('has attribute', function () {

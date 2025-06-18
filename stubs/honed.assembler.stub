@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Assembler;
+use Honed\Action\Operations\Operation;
+
+class {{ class }} extends Assembler
+{
+    /**
+     * Assemble an operation for serialization.
+     * 
+     * @param \Honed\Action\Operations\Operation $operation
+     * 
+     * @return \Honed\Action\Operations\Operation
+     */
+    protected function definition(Operation $operation): Operation
+    {
+        return $operation;
+    }
+}

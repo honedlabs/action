@@ -7,7 +7,6 @@ namespace Honed\Action\Testing;
 use Honed\Action\Http\Requests\InvokableRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 use function array_merge;
 use function is_string;
@@ -241,7 +240,7 @@ class FakeRequest
     {
         return Request::create(
             $this->getUri(),
-            HttpFoundationRequest::METHOD_POST,
+            Request::METHOD_POST,
             $this->getData()
         );
     }

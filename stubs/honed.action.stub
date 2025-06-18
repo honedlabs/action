@@ -2,9 +2,9 @@
 
 namespace {{ namespace }};
 
-use Honed\Action\Contracts\Actionable;
+use Honed\Action\Contracts\Action;
 
-class {{ class }} implements Actionable
+class {{ class }} implements Action
 {
     /**
      * Handle the action.

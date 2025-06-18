@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Testing\InlineRequest;
-use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Batches\UserBatch;
 use Workbench\App\Models\User;
 
 use function Pest\Laravel\post;
@@ -11,7 +11,7 @@ use function Pest\Laravel\post;
 beforeEach(function () {
     $this->user = User::factory()->create();
 
-    $this->actions = UserActions::make();
+    $this->actions = UserBatch::make();
 
     $this->request = InlineRequest::fake()
         ->for($this->actions)
@@ -34,7 +34,7 @@ it('executes the action', function () {
 });
 
 it('does not execute non-existent action', function () {
-    $key = UserActions::encode(User::class);
+    $key = UserBatch::encode(User::class);
 
     $data = $this->request
         ->record($this->user->id)
@@ -47,7 +47,7 @@ it('does not execute non-existent action', function () {
 });
 
 // it('does not execute for non-executable actions', function () {
-//     $group = RouteUserActions::make();
+//     $group = RouteUserBatch::make();
 
 //     $data = $this->request->for($group)->getData();
 

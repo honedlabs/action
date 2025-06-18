@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\ActionGroup;
+use Honed\Action\Batch;
 use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Tests\Stubs\Product;
 use Honed\Action\Tests\Stubs\ProductActions;
@@ -14,7 +14,7 @@ beforeEach(function () {
 
         public static function baseClass()
         {
-            return ActionGroup::class;
+            return Batch::class;
         }
     };
 
@@ -54,7 +54,7 @@ it('retrieves primitive', function () {
         ->toBeInstanceOf(ProductActions::class);
 
     expect($actions)
-        ->tryFrom(ActionGroup::make()->getRouteKey())
+        ->tryFrom(Batch::make()->getRouteKey())
         ->toBeNull();
 });
 

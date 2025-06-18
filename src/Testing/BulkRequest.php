@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Testing;
 
-use Honed\Action\Action;
-
-use function array_merge;
+use Honed\Action\Operations\Operation;
 
 class BulkRequest extends FakeRequest
 {
@@ -105,11 +103,12 @@ class BulkRequest extends FakeRequest
      */
     public function getData()
     {
-        return array_merge([
-            'type' => Action::BULK,
+        return [
+            'type' => Operation::BULK,
             'only' => $this->getOnly(),
             'except' => $this->getExcept(),
             'all' => $this->isAll(),
-        ], parent::getData());
+            ...parent::getData(),
+        ];
     }
 }

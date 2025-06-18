@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Data;
 
-class BulkData extends ActionData
+class BulkData extends PageData
 {
     /**
      * @param  array<int,string|int>  $only

@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Workbench\App\Models;
 
-use Honed\Action\Attributes\UseActionGroup;
-use Honed\Action\Concerns\HasActionGroup;
+use Honed\Action\Attributes\UseBatch;
+use Honed\Action\Concerns\HasBatch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Workbench\App\ActionGroups\UserActions;
+use Workbench\App\Batches\UserBatch;
 use Workbench\Database\Factories\UserFactory;
 
-#[UseActionGroup(UserActions::class)]
+#[UseBatch(UserBatch::class)]
 class User extends Authenticatable
 {
     /**
-     * @use \Honed\Action\Concerns\HasActionGroup<\Workbench\App\ActionGroups\UserActions>
+     * @use \Honed\Action\Concerns\HasBatch<\Workbench\App\Batches\UserBatch>
      */
-    use HasActionGroup;
+    use HasBatch;
 
     /**
      * @use \Illuminate\Database\Eloquent\Factories\HasFactory<\Workbench\Database\Factories\UserFactory>

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Action\Concerns\HasAction;
-use Honed\Action\Contracts\Actionable;
+use Honed\Action\Contracts\Action;
 use Workbench\App\Actions\Inline\DestroyAction;
 
 beforeEach(function () {
@@ -15,10 +15,10 @@ beforeEach(function () {
 
 it('has action', function () {
     expect($this->test)
-        ->isActionable()->toBeFalse()
+        ->isAction()->toBeFalse()
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
-        ->isActionable()->toBeTrue()
+        ->isAction()->toBeTrue()
         ->getAction()->toBeInstanceOf(Closure::class);
 });
 
@@ -41,7 +41,7 @@ it('has handler', function () {
 });
 
 it('has actionable', function () {
-    $test = new class() implements Actionable
+    $test = new class() implements Action
     {
         use HasAction;
 
@@ -52,9 +52,9 @@ it('has actionable', function () {
     };
 
     expect($test)
-        ->isActionable()->toBeTrue()
+        ->isAction()->toBeTrue()
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
-        ->isActionable()->toBeTrue()
+        ->isAction()->toBeTrue()
         ->getHandler()->toBeInstanceOf(Closure::class);
 });

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Http\Controllers;
 
-use Honed\Action\ActionGroup;
+use Honed\Action\Batch;
 use Honed\Action\Exceptions\CouldNotResolveHandlerException;
 use Honed\Action\Http\Requests\DispatchableRequest;
 use Honed\Action\Http\Requests\InvokableRequest;
@@ -28,7 +28,7 @@ abstract class Controller extends BaseController
      * @throws \Honed\Action\Exceptions\ActionNotAllowedException
      * @throws \Honed\Action\Exceptions\InvalidActionException
      */
-    public function invoke(InvokableRequest $request, ActionGroup $action)
+    public function invoke(InvokableRequest $request, Batch $action)
     {
         return $action->handle($request);
     }
