@@ -10,7 +10,7 @@ class DestroyUser implements Action
 {
     /**
      * Handle the action.
-     * 
+     *
      * @param  \Workbench\App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */

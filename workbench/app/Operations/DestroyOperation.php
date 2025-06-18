@@ -12,8 +12,6 @@ class DestroyOperation extends InlineOperation
 {
     /**
      * Provide the instance with any necessary setup.
-     * 
-     * @return void
      */
     protected function setUp(): void
     {
@@ -25,7 +23,7 @@ class DestroyOperation extends InlineOperation
 
     /**
      * Define the inline operation instance.
-     * 
+     *
      * @param  $this  $operation
      * @return $this
      */

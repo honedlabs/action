@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Workbench\App\Assemblers;
 
 use Honed\Action\Assembler;
@@ -9,10 +11,6 @@ class UpdateAssembler extends Assembler
 {
     /**
      * Assemble an operation for serialization.
-     * 
-     * @param \Honed\Action\Operations\Operation $operation
-     * 
-     * @return \Honed\Action\Operations\Operation
      */
     protected function definition(Operation $operation): Operation
     {
