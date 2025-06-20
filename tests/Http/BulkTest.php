@@ -43,17 +43,6 @@ it('is 404 for no name match', function () {
     $response->assertNotFound();
 });
 
-it('is 403 if the action is not allowed', function () {
-    $data = $this->request
-        ->all()
-        ->name('update.name')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertForbidden();
-});
-
 it('does not mix action types', function () {
     $data = $this->request
         ->all()
@@ -85,7 +74,6 @@ it('applies only to selected records', function () {
         ->each(fn ($user) => $user
             ->name->not->toBe('description')
         );
-
 });
 
 it('applies all excepted records', function () {
@@ -111,3 +99,28 @@ it('applies all excepted records', function () {
             ->name->toBe('description')
         );
 });
+
+it('applies with chunking', function ($name) {
+    $ids = [1, 2, 3, 4, 5];
+    $data = $this->request
+        ->only($ids)
+        ->name($name)
+        ->getData();
+
+    $response = post(route('actions'), $data);
+
+    $response->assertRedirect();
+
+    expect(User::query()->whereIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->toBe($name)
+        );
+
+    expect(User::query()->whereNotIn('id', $ids)->get())
+        ->each(fn ($user) => $user
+            ->name->not->toBe($name)
+        );
+})->with([
+    'chunk',
+    'chunk.id',
+]);

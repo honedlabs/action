@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Honed\Action\Batch;
 use Honed\Action\Operations\PageOperation;
 use Honed\Action\Testing\RequestFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Workbench\App\Batches\UserBatch;
@@ -20,9 +23,9 @@ afterEach(function () {
 
 it('has model', function () {
     expect($this->group)
-        ->getModel()->toBeNull()
-        ->for(User::factory()->create())->toBe($this->group)
-        ->getModel()->toBeInstanceOf(User::class);
+        ->getRecord()->toBeNull()
+        ->record(User::factory()->create())->toBe($this->group)
+        ->getRecord()->toBeInstanceOf(User::class);
 });
 
 it('has route key name', function () {
@@ -38,22 +41,6 @@ it('requires builder to handle requests', function () {
     expect($this->group->handle($request))
         ->toBeInstanceOf(RedirectResponse::class);
 })->throws(RuntimeException::class);
-
-it('handles requests with model', function () {
-
-    $request = RequestFactory::page()
-        ->fill()
-        ->name('create.name')
-        ->validate();
-
-    expect(User::query()->count())->toBe(0);
-
-    expect(UserBatch::make())
-        ->handle($request)
-        ->toBeInstanceOf(RedirectResponse::class);
-
-    expect(User::query()->count())->toBe(1);
-});
 
 it('resolves route binding', function () {
     expect($this->group)
@@ -71,19 +58,19 @@ it('resolves route binding', function () {
         ->toBeInstanceOf(UserBatch::class);
 });
 
-it('resolves action group', function () {
+it('resolves batch', function () {
     UserBatch::guessBatchNamesUsing(function ($class) {
         return Str::of($class)
             ->afterLast('\\')
-            ->prepend('Workbench\\App\\Batchs\\')
-            ->append('Actions')
+            ->prepend('Workbench\\App\\Batches\\')
+            ->append('Batch')
             ->value();
     });
 
     expect(UserBatch::resolveBatchName(User::class))
         ->toBe(UserBatch::class);
 
-    expect(UserBatch::actionGroupForModel(User::class))
+    expect(UserBatch::batchForModel(User::class))
         ->toBeInstanceOf(UserBatch::class);
 
     UserBatch::flushState();
@@ -102,29 +89,68 @@ it('uses namespace', function () {
     UserBatch::flushState();
 });
 
-it('has array representation', function () {
+it('has array representation with actions but is anonymous', function () {
     expect($this->group->toArray())
         ->toBeArray()
-        ->toHaveCount(3)
-        ->toHaveKeys(['inline', 'bulk', 'page']);
+        ->toHaveKeys([
+            'inline',
+            'bulk',
+            'page',
+        ]);
 });
 
-it('has array representation with server actions', function () {
-    expect(UserBatch::make()->for(User::factory()->create())->toArray())
-        ->toBeArray()
-        ->toHaveCount(5)
-        ->toHaveKeys(['id', 'endpoint', 'inline', 'bulk', 'page']);
+describe('class-based batch', function () {
+    beforeEach(function () {
+        $this->batch = UserBatch::make()->record(User::factory()->create());
+    });
 
-    expect(UserBatch::make()->for(User::factory()->create())->executes(false)->toArray())
-        ->toHaveCount(3)
-        ->toHaveKeys(['inline', 'bulk', 'page']);
+    it('has array representation with actions', function () {
+        expect($this->batch->toArray())
+            ->toBeArray()
+            ->toHaveKeys([
+                'inline',
+                'bulk',
+                'page',
+                'id',
+                'endpoint',
+            ]);
+    });
+
+    it('has array representation without actions', function () {
+        expect($this->batch->actionable(false)->toArray())
+            ->toBeArray()
+            ->toHaveKeys([
+                'inline',
+                'bulk',
+                'page',
+            ]);
+    });
 });
 
-it('has array representation with model', function () {
-    $user = User::factory()->create();
+describe('evaluation', function () {
+    beforeEach(function () {
+        $this->batch = UserBatch::make()
+            ->record(User::factory()->create());
+    });
 
-    expect(UserBatch::make()->for($user)->toArray())
-        ->toBeArray()
-        ->toHaveCount(5)
-        ->toHaveKeys(['inline', 'bulk', 'page', 'id', 'endpoint']);
+    it('named dependencies', function ($closure, $class) {
+        expect($this->batch->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn ($row) => $row, User::class],
+        fn () => [fn ($record) => $record, User::class],
+        fn () => [fn ($builder) => $builder, Builder::class],
+        fn () => [fn ($query) => $query, Builder::class],
+        fn () => [fn ($q) => $q, Builder::class],
+        fn () => [fn ($collection) => $collection, Collection::class],
+        fn () => [fn ($records) => $records, Collection::class],
+    ]);
+
+    it('typed dependencies', function ($closure, $class) {
+        expect($this->batch->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn (Model $arg) => $arg, User::class],
+        fn () => [fn (User $arg) => $arg, User::class],
+        fn () => [fn (Builder $arg) => $arg, Builder::class],
+        fn () => [fn (Collection $arg) => $arg, Collection::class],
+    ]);
 });

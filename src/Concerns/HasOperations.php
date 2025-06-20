@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Concerns;
 
 use Honed\Action\Batch;
+use Honed\Action\Operations\InlineOperation;
 use Honed\Action\Operations\Operation;
-use Honed\Core\Parameters;
 
 use function array_filter;
 use function array_map;
@@ -25,7 +25,7 @@ trait HasOperations
      *
      * @var bool
      */
-    protected $operationable = true;
+    protected $operable = true;
 
     /**
      * List of the operations.
@@ -61,9 +61,9 @@ trait HasOperations
      * @param  bool  $provide
      * @return $this
      */
-    public function operationable($provide = true)
+    public function operable($provide = true)
     {
-        $this->operationable = $provide;
+        $this->operable = $provide;
 
         return $this;
     }
@@ -74,9 +74,9 @@ trait HasOperations
      * @param  bool  $provide
      * @return $this
      */
-    public function notOperation($provide = true)
+    public function notOperable($provide = true)
     {
-        return $this->operationable(! $provide);
+        return $this->operable(! $provide);
     }
 
     /**
@@ -84,9 +84,9 @@ trait HasOperations
      *
      * @return bool
      */
-    public function isOperation()
+    public function isOperable()
     {
-        return $this->operationable;
+        return $this->operable;
     }
 
     /**
@@ -94,9 +94,9 @@ trait HasOperations
      *
      * @return bool
      */
-    public function isNotOperation()
+    public function isNotOperable()
     {
-        return ! $this->isOperation();
+        return ! $this->isOperable();
     }
 
     /**
@@ -135,6 +135,10 @@ trait HasOperations
      */
     public function getOperations()
     {
+        if ($this->isNotOperable()) {
+            return [];
+        }
+
         $operations = [];
 
         foreach ($this->operations as $operation) {
@@ -171,6 +175,8 @@ trait HasOperations
     public function inlinable($inlinable = true)
     {
         $this->inlinable = $inlinable;
+
+        return $this;
     }
 
     /**
@@ -207,7 +213,7 @@ trait HasOperations
     /**
      * Retrieve only the allowed inline operations.
      *
-     * @return array<int,Operation>
+     * @return array<int,InlineOperation>
      */
     public function getInlineOperations()
     {
@@ -215,6 +221,7 @@ trait HasOperations
             return [];
         }
 
+        /** @var array<int,InlineOperation> */
         return array_values(
             array_filter(
                 $this->getOperations(),
@@ -226,24 +233,20 @@ trait HasOperations
     /**
      * Get the inline operations as an array.
      *
-     * @param  \Illuminate\Database\Eloquent\Model|null  $model
+     * @param  array<string,mixed>|\Illuminate\Database\Eloquent\Model|null  $model
      * @return array<int,mixed>
      */
     public function inlineOperationsToArray($model = null)
     {
-        $named = $typed = [];
-
-        if ($model) {
-            [$named, $typed] = Parameters::model($model);
-        }
-
         return array_map(
-            static fn (Operation $operation) => $operation
-                ->toArray($named, $typed),
+            static fn (InlineOperation $operation) => $operation
+                ->toArray(),
             array_values(
                 array_filter(
                     $this->getInlineOperations(),
-                    static fn (Operation $operation) => $operation->isAllowed($named, $typed)
+                    static fn (InlineOperation $operation) => $operation
+                        ->record($model)
+                        ->isAllowed()
                 )
             )
         );
@@ -272,6 +275,8 @@ trait HasOperations
     public function bulkable($bulkable = true)
     {
         $this->bulkable = $bulkable;
+
+        return $this;
     }
 
     /**
@@ -361,6 +366,8 @@ trait HasOperations
     public function pageable($pageable = true)
     {
         $this->pageable = $pageable;
+
+        return $this;
     }
 
     /**

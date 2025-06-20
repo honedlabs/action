@@ -7,37 +7,30 @@ namespace Honed\Action\Concerns;
 use Illuminate\Support\Facades\App;
 use Throwable;
 
-trait CanResolveActions
+/**
+ * @phpstan-require-implements \Honed\Action\Contracts\HandlesOperations
+ */
+trait CanHandleOperations
 {
-    use CanBeExecutable;
+    use CanBeActionable;
     use HasEncoder;
-    use HasEndpoint;
     use HasOperations;
-
-    /**
-     * Get the handler for the instance.
-     *
-     * @return class-string<Handler>
-     */
-    abstract public function getHandler();
 
     /**
      * Decode and retrieve a primitive class.
      *
      * @param  string  $value
-     * @return mixed
+     * @return static|null
      */
     public static function find($value)
     {
         try {
             $primitive = static::decode($value);
 
-            // @phpstan-ignore-next-line
-            if (class_exists($primitive)) {
-                return $primitive::make();
-            }
+            return static::canHandleOperations($primitive)
+                ? $primitive::make() // @phpstan-ignore-line
+                : null;
 
-            return null;
         } catch (Throwable $th) {
             return null;
         }
@@ -87,11 +80,24 @@ trait CanResolveActions
      */
     public function handle($request)
     {
-        if ($this->isNotExecutable()) {
+        if ($this->isNotActionable()) {
             abort(404);
         }
 
         return App::make($this->getHandler())
             ->handle($this, $request);
+    }
+
+    /**
+     * Determine if the primitive cannot handle operations.
+     *
+     * @param  mixed  $primitive
+     * @return bool
+     */
+    protected static function canHandleOperations($primitive)
+    {
+        return is_string($primitive)
+            && class_exists($primitive)
+            && is_subclass_of($primitive, static::getParentClass()); // @phpstan-ignore function.alreadyNarrowedType
     }
 }

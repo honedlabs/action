@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Concerns;
+namespace Honed\Action\Operations\Concerns;
 
 use Closure;
 use Honed\Action\Contracts\Action;
@@ -56,7 +56,7 @@ trait HasAction
      *
      * @return bool
      */
-    public function isAction()
+    public function hasAction()
     {
         return (bool) $this->action || $this instanceof Action;
     }
@@ -94,6 +94,7 @@ trait HasAction
         $action = $this->getAction();
 
         return match (true) {
+            // @phpstan-ignore-next-line argument.type
             is_string($action) => Closure::fromCallable([
                 App::make($action),
                 'handle',

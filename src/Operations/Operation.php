@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action\Operations;
 
 use Closure;
-use Honed\Action\Concerns\HasAction;
 use Honed\Action\Concerns\HasConfirm;
 use Honed\Action\Confirm;
 use Honed\Core\Concerns\Allowable;
@@ -20,7 +19,7 @@ use Honed\Core\Primitive;
 abstract class Operation extends Primitive
 {
     use Allowable;
-    use HasAction;
+    use Concerns\HasAction;
     use HasConfirm;
     use HasExtra;
     use HasIcon;
@@ -34,26 +33,6 @@ abstract class Operation extends Primitive
     public const BULK = 'bulk';
 
     public const PAGE = 'page';
-
-    /**
-     * Provide the instance with any necessary setup.
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->definition($this);
-    }
-
-    /**
-     * Execute the action on a resource.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>  $record
-     * @return mixed
-     */
-    abstract public function execute($record);
 
     /**
      * Create a new action instance.
@@ -70,31 +49,49 @@ abstract class Operation extends Primitive
     }
 
     /**
-     * Determine if the action is an inline action.
+     * Execute the inline action on the given record.
+     *
+     * @return Closure|null
      */
-    public function isInline(): bool
+    public function callback()
+    {
+        return $this->getHandler();
+    }
+
+    /**
+     * Determine if the action is an inline action.
+     *
+     * @return bool
+     */
+    public function isInline()
     {
         return $this instanceof InlineOperation;
     }
 
     /**
      * Determine if the action is a bulk action.
+     *
+     * @return bool
      */
-    public function isBulk(): bool
+    public function isBulk()
     {
         return $this instanceof BulkOperation;
     }
 
     /**
      * Determine if the action is a page action.
+     *
+     * @return bool
      */
-    public function isPage(): bool
+    public function isPage()
     {
         return $this instanceof PageOperation;
     }
 
     /**
-     * {@inheritdoc}
+     * Get the instance as an array.
+     *
+     * @return array<string, mixed>
      */
     public function toArray()
     {
@@ -104,14 +101,17 @@ abstract class Operation extends Primitive
             'type' => $this->getType(),
             'icon' => $this->getIcon(),
             'extra' => $this->getExtra(),
-            'actionable' => $this->isAction(),
+            'action' => $this->hasAction(),
             'confirm' => $this->getConfirm()?->toArray(),
             'route' => $this->routeToArray(),
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * Provide a selection of default dependencies for evaluation by name.
+     *
+     * @param  string  $parameterName
+     * @return array<int, mixed>
      */
     protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
     {
@@ -120,18 +120,21 @@ abstract class Operation extends Primitive
         }
 
         return match ($parameterName) {
-            'confirm' => [$this->confirmInstance()],
+            'confirm' => [$this->newConfirm()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
         };
     }
 
     /**
-     * {@inheritdoc}
+     * Provide a selection of default dependencies for evaluation by type.
+     *
+     * @param  string  $parameterType
+     * @return array<int, mixed>
      */
     protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
     {
         return match ($parameterType) {
-            Confirm::class => [$this->confirmInstance()],
+            Confirm::class => [$this->newConfirm()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType),
         };
     }

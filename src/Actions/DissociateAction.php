@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,23 +11,19 @@ use Illuminate\Database\Eloquent\Model;
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TParent of \Illuminate\Database\Eloquent\Model
  */
-abstract class DissociateAction implements Action, Relatable
+abstract class DissociateAction extends DatabaseAction implements Relatable
 {
-    use CanBeTransaction;
-
     /**
      * Dissociate a model from the parent model.
      *
      * @param  TModel  $model
-     * @return void
+     * @return TModel
      */
     public function handle($model)
     {
-        $this->transact(
+        return $this->transact(
             fn () => $this->dissociate($model)
         );
-
-        return $model;
     }
 
     /**
@@ -48,7 +42,7 @@ abstract class DissociateAction implements Action, Relatable
      * Dissociate the parent from the model.
      *
      * @param  TModel  $model
-     * @return void
+     * @return TModel
      */
     protected function dissociate($model)
     {
@@ -57,6 +51,8 @@ abstract class DissociateAction implements Action, Relatable
         $model->save();
 
         $this->after($model);
+
+        return $model;
     }
 
     /**

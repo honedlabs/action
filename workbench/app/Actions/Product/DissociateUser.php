@@ -7,8 +7,8 @@ namespace Workbench\App\Actions\Product;
 use Honed\Action\Actions\DissociateAction;
 
 /**
- * @template TModel of \Workbench\App\Models\User
- * @template TParent of \Workbench\App\Models\Product
+ * @template TModel of \Workbench\App\Models\Product
+ * @template TParent of \Workbench\App\Models\User
  *
  * @extends \Honed\Action\Actions\DissociateAction<TModel, TParent>
  */
@@ -21,6 +21,6 @@ class DissociateUser extends DissociateAction
      */
     public function relationship()
     {
-        return 'product';
+        return 'user';
     }
 }

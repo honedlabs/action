@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Closure;
+use Honed\Core\Concerns\HasRecord;
 use Honed\Core\Primitive;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends \Honed\Core\Primitive<string, mixed>
  */
 class Confirm extends Primitive
 {
+    use HasRecord;
+
     public const CONSTRUCTIVE = 'constructive';
 
     public const DESTRUCTIVE = 'destructive';
@@ -42,14 +46,14 @@ class Confirm extends Primitive
     /**
      * The message to display on the submit button.
      *
-     * @var string
+     * @var string|Closure(mixed...):string
      */
     protected $submit = 'Confirm';
 
     /**
      * The message to display on the dismiss button.
      *
-     * @var string|null
+     * @var string|Closure(mixed...):string
      */
     protected $dismiss = 'Cancel';
 
@@ -63,8 +67,8 @@ class Confirm extends Primitive
     public static function make($title = null, $description = null)
     {
         return resolve(static::class)
-            ->when($title, fn ($confirm, $title) => $confirm->title($title))
-            ->when($description, fn ($confirm, $description) => $confirm->description($description));
+            ->title($title)
+            ->description($description);
     }
 
     /**
@@ -83,13 +87,12 @@ class Confirm extends Primitive
     /**
      * Get the title of the confirm.
      *
-     * @param  array<string, mixed>  $parameters
-     * @param  array<class-string, mixed>  $typed
      * @return string|null
      */
-    public function getTitle($parameters = [], $typed = [])
+    public function getTitle()
     {
-        return $this->evaluate($this->title, $parameters, $typed);
+        /** @var string|null */
+        return $this->evaluate($this->title);
     }
 
     /**
@@ -108,13 +111,12 @@ class Confirm extends Primitive
     /**
      * Get the description of the confirm.
      *
-     * @param  array<string, mixed>  $parameters
-     * @param  array<class-string, mixed>  $typed
      * @return string|null
      */
-    public function getDescription($parameters = [], $typed = [])
+    public function getDescription()
     {
-        return $this->evaluate($this->description, $parameters, $typed);
+        /** @var string|null */
+        return $this->evaluate($this->description);
     }
 
     /**
@@ -173,7 +175,7 @@ class Confirm extends Primitive
     /**
      * Set the submit message for the confirm.
      *
-     * @param  string|null  $submit
+     * @param  string|Closure(mixed...):string  $submit
      * @return $this
      */
     public function submit($submit)
@@ -190,13 +192,14 @@ class Confirm extends Primitive
      */
     public function getSubmit()
     {
-        return $this->submit;
+        /** @var string */
+        return $this->evaluate($this->submit);
     }
 
     /**
      * Set the dismiss message for the confirm.
      *
-     * @param  string|null  $dismiss
+     * @param  string|Closure(mixed...):string  $dismiss
      * @return $this
      */
     public function dismiss($dismiss)
@@ -213,20 +216,55 @@ class Confirm extends Primitive
      */
     public function getDismiss()
     {
-        return $this->dismiss;
+        /** @var string */
+        return $this->evaluate($this->dismiss);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toArray($named = [], $typed = [])
+    public function toArray()
     {
         return [
-            'title' => $this->getTitle($named, $typed),
-            'description' => $this->getDescription($named, $typed),
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
             'dismiss' => $this->getDismiss(),
             'submit' => $this->getSubmit(),
             'intent' => $this->getIntent(),
         ];
+    }
+
+    /**
+     * Provide a selection of default dependencies for evaluation by name.
+     *
+     * @param  string  $parameterName
+     * @return array<int, mixed>
+     */
+    protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
+    {
+        return match ($parameterName) {
+            'model', 'record', 'row' => [$this->getRecord()],
+            default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
+        };
+    }
+
+    /**
+     * Provide a selection of default dependencies for evaluation by type.
+     *
+     * @param  string  $parameterType
+     * @return array<int, mixed>
+     */
+    protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
+    {
+        $record = $this->getRecord();
+
+        if (! $record instanceof Model) {
+            return parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType);
+        }
+
+        return match ($parameterType) {
+            Model::class, $record::class => [$record],
+            default => parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType),
+        };
     }
 }

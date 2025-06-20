@@ -8,11 +8,7 @@ use Honed\Action\Operations\Operation;
 class {{ class }} extends Assembler
 {
     /**
-     * Assemble an operation for serialization.
-     * 
-     * @param \Honed\Action\Operations\Operation $operation
-     * 
-     * @return \Honed\Action\Operations\Operation
+     * Define the parameters of the operation.
      */
     protected function definition(Operation $operation): Operation
     {

@@ -37,7 +37,7 @@ trait HasBatch
             return static::$batch::make();
         }
 
-        if ($batch = static::getBatchAttribute()) {
+        if ($batch = static::getUseBatchAttribute()) {
             return $batch::make();
         }
 

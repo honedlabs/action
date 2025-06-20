@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
+use Illuminate\Support\Collection;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TArg of 'model' | 'models' | 'query' | 'relationship' = 'model'
+ * @template TType of TModel|\Illuminate\Database\Eloquent\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, \Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model> = TModel
  */
-class DestroyAction implements Action
+class DestroyAction extends DatabaseAction
 {
-    use CanBeTransaction;
-
     /**
      * Destroy the model(s).
      *
-     * @param TArg is 'model' ? TModel : TArg is 'models' ? iterable<int, TModel> : TArg is 'query' ? \Illuminate\Database\Eloquent\Builder<TModel> : \Illuminate\Database\Eloquent\Relations\Relation<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model> $model
-     * @return TModel
+     * @param  TType  $model
+     * @return TType
      */
     public function handle($model)
     {
@@ -27,32 +24,32 @@ class DestroyAction implements Action
             fn () => $this->destroy($model)
         );
 
-        $this->after($model);
-
         return $model;
     }
 
     /**
      * Destroy the model(s).
      *
-     * @param TArg is 'model' ? TModel : TArg is 'models' ? iterable<int, TModel> : TArg is 'query' ? \Illuminate\Database\Eloquent\Builder<TModel> : \Illuminate\Database\Eloquent\Relations\Relation<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model> $model
+     * @param  TType  $model
      * @return void
      */
     protected function destroy($model)
     {
-        if (is_iterable($model)) {
+        if ($model instanceof Collection) {
             foreach ($model as $item) {
                 $item->delete();
             }
         } else {
             $model->delete();
         }
+
+        $this->after($model);
     }
 
     /**
      * Perform additional logic after the model has been deleted.
      *
-     * @param TArg is 'model' ? TModel : TArg is 'models' ? iterable<int, TModel> : TArg is 'query' ? \Illuminate\Database\Eloquent\Builder<TModel> : \Illuminate\Database\Eloquent\Relations\Relation<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model> $model
+     * @param  TType  $model
      * @return void
      */
     protected function after($model)

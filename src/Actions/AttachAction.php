@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TAttach of \Illuminate\Database\Eloquent\Model
+ * @template TInput of mixed = array<int, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
  */
-abstract class AttachAction implements Action, Relatable
+abstract class AttachAction extends DatabaseAction implements Relatable
 {
-    use CanBeTransaction;
+    /**
+     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
+     */
+    use Concerns\InteractsWithFormData;
+
     use Concerns\InteractsWithModels;
 
     /**
@@ -26,7 +28,7 @@ abstract class AttachAction implements Action, Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TAttach|iterable<int, int|string|TAttach>  $attachments
-     * @param  iterable<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return TModel
      */
     public function handle($model, $attachments, $attributes = [])
@@ -54,12 +56,18 @@ abstract class AttachAction implements Action, Relatable
      * Prepare the attachments and attributes for the attach method.
      *
      * @param  int|string|TAttach|array<int, int|string|TAttach>  $attachments
-     * @param  array<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return array<int|string, array<string, mixed>>
      */
     protected function prepare($attachments, $attributes)
     {
+        /** @var array<int, int|string|TAttach> */
         $attachments = $this->arrayable($attachments);
+
+        /** @var array<string, mixed> */
+        $attributes = $this->only(
+            $this->normalize($attributes)
+        );
 
         return Arr::mapWithKeys(
             $attachments,
@@ -74,12 +82,13 @@ abstract class AttachAction implements Action, Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TAttach|iterable<int, int|string|TAttach>  $attachments
-     * @param  iterable<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return void
      */
     protected function attach($model, $attachments, $attributes)
     {
-        $attributes = $this->arrayable($attributes);
+        /** @var array<int, int|string|TAttach> */
+        $attachments = $this->arrayable($attachments);
 
         $attaching = $this->prepare($attachments, $attributes);
 
@@ -93,7 +102,7 @@ abstract class AttachAction implements Action, Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TAttach|array<int, int|string|TAttach>  $attachments
-     * @param  array<int|string, mixed>|\Illuminate\Support\ValidatedInput|FormRequest  $attributes
+     * @param  TInput  $attributes
      * @return void
      */
     protected function after($model, $attachments, $attributes)

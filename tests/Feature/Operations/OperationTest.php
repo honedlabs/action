@@ -5,25 +5,22 @@ declare(strict_types=1);
 use Honed\Action\Action;
 use Honed\Action\Confirm;
 use Honed\Action\Operations\InlineOperation;
-use Honed\Core\Parameters;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request;
-use Workbench\App\Actions\Inline\DestroyAction;
 use Workbench\App\Models\User;
+use Workbench\App\Operations\DestroyOperation;
 
 beforeEach(function () {
     // Using inline action for testing base class
-    $this->action = InlineOperation::make('test');
+    $this->operation = InlineOperation::make('test');
 });
 
 it('has implicit route bindings', function () {
     $user = User::factory()->create();
 
-    [$named, $typed] = Parameters::model($user);
+    $this->operation->route('users.show', '{user}');
 
-    $this->action->route('users.show', '{user}');
-
-    expect($this->action->toArray($named, $typed))
+    expect($this->operation->record($user)->toArray())
         ->toHaveKey('route')
         ->{'route'}
         ->scoped(fn ($route) => $route
@@ -33,7 +30,7 @@ it('has implicit route bindings', function () {
 });
 
 it('has array representation', function () {
-    expect($this->action->toArray())
+    expect($this->operation->toArray())
         ->toBeArray()
         ->toHaveKeys([
             'name',
@@ -41,14 +38,14 @@ it('has array representation', function () {
             'type',
             'icon',
             'extra',
-            'actionable',
+            'action',
             'confirm',
             'route',
         ]);
 });
 
 it('has array representation with route', function () {
-    expect($this->action->route('users.index')->toArray())
+    expect($this->operation->route('users.index')->toArray())
         ->toBeArray()
         ->toEqual([
             'name' => 'test',
@@ -56,7 +53,7 @@ it('has array representation with route', function () {
             'type' => 'inline',
             'icon' => null,
             'extra' => null,
-            'actionable' => false,
+            'action' => false,
             'confirm' => null,
             'default' => false,
             'route' => [
@@ -70,16 +67,14 @@ it('has array representation with route', function () {
 it('resolves to array', function () {
     $user = User::factory()->create();
 
-    [$named, $typed] = Parameters::model($user);
-
-    expect((new DestroyAction())->toArray($named, $typed))
+    expect((new DestroyOperation())->record($user)->toArray())
         ->toEqual([
             'name' => 'destroy',
             'label' => 'Destroy '.$user->name,
             'type' => 'inline',
             'icon' => null,
             'extra' => null,
-            'actionable' => true,
+            'action' => true,
             'confirm' => null,
             'default' => false,
             'route' => null,
@@ -87,21 +82,34 @@ it('resolves to array', function () {
 });
 
 it('evaluates names', function () {
-    expect($this->action->evaluate(fn ($confirm) => $confirm->title('test')))
+    expect($this->operation->evaluate(fn ($confirm) => $confirm->title('test')))
         ->toBeInstanceOf(Confirm::class)
         ->getTitle()->toBe('test');
 
     $name = Str::random();
-    expect($this->action->parameters(['name' => $name])
+    expect($this->operation->parameters(['name' => $name])
         ->evaluate(fn ($name) => $name))->toBe($name);
 });
 
-it('evaluates types', function () {
-    expect($this->action->evaluate(fn (Confirm $confirm) => $confirm->title('test')))
-        ->toBeInstanceOf(Confirm::class)
-        ->getTitle()->toBe('test');
+describe('evaluation', function () {
+    it('named dependencies', function ($closure, $class) {
+        expect($this->operation->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn ($confirm) => $confirm, Confirm::class],
+    ]);
 
-    // Dependency injection
-    expect($this->action->evaluate(fn (User $user) => $user))
-        ->toBeInstanceOf(User::class);
+    it('from parameters', function () {
+        expect($this->operation)
+            ->action(fn ($parameter) => $parameter, [
+                'parameter' => 'parameter',
+            ])->toBe($this->operation)
+            ->evaluate(fn ($parameter) => $parameter)
+            ->toBe('parameter');
+    });
+
+    it('typed dependencies', function ($closure, $class) {
+        expect($this->operation->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn (Confirm $arg) => $arg, Confirm::class],
+    ]);
 });

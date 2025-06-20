@@ -15,16 +15,21 @@ beforeEach(function () {
 
     $this->name = fake()->unique()->name();
 
+    $this->input = [
+        'name' => $this->name,
+    ];
+
+    $this->assertDatabaseCount('products', 1);
 });
 
 it('updates a model with validated input', function () {
-    $input = Validator::make([
-        'name' => $this->name,
-    ], [
+    $input = Validator::make($this->input, [
         'name' => 'required|string|max:255',
     ]);
 
     $this->action->handle($this->product, $input->safe());
+
+    $this->assertDatabaseCount('products', 1);
 
     $this->assertDatabaseHas('products', [
         'id' => $this->product->id,
@@ -33,9 +38,7 @@ it('updates a model with validated input', function () {
 });
 
 it('updates a model with a form request', function () {
-    $request = Request::create('/', 'POST', [
-        'name' => $this->name,
-    ]);
+    $request = Request::create('/', 'POST', $this->input);
 
     $this->app->instance('request', $request);
 
@@ -46,6 +49,19 @@ it('updates a model with a form request', function () {
     $request->validateResolved();
 
     $this->action->handle($this->product, $request);
+
+    $this->assertDatabaseCount('products', 1);
+
+    $this->assertDatabaseHas('products', [
+        'id' => $this->product->id,
+        'name' => $this->name,
+    ]);
+});
+
+it('updates a model with array', function () {
+    $this->action->handle($this->product, $this->input);
+
+    $this->assertDatabaseCount('products', 1);
 
     $this->assertDatabaseHas('products', [
         'id' => $this->product->id,

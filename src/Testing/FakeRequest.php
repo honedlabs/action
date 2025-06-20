@@ -8,7 +8,6 @@ use Honed\Action\Http\Requests\InvokableRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-use function array_merge;
 use function is_string;
 
 class FakeRequest
@@ -225,10 +224,11 @@ class FakeRequest
      */
     public function getData()
     {
-        return array_merge([
+        return [
             'id' => $this->getId(),
             'name' => $this->getName(),
-        ], $this->data);
+            ...$this->data,
+        ];
     }
 
     /**

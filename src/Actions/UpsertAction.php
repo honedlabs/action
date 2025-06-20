@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\ValidatedInput;
+use function is_array;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TInput of mixed = array<int, array<string, mixed>>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
  */
-abstract class UpsertAction implements Action
+abstract class UpsertAction extends DatabaseAction
 {
-    use CanBeTransaction;
+    /**
+     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
+     */
+    use Concerns\InteractsWithFormData;
 
     /**
      * Get the model to perform the upsert on.
@@ -40,16 +41,11 @@ abstract class UpsertAction implements Action
     /**
      * Upsert the input data in the database.
      *
-     * @param  array<int, array<string, mixed>>|ValidatedInput|FormRequest  $values
-     * @return array<int, array<string, mixed>>|ValidatedInput
+     * @param  TInput  $values
+     * @return TInput
      */
     public function handle($values)
     {
-        if ($values instanceof FormRequest) {
-            /** @var ValidatedInput */
-            $values = $values->safe();
-        }
-
         $this->transact(
             fn () => $this->upsert($values)
         );
@@ -60,16 +56,15 @@ abstract class UpsertAction implements Action
     /**
      * Prepare the input for the update method.
      *
-     * @param  array<int, array<string, mixed>>|ValidatedInput  $values
+     * @param  TInput  $values
      * @return array<int, array<string, mixed>>
      */
     protected function prepare($values)
     {
-        if ($values instanceof ValidatedInput) {
-            /** @var array<string, mixed> */
-            $all = $values->all();
-
-            return [$all];
+        if (! is_array($values)) {
+            return [$this->only(
+                $this->normalize($values)
+            )];
         }
 
         return $values;
@@ -78,7 +73,7 @@ abstract class UpsertAction implements Action
     /**
      * Upsert the record in the database.
      *
-     * @param  array<int, array<string, mixed>>|ValidatedInput  $values
+     * @param  TInput  $values
      * @return void
      */
     protected function upsert($values)
@@ -96,7 +91,7 @@ abstract class UpsertAction implements Action
     /**
      * Perform additional database transactions after the model has been updated.
      *
-     * @param  array<int, array<string, mixed>>|ValidatedInput  $values
+     * @param  TInput  $values
      * @param  array<int, array<string, mixed>>  $prepared
      * @return void
      */

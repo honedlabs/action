@@ -6,19 +6,24 @@ use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
     File::cleanDirectory(app_path('Operations'));
-})->skip();
+});
 
 afterEach(function () {
     File::cleanDirectory(app_path('Operations'));
 });
 
-it('makes', function () {
+it('makes an inline operation by default', function () {
     $this->artisan('make:operation', [
         'name' => 'View',
         '--force' => true,
     ])->assertSuccessful();
 
     $this->assertFileExists(app_path('Operations/View.php'));
+
+    $this->assertStringContainsString(
+        'class View extends InlineOperation',
+        File::get(app_path('Operations/View.php'))
+    );
 });
 
 it('bindings for a name', function () {
@@ -28,4 +33,48 @@ it('bindings for a name', function () {
         ->assertSuccessful();
 
     $this->assertFileExists(app_path('Operations/View.php'));
+
+    $this->assertStringContainsString(
+        'class View extends InlineOperation',
+        File::get(app_path('Operations/View.php'))
+    );
 });
+
+it('makes operation types', function ($flag, $class) {
+    $this->artisan('make:operation', [
+        'name' => 'View',
+        '--force' => true,
+        $flag => true,
+    ])->assertSuccessful();
+
+    $this->assertFileExists(app_path('Operations/View.php'));
+
+    $this->assertStringContainsString(
+        "class View extends {$class}",
+        File::get(app_path('Operations/View.php'))
+    );
+})->with([
+    ['--inline', 'InlineOperation'],
+    ['--bulk', 'BulkOperation'],
+    ['--page', 'PageOperation'],
+]);
+
+it('makes operation with type', function ($type, $class) {
+    $this->artisan('make:operation', [
+        'name' => 'View',
+        '--force' => true,
+        '--type' => $type,
+    ])->assertSuccessful();
+
+    $this->assertFileExists(app_path('Operations/View.php'));
+
+    $this->assertStringContainsString(
+        "class View extends {$class}",
+        File::get(app_path('Operations/View.php'))
+    );
+})->with([
+    ['inline', 'InlineOperation'],
+    ['bulk', 'BulkOperation'],
+    ['page', 'PageOperation'],
+    ['invalid', 'InlineOperation'],
+]);

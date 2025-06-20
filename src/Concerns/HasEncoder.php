@@ -8,10 +8,6 @@ use Closure;
 
 use function call_user_func;
 
-/**
- * @phpstan-require-implements \Honed\Action\Contracts\Handles
- * @phpstan-require-implements \Illuminate\Contracts\Routing\UrlRoutable
- */
 trait HasEncoder
 {
     /**

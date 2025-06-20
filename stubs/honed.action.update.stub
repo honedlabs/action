@@ -2,28 +2,15 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Support\Facades\DB;
-use Honed\Action\Contracts\Actionable;
-use Illuminate\Support\ValidatedInput;
+use Honed\Action\Actions\UpdateAction;
 
-class {{ class }} implements Actionable
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * 
+ * @extends \Honed\Action\Actions\UpdateAction<TModel>
+ */
+class {{ class }} extends UpdateAction
 {
-    /**
-     * Handle the action.
-     */
-    public function handle({{ model }} ${{ modelVariable }}, ValidatedInput $input): void
-    {
-        DB::transaction(
-            fn () => $this->update($input, ${{ modelVariable }})
-        );
-    }
-
-    /**
-     * Update the {{ modelVariable }} in the database.
-     */
-    public function update({{ model }} ${{ modelVariable }}, ValidatedInput $input): void
-    {
-        ${{ modelVariable }}->update($input->all());
-    }
+    //
 }
 

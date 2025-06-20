@@ -2,15 +2,14 @@
 
 namespace {{ namespace }};
 
-use Honed\Action\Contracts\Actionable;
+use Honed\Action\Actions\DestroyAction;
 
-class {{ class }} implements Actionable
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * 
+ * @extends \Honed\Action\Actions\DestroyAction<TModel>
+ */
+class {{ class }} extends DestroyAction
 {
-    /**
-     * Destroy the {{ modelVariable }} record in the database.
-     */
-    public function handle({{ model }} ${{ modelVariable }}): void
-    {
-        ${{ modelVariable }}->delete();
-    }
+    //
 }

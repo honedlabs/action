@@ -11,12 +11,12 @@ class DestroyUser implements Action
     /**
      * Handle the action.
      *
-     * @param  \Workbench\App\Models\User  $user
+     * @param  \Workbench\App\Models\User  $record
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function handle($user)
+    public function handle($record)
     {
-        $user->delete();
+        $record->delete();
 
         return back();
     }

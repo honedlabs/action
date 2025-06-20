@@ -2,10 +2,10 @@
 
 namespace {{ namespace }};
 
-use Honed\Action\Contracts\Actionable;
+use Honed\Action\Contracts\Action;
 use Inertia\Inertia;
 
-class {{ class }} implements Actionable
+class {{ class }} implements Action
 {
     /**
      * Show the confirmation page to delete the {{ modelVariable }}.

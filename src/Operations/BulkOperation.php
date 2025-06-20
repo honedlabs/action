@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Action\Operations;
 
-use Honed\Action\Concerns\HandlesBulkActions;
-
 class BulkOperation extends Operation
 {
-    use HandlesBulkActions;
+    use Concerns\CanBeChunked;
 
     /**
      * Whether the action keeps the records selected after successful execution.
@@ -61,16 +59,5 @@ class BulkOperation extends Operation
             ...parent::toArray(),
             'keepSelected' => $this->keepsSelected(),
         ];
-    }
-
-    /**
-     * Define the bulk operation instance.
-     *
-     * @param  $this  $operation
-     * @return $this
-     */
-    protected function definition(self $operation): self
-    {
-        return $operation;
     }
 }

@@ -9,9 +9,14 @@ use Honed\Action\Confirm;
 
 use function is_null;
 
+/**
+ * @phpstan-require-extends \Honed\Core\Primitive
+ */
 trait HasConfirm
 {
     /**
+     * The instance of the confirm.
+     *
      * @var Confirm|null
      */
     protected $confirm;

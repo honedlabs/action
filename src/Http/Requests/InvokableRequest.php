@@ -98,6 +98,7 @@ class InvokableRequest extends FormRequest
      */
     public function type()
     {
+        /** @var 'inline'|'bulk'|'page'|null */
         return $this->validated('type');
     }
 

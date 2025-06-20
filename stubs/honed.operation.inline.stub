@@ -1,0 +1,20 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Operations\InlineOperation;
+
+class {{ class }} extends InlineOperation
+{
+    /**
+     * Provide the instance with any necessary setup.
+     * 
+     * @return void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        //
+    }
+}

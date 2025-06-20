@@ -18,26 +18,43 @@ use Workbench\App\Models\User;
  */
 class UserBatch extends Batch
 {
-    protected function definition(Batch $actions): Batch
+    /**
+     * Define the operations for the batch.
+     *
+     * @param  $this  $batch
+     * @return $this
+     */
+    protected function definition(Batch $batch): Batch
     {
-        return $actions
-            ->actions([
+        return $batch
+            ->for(User::class)
+            ->operations([
                 InlineOperation::make('show')
-                    ->route(fn ($user) => route('users.show', $user)),
+                    ->route(fn ($record) => route('users.show', $record)),
 
                 InlineOperation::make('update.name')
-                    ->action(fn ($user) => $user->update(['name' => 'test'])),
+                    ->action(fn ($record) => $record->update(['name' => 'test'])),
 
                 InlineOperation::make('update.description')
-                    ->action(fn ($user) => $user->update(['name' => 'description']))
+                    ->action(fn ($record) => $record->update(['name' => 'description']))
                     ->allow(false),
 
                 BulkOperation::make('update.name')
-                    ->action(fn ($user) => $user->update(['name' => 'test']))
+                    ->action(fn ($builder) => $builder->update(['name' => 'test']))
                     ->allow(false),
 
                 BulkOperation::make('update.description')
-                    ->action(fn ($user) => $user->update(['name' => 'description'])),
+                    ->action(fn ($builder) => $builder->update(['name' => 'description'])),
+
+                BulkOperation::make('chunk')
+                    ->chunk()
+                    ->action(fn ($collection) => $collection->each(fn ($record) => $record->update(['name' => 'chunk']))
+                    ),
+
+                BulkOperation::make('chunk.id')
+                    ->chunkById()
+                    ->action(fn ($collection) => $collection->each(fn ($record) => $record->update(['name' => 'chunk.id']))
+                    ),
 
                 PageOperation::make('create')
                     ->route('users.create'),

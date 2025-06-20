@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -14,9 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TDetach of \Illuminate\Database\Eloquent\Model
  */
-abstract class DetachAction implements Action, Relatable
+abstract class DetachAction extends DatabaseAction implements Relatable
 {
-    use CanBeTransaction;
     use Concerns\InteractsWithModels;
 
     /**
@@ -55,6 +52,7 @@ abstract class DetachAction implements Action, Relatable
      */
     protected function prepare($detachments)
     {
+        /** @var array<int, int|string|TDetach> */
         $detachments = $this->arrayable($detachments);
 
         return array_map(

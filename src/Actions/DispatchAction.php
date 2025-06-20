@@ -7,8 +7,9 @@ namespace Honed\Action\Actions;
 use Honed\Action\Contracts\Action;
 
 /**
- * @template TDispatch of \Honed\Action\Contracts\Dispatches
- * @template TPayload of mixed
+ * @template TDispatch
+ * @template TPayload
+ * @template TInput = TPayload
  */
 abstract class DispatchAction implements Action
 {
@@ -23,27 +24,41 @@ abstract class DispatchAction implements Action
      * Dispatch the payload.
      *
      * @param  TPayload  $payload
-     * @return TPayload
+     * @return TInput
      */
     public function handle($payload)
     {
+        $prepared = $this->prepare($payload);
+
         $event = $this->dispatch();
 
-        $event::dispatch($payload);
+        $event::dispatch($prepared);
 
-        $this->after($payload, $event);
+        $this->after($prepared, $event);
 
+        return $prepared;
+    }
+
+    /**
+     * Prepare the payload for dispatching.
+     *
+     * @param  TPayload  $payload
+     * @return TInput
+     */
+    protected function prepare($payload)
+    {
+        /** @var TInput */
         return $payload;
     }
 
     /**
      * Perform additional logic after the event has been dispatched.
      *
-     * @param  mixed  $payload
-     * @param  class-string<TDispatch>  $dispatched
+     * @param  TInput  $payload
+     * @param  class-string<TDispatch>  $dispatch
      * @return void
      */
-    public function after($payload, $dispatched)
+    protected function after($payload, $dispatch)
     {
         //
     }

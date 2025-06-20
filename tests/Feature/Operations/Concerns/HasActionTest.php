@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\HasAction;
 use Honed\Action\Contracts\Action;
-use Workbench\App\Actions\Inline\DestroyAction;
+use Honed\Action\Operations\Concerns\HasAction;
+use Workbench\App\Actions\User\DestroyUser;
 
 beforeEach(function () {
     $this->test = new class()
@@ -15,10 +15,10 @@ beforeEach(function () {
 
 it('has action', function () {
     expect($this->test)
-        ->isAction()->toBeFalse()
+        ->hasAction()->toBeFalse()
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
-        ->isAction()->toBeTrue()
+        ->hasAction()->toBeTrue()
         ->getAction()->toBeInstanceOf(Closure::class);
 });
 
@@ -36,7 +36,7 @@ it('has handler', function () {
         ->getHandler()->toBeNull()
         ->action(fn () => 'test')->toBe($this->test)
         ->getHandler()->toBeInstanceOf(Closure::class)
-        ->action(DestroyAction::class)->toBe($this->test)
+        ->action(DestroyUser::class)->toBe($this->test)
         ->getHandler()->toBeInstanceOf(Closure::class);
 });
 
@@ -52,9 +52,9 @@ it('has actionable', function () {
     };
 
     expect($test)
-        ->isAction()->toBeTrue()
+        ->hasAction()->toBeTrue()
         ->getAction()->toBeNull()
         ->action(fn () => 'test')
-        ->isAction()->toBeTrue()
+        ->hasAction()->toBeTrue()
         ->getHandler()->toBeInstanceOf(Closure::class);
 });

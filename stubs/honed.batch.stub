@@ -17,24 +17,23 @@ use Honed\Action\PageAction;
 class {{ class }} extends Batch
 {
     /**
-     * Provide the action group with any necessary setup
+     * Provide the instance with any necessary setup
      *
      * @return void
      */
-    public function setUp()
+    protected function setUp()
     {
         //
     }
 
     /**
-     * Define the available actions.
-     *
-     * @return array<int,\Honed\Action\Action|\Honed\Action\Batch<TModel, TBuilder>>
+     * Define the operations for the batch.
+     * 
+     * @param $this $batch
+     * @return $this
      */
-    public function defineActions()
+    protected function definition(Batch $batch): Batch
     {
-        return [
-            //
-        ];
+        return $batch;
     }
 }

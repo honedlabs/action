@@ -2,32 +2,23 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Support\Facades\DB;
-use Honed\Action\Contracts\Actionable;
-use Illuminate\Support\ValidatedInput;
+use Honed\Action\Actions\StoreAction;
 
-class {{ class }} implements Actionable
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * 
+ * @extends \Honed\Action\Actions\StoreAction<TModel>
+ */
+class {{ class }} extends StoreAction
 {
     /**
-     * Handle the action.
+     * Get the model to store the input data in.
+     *
+     * @return class-string<TModel>
      */
-    public function handle(ValidatedInput $input): {{ model }}
+    protected function for()
     {
-        ${{ modelVariable }} = DB::transaction(
-            fn () => $this->store($input),
-        );
-
-        return ${{ modelVariable }};
-    }
-
-    /**
-     * Store the {{ modelVariable }} record in the database.
-     */
-    public function store(ValidatedInput $input): {{ model }}
-    {
-        ${{ modelVariable }} = {{ model }}::query()->create($input->all());
-
-        return ${{ modelVariable }};
+        return {{ model }}::class;
     }
 }
 

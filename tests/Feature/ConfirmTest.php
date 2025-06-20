@@ -3,56 +3,56 @@
 declare(strict_types=1);
 
 use Honed\Action\Confirm;
-use Honed\Core\Parameters;
+use Illuminate\Database\Eloquent\Model;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
-    $this->test = Confirm::make();
+    $this->confirm = Confirm::make();
 });
 
 it('has title', function () {
-    expect($this->test)
+    expect($this->confirm)
         ->getTitle()->toBeNull()
-        ->title('name')->toBe($this->test)
+        ->title('name')->toBe($this->confirm)
         ->getTitle()->toBe('name');
 });
 
 it('has description', function () {
-    expect($this->test)
+    expect($this->confirm)
         ->getDescription()->toBeNull()
-        ->description('description')->toBe($this->test)
+        ->description('description')->toBe($this->confirm)
         ->getDescription()->toBe('description');
 });
 
 it('has dismiss', function () {
-    expect($this->test)
+    expect($this->confirm)
         ->getDismiss()->toBe('Cancel')
-        ->dismiss('Back')->toBe($this->test)
+        ->dismiss('Back')->toBe($this->confirm)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
-    expect($this->test)
+    expect($this->confirm)
         ->getSubmit()->toBe('Confirm')
-        ->submit('Accept')->toBe($this->test)
+        ->submit('Accept')->toBe($this->confirm)
         ->getSubmit()->toBe('Accept');
 });
 
 it('has intent', function () {
-    expect($this->test)
+    expect($this->confirm)
         ->getIntent()->toBeNull()
-        ->intent('danger')->toBe($this->test)
+        ->intent('danger')->toBe($this->confirm)
         ->getIntent()->toBe('danger')
-        ->constructive()->toBe($this->test)
+        ->constructive()->toBe($this->confirm)
         ->getIntent()->toBe(Confirm::CONSTRUCTIVE)
-        ->destructive()->toBe($this->test)
+        ->destructive()->toBe($this->confirm)
         ->getIntent()->toBe(Confirm::DESTRUCTIVE)
-        ->informative()->toBe($this->test)
+        ->informative()->toBe($this->confirm)
         ->getIntent()->toBe(Confirm::INFORMATIVE);
 });
 
 it('has array representation', function () {
-    expect($this->test->toArray())
+    expect($this->confirm->toArray())
         ->toBeArray()
         ->toEqual([
             'title' => null,
@@ -71,7 +71,7 @@ it('resolves to array', function () {
         fn (User $p) => \sprintf('Are you sure you want to delete %s?', $p->name)
     );
 
-    expect($confirm->toArray(...Parameters::model($user)))
+    expect($confirm->record($user)->toArray())
         ->toEqual([
             'title' => $user->name,
             'description' => \sprintf('Are you sure you want to delete %s?', $user->name),
@@ -79,4 +79,24 @@ it('resolves to array', function () {
             'submit' => 'Confirm',
             'intent' => null,
         ]);
+});
+
+describe('evaluation', function () {
+    beforeEach(function () {
+        $this->confirm = $this->confirm->record(User::factory()->create());
+    });
+
+    it('named dependencies', function ($closure, $class) {
+        expect($this->confirm->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn ($row) => $row, User::class],
+        fn () => [fn ($record) => $record, User::class],
+    ]);
+
+    it('typed dependencies', function ($closure, $class) {
+        expect($this->confirm->evaluate($closure))->toBeInstanceOf($class);
+    })->with([
+        fn () => [fn (Model $arg) => $arg, User::class],
+        fn () => [fn (User $arg) => $arg, User::class],
+    ]);
 });

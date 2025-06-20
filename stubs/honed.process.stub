@@ -15,7 +15,7 @@ class {{ class }} extends Process
     /**
      * The tasks to be sequentially executed.
      *
-     * @return array<int, class-string>
+     * @return array<int, class-string|\Closure>
      */
     protected function tasks()
     {

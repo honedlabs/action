@@ -4,31 +4,26 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
-use Illuminate\Foundation\Http\FormRequest;
-
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TInput of mixed = array<string, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
  */
-class UpdateAction implements Action
+class UpdateAction extends DatabaseAction
 {
-    use CanBeTransaction;
+    /**
+     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
+     */
+    use Concerns\InteractsWithFormData;
 
     /**
      * Update the provided model using the input.
      *
      * @param  TModel  $model
-     * @param  \Illuminate\Support\ValidatedInput|FormRequest  $input
+     * @param  TInput  $input
      * @return TModel $model
      */
     public function handle($model, $input)
     {
-        if ($input instanceof FormRequest) {
-            /** @var \Illuminate\Support\ValidatedInput */
-            $input = $input->safe();
-        }
-
         return $this->transact(
             fn () => $this->update($model, $input)
         );
@@ -37,20 +32,22 @@ class UpdateAction implements Action
     /**
      * Prepare the input for the update method.
      *
-     * @param  \Illuminate\Support\ValidatedInput  $input
+     * @param  TInput  $input
      * @param  TModel  $model
      * @return array<string, mixed>
      */
     protected function prepare($model, $input)
     {
-        return $input->all();
+        return $this->only(
+            $this->normalize($input)
+        );
     }
 
     /**
-     * Store the record in the database.
+     * Update the record in the database.
      *
      * @param  TModel  $model
-     * @param  \Illuminate\Support\ValidatedInput  $input
+     * @param  TInput  $input
      * @return TModel
      */
     protected function update($model, $input)
@@ -68,7 +65,7 @@ class UpdateAction implements Action
      * Perform additional database transactions after the model has been updated.
      *
      * @param  TModel  $model
-     * @param  \Illuminate\Support\ValidatedInput  $input
+     * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      * @return void
      */

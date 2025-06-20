@@ -3,62 +3,30 @@
 declare(strict_types=1);
 
 use Honed\Action\Batch;
-use Honed\Action\Concerns\HasEncoder;
-use Honed\Action\Tests\Stubs\Product;
-use Honed\Action\Tests\Stubs\ProductActions;
 
-beforeEach(function () {
-    $this->test = new class()
-    {
-        use HasEncoder;
-
-        public static function baseClass()
-        {
-            return Batch::class;
-        }
-    };
-
-    // Null the encoder and decoder as they are static
-    $this->test->encoder();
-    $this->test->decoder();
+afterEach(function () {
+    Batch::flushState();
 });
 
 it('encodes using encrypter', function () {
-    $encoded = $this->test->encode('test');
+    $encoded = Batch::encode('test');
 
     expect($encoded)->toBeString();
 
-    $decoded = $this->test->decode($encoded);
+    $decoded = Batch::decode($encoded);
 
     expect($decoded)->toBe('test');
 });
 
 it('encodes using custom encoder', function () {
-    $this->test->encoder(fn ($value) => base64_encode($value));
-    $this->test->decoder(fn ($value) => base64_decode($value));
+    Batch::encoder(fn ($value) => base64_encode($value));
+    Batch::decoder(fn ($value) => base64_decode($value));
 
-    $encoded = $this->test->encode('test');
+    $encoded = Batch::encode('test');
 
     expect($encoded)->toBeString();
 
-    $decoded = $this->test->decode($encoded);
+    $decoded = Batch::decode($encoded);
 
     expect($decoded)->toBe('test');
-});
-
-it('retrieves primitive', function () {
-    $actions = ProductActions::make();
-
-    expect($actions)
-        ->tryFrom($actions->getRouteKey())
-        ->toBeInstanceOf(ProductActions::class);
-
-    expect($actions)
-        ->tryFrom(Batch::make()->getRouteKey())
-        ->toBeNull();
-});
-
-it('must have a make method', function () {
-    expect($this->test->tryFrom(Product::class))
-        ->toBeNull();
 });

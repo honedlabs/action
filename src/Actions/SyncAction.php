@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Support\Arr;
 
@@ -13,9 +11,8 @@ use Illuminate\Support\Arr;
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TSync of \Illuminate\Database\Eloquent\Model
  */
-abstract class SyncAction implements Action, Relatable
+abstract class SyncAction extends DatabaseAction implements Relatable
 {
-    use CanBeTransaction;
     use Concerns\InteractsWithModels;
 
     /**
@@ -56,6 +53,7 @@ abstract class SyncAction implements Action, Relatable
      */
     protected function prepare($syncs, $attributes)
     {
+        /** @var array<int, int|string|TSync> */
         $syncs = $this->arrayable($syncs);
 
         return Arr::mapWithKeys(

@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
-
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  */
-class ForceDestroyAction implements Action
+class ForceDestroyAction extends DatabaseAction
 {
-    use CanBeTransaction;
-
     /**
      * Force destroy the model.
      *

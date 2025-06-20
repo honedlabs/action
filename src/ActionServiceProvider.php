@@ -18,8 +18,10 @@ class ActionServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
+     *
+     * @return void
      */
-    public function register(): void
+    public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/action.php', 'action');
 
@@ -28,8 +30,10 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap services.
+     *
+     * @return void
      */
-    public function boot(): void
+    public function boot()
     {
         if ($this->app->runningInConsole()) {
 
@@ -48,22 +52,26 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Register the publishing for the package.
+     *
+     * @return void
      */
-    protected function offerPublishing(): void
+    protected function offerPublishing()
     {
         $this->publishes([
             __DIR__.'/../config/action.php' => config_path('action.php'),
-        ], 'config');
+        ], 'action-config');
 
         $this->publishes([
             __DIR__.'/../stubs' => base_path('stubs'),
-        ], 'stubs');
+        ], 'action-stubs');
     }
 
     /**
      * Register the route macro for the action handler.
+     *
+     * @return void
      */
-    private function registerRoutesMacro(): void
+    protected function registerRoutesMacro()
     {
         Router::macro('actions', function () {
             /** @var Router $this */

@@ -16,6 +16,7 @@ class NameRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => 'sometimes|integer',
             'name' => 'required|string|max:255',
         ];
     }

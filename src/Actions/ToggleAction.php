@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Concerns\CanBeTransaction;
-use Honed\Action\Contracts\Action;
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Support\Arr;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TToggle of \Illuminate\Database\Eloquent\Model
+ * @template TInput of mixed = array<string, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
  */
-abstract class ToggleAction implements Action, Relatable
+abstract class ToggleAction extends DatabaseAction implements Relatable
 {
-    use CanBeTransaction;
+    /**
+     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
+     */
+    use Concerns\InteractsWithFormData;
+
     use Concerns\InteractsWithModels;
 
     /**
@@ -23,7 +26,7 @@ abstract class ToggleAction implements Action, Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
-     * @param  array<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return TModel
      */
     public function handle($model, $toggles, $attributes = [])
@@ -51,12 +54,15 @@ abstract class ToggleAction implements Action, Relatable
      * Prepare the models and attributes for the toggle method.
      *
      * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
-     * @param  array<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return array<int|string, array<string, mixed>>
      */
     protected function prepare($toggles, $attributes)
     {
+        /** @var array<int, int|string|TToggle> */
         $toggles = $this->arrayable($toggles);
+
+        $attributes = $this->normalize($attributes);
 
         return Arr::mapWithKeys(
             $toggles,
@@ -71,13 +77,11 @@ abstract class ToggleAction implements Action, Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
-     * @param  array<string, mixed>  $attributes
+     * @param  TInput  $attributes
      * @return void
      */
     protected function toggle($model, $toggles, $attributes)
     {
-        $attributes = $this->arrayable($attributes);
-
         $toggling = $this->prepare($toggles, $attributes);
 
         $toggled = $this->getRelation($model)->toggle($toggling, $this->shouldTouch());
@@ -89,7 +93,7 @@ abstract class ToggleAction implements Action, Relatable
      * Perform additional logic after the model has been toggleed.
      *
      * @param  TModel  $model
-     * @param  array<int, int|string>  $toggled
+     * @param  array<mixed>  $toggled
      * @return void
      */
     protected function after($model, $toggled)

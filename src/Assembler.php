@@ -12,9 +12,24 @@ use Honed\Action\Operations\PageOperation;
 abstract class Assembler
 {
     /**
-     * Configure the action.
+     * Define the parameters of the operation.
+     *
+     * @template TOperation of Operation
+     *
+     * @param  TOperation  $operation
+     * @return TOperation
      */
     abstract protected function definition(Operation $operation): Operation;
+
+    /**
+     * Create a new instance of the assembler.
+     *
+     * @return static
+     */
+    public static function make()
+    {
+        return resolve(static::class);
+    }
 
     /**
      * Get as an inline action
@@ -49,11 +64,13 @@ abstract class Assembler
     /**
      * The type of the action to be generated.
      *
-     * @param  class-string<Operation>  $type
-     * @return Operation
+     * @template TOperation of Operation
+     *
+     * @param  class-string<TOperation>  $type
+     * @return TOperation
      */
-    public static function create($type)
+    protected static function create($type)
     {
-        return resolve(static::class)->definition(new $type());
+        return static::make()->definition(new $type());
     }
 }

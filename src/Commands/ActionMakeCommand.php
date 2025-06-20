@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function array_merge;
 use function count;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
@@ -95,12 +94,12 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
         $model = str_replace('/', '\\', $model);
 
         if (str_starts_with($model, '\\')) {
-            $namespacedModel = mb_trim($model, '\\');
+            $namespacedModel = trim($model, '\\');
         } else {
             $namespacedModel = $this->qualifyModel($model);
         }
 
-        $model = class_basename(mb_trim($model, '\\'));
+        $model = class_basename(trim($model, '\\'));
 
         $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
@@ -164,7 +163,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(\mb_trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }
@@ -205,9 +204,10 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
             return;
         }
 
-        $actions = array_merge($this->actions, [
+        $actions = [
+            ...$this->actions,
             'none' => 'None',
-        ]);
+        ];
 
         $action = select(
             'What action should be used? (Optional)',

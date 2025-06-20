@@ -14,7 +14,18 @@ trait CanBeTransaction
      *
      * @var bool
      */
-    protected $transaction = false;
+    protected static $transaction = false;
+
+    /**
+     * Set whether to wrap the callback in a database transaction.
+     *
+     * @param  bool  $transaction
+     * @return void
+     */
+    public static function shouldBeTransaction($transaction = true)
+    {
+        static::$transaction = $transaction;
+    }
 
     /**
      * Set whether to wrap the callback in a database transaction.
@@ -24,7 +35,7 @@ trait CanBeTransaction
      */
     public function transaction($transaction = true)
     {
-        $this->transaction = $transaction;
+        static::$transaction = $transaction;
 
         return $this;
     }
@@ -34,9 +45,9 @@ trait CanBeTransaction
      *
      * @return bool
      */
-    protected function isTransaction()
+    public function isTransaction()
     {
-        return $this->transaction;
+        return static::$transaction;
     }
 
     /**
