@@ -4,19 +4,10 @@ declare(strict_types=1);
 
 namespace Honed\Action\Commands\Concerns;
 
-use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
-use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Finder\Finder;
 
 use function in_array;
-use function Laravel\Prompts\error;
-use function Laravel\Prompts\select;
 
 /**
  * @phpstan-require-extends \Illuminate\Console\Command
@@ -41,8 +32,8 @@ trait SuggestsModels
 
     /**
      * Get the model for the action.
-     * 
-     * @param string $model
+     *
+     * @param  string  $model
      * @return string|null
      */
     protected function getModel($model)

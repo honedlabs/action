@@ -7,14 +7,11 @@ namespace Honed\Action\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Finder\Finder;
 
-use function in_array;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 

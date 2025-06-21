@@ -247,7 +247,6 @@ trait HasOperations
         return $this->bulkable;
     }
 
-
     /**
      * Retrieve only the allowed bulk operations.
      *

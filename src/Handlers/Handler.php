@@ -14,7 +14,6 @@ use Honed\Action\Operations\Operation;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -244,7 +243,7 @@ abstract class Handler
      *
      * @param  mixed  $result
      * @return ($result is Responsable|RedirectResponse ? true : false)
-     */  
+     */
     protected function isResponsable($result)
     {
         return $result instanceof Responsable
@@ -276,8 +275,7 @@ abstract class Handler
     protected function getException($ids)
     {
         $this->instance->evaluate(
-            fn ($builder) => 
-                $builder->whereNotIn($this->getKey(), $ids)
+            fn ($builder) => $builder->whereNotIn($this->getKey(), $ids)
         );
     }
 
@@ -290,8 +288,7 @@ abstract class Handler
     protected function getOnly($ids)
     {
         $this->instance->evaluate(
-            fn ($builder) => 
-                $builder->whereIn($this->getKey(), $ids)
+            fn ($builder) => $builder->whereIn($this->getKey(), $ids)
         );
     }
 }

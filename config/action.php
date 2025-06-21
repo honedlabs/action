@@ -36,7 +36,7 @@ return [
     | Actions
     |--------------------------------------------------------------------------
     |
-    | You can create your own action stubs inside the `stubs` directory with a 
+    | You can create your own action stubs inside the `stubs` directory with a
     | name following the format `honed.action.{id}.stub`. The value provided
     | will be prefixed to the model name. You can supply a {{ model }},
     | {{ action }} and {{ modelVariable }} placeholders to be replaced. These
@@ -66,10 +66,10 @@ return [
     | Model names
     |--------------------------------------------------------------------------
     |
-    | You can create multiple actions for a model with one command via the 
+    | You can create multiple actions for a model with one command via the
     | 'make:actions' command. You can supply the actions to be created with
-    | the key being the action name and the value being the verb name. These 
-    | are generated under a directory of the model name, and a name generated 
+    | the key being the action name and the value being the verb name. These
+    | are generated under a directory of the model name, and a name generated
     | using the action name and the model name joined.
     |
     */

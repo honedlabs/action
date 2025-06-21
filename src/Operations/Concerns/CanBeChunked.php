@@ -7,7 +7,6 @@ namespace Honed\Action\Operations\Concerns;
 use Closure;
 use Honed\Action\Contracts\ShouldChunk;
 use Honed\Action\Contracts\ShouldChunkById;
-use Honed\Core\Concerns\HasQuery;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -119,12 +118,8 @@ trait CanBeChunked
         }
 
         return match (true) {
-            $this->isChunkedById() => 
-                fn (Builder $builder) => 
-                    $builder->chunkById($this->getChunkSize(), $handler),
-            $this->isChunked() => 
-                fn (Builder $builder) => 
-                    $builder->chunk($this->getChunkSize(), $handler),
+            $this->isChunkedById() => fn (Builder $builder) => $builder->chunkById($this->getChunkSize(), $handler),
+            $this->isChunked() => fn (Builder $builder) => $builder->chunk($this->getChunkSize(), $handler),
             default => $handler,
         };
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action\Operations;
 
 use Closure;
-use Honed\Action\Concerns\Confirmable;
 use Honed\Action\Confirm;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\HasExtra;

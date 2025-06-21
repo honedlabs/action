@@ -23,7 +23,7 @@ class BulkOperation extends Operation
 
     /**
      * Get the instance as an array.
-     * 
+     *
      * @return array<string, mixed>
      */
     public function toArray()

@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Commands\ActionsMakeCommand;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
