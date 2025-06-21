@@ -5,16 +5,12 @@ namespace {{ namespace }};
 use Honed\Action\Actions\StoreAction;
 
 /**
- * @template TModel of \Illuminate\Database\Eloquent\Model
- * 
- * @extends \Honed\Action\Actions\StoreAction<TModel>
+ * @extends \Honed\Action\Actions\StoreAction<{{ model }}>
  */
 class {{ class }} extends StoreAction
 {
     /**
      * Get the model to store the input data in.
-     *
-     * @return class-string<TModel>
      */
     protected function for()
     {

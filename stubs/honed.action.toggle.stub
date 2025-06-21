@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\ToggleAction;
+
+/**
+ * @extends \Honed\Action\Actions\ToggleAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ */
+class {{ class }} extends ToggleAction
+{
+    /**
+     * Get the name of the relationship to use.
+     *
+     * @return string
+     */
+    public function relationship()
+    {
+        //
+    }
+}
+

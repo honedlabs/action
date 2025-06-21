@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action;
 
-use Honed\Action\Concerns\CanBeTransaction;
+use Honed\Action\Concerns\Transactable;
 use Honed\Action\Contracts\Action;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Pipeline;
@@ -19,7 +19,7 @@ use function array_map;
  */
 abstract class Process implements Action
 {
-    use CanBeTransaction;
+    use Transactable;
 
     /**
      * The container implementation.

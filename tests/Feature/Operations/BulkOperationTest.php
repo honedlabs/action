@@ -24,5 +24,5 @@ it('keeps selected', function () {
 it('has array representation', function () {
     expect($this->action->toArray())
         ->toBeArray()
-        ->toHaveKey('keepSelected');
+        ->toHaveKey('keep');
 });

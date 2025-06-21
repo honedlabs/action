@@ -69,17 +69,6 @@ trait HasOperations
     }
 
     /**
-     * Set whether the operations should not be provided.
-     *
-     * @param  bool  $provide
-     * @return $this
-     */
-    public function notOperable($provide = true)
-    {
-        return $this->operable(! $provide);
-    }
-
-    /**
      * Determine if the operations should be provided.
      *
      * @return bool
@@ -90,17 +79,7 @@ trait HasOperations
     }
 
     /**
-     * Determine if the operations should not be provided.
-     *
-     * @return bool
-     */
-    public function isNotOperable()
-    {
-        return ! $this->isOperable();
-    }
-
-    /**
-     * Merge a set of operations with the existing operations.
+     * Merge a set of operations with existing.
      *
      * @param  Operation|Batch|array<int, Operation|Batch<TModel, TBuilder>>  $operations
      * @return $this
@@ -135,7 +114,7 @@ trait HasOperations
      */
     public function getOperations()
     {
-        if ($this->isNotOperable()) {
+        if (! $this->isOperable()) {
             return [];
         }
 
@@ -180,17 +159,6 @@ trait HasOperations
     }
 
     /**
-     * Set whether the instance should not provide inline operations.
-     *
-     * @param  bool  $inlinable
-     * @return $this
-     */
-    public function notInlinable($inlinable = true)
-    {
-        return $this->inlinable(! $inlinable);
-    }
-
-    /**
      * Determine if the instance should provide inline operations.
      *
      * @return bool
@@ -201,23 +169,13 @@ trait HasOperations
     }
 
     /**
-     * Determine if the instance should not provide inline operations.
-     *
-     * @return bool
-     */
-    public function isNotInlinable()
-    {
-        return ! $this->isInlinable();
-    }
-
-    /**
      * Retrieve only the allowed inline operations.
      *
      * @return array<int,InlineOperation>
      */
     public function getInlineOperations()
     {
-        if ($this->isNotInlinable()) {
+        if (! $this->isInlinable()) {
             return [];
         }
 
@@ -280,17 +238,6 @@ trait HasOperations
     }
 
     /**
-     * Set whether the instance should not provide bulk operations.
-     *
-     * @param  bool  $bulkable
-     * @return $this
-     */
-    public function notBulkable($bulkable = true)
-    {
-        return $this->bulkable(! $bulkable);
-    }
-
-    /**
      * Determine if the instance should provide bulk operations.
      *
      * @return bool
@@ -300,15 +247,6 @@ trait HasOperations
         return $this->bulkable;
     }
 
-    /**
-     * Determine if the instance should not provide bulk operations.
-     *
-     * @return bool
-     */
-    public function isNotBulkable()
-    {
-        return ! $this->isBulkable();
-    }
 
     /**
      * Retrieve only the allowed bulk operations.
@@ -317,7 +255,7 @@ trait HasOperations
      */
     public function getBulkOperations()
     {
-        if ($this->isNotBulkable()) {
+        if (! $this->isBulkable()) {
             return [];
         }
 
@@ -371,17 +309,6 @@ trait HasOperations
     }
 
     /**
-     * Set whether the instance should not provide page operations.
-     *
-     * @param  bool  $pageable
-     * @return $this
-     */
-    public function notPageable($pageable = true)
-    {
-        return $this->pageable(! $pageable);
-    }
-
-    /**
      * Determine if the instance should provide page operations.
      *
      * @return bool
@@ -392,23 +319,13 @@ trait HasOperations
     }
 
     /**
-     * Determine if the instance should not provide page operations.
-     *
-     * @return bool
-     */
-    public function isNotPageable()
-    {
-        return ! $this->isPageable();
-    }
-
-    /**
      * Retrieve only the allowed page operations.
      *
      * @return array<int,Operation>
      */
     public function getPageOperations()
     {
-        if ($this->isNotPageable()) {
+        if (! $this->isPageable()) {
             return [];
         }
 

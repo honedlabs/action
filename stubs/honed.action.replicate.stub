@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\ReplicateAction;
+
+/**
+ * @extends \Honed\Action\Actions\ReplicateAction<{{ model }}>
+ */
+class {{ class }} extends ReplicateAction
+{
+    /**
+     * Get the attributes to exclude from the replication.
+     *
+     * @return array<int, string>
+     */
+    protected function except()
+    {
+        return [];
+    }
+}
+

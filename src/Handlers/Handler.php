@@ -14,6 +14,7 @@ use Honed\Action\Operations\Operation;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -81,7 +82,7 @@ abstract class Handler
     }
 
     /**
-     * Handle the incoming action request using the actions from the source, and the resource provided.
+     * Handle the incoming request using the operations from the source, and the resource provided.
      *
      * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
      * @return Responsable|RedirectResponse
@@ -113,9 +114,7 @@ abstract class Handler
         }
 
         $response = $this->instance->evaluate(
-            $operation->callback(),
-            $this->getNamedParameters($model),
-            $this->getTypedParameters($model)
+            $operation->callback(), $named, $typed
         );
 
         return $this->isResponsable($response)
@@ -245,11 +244,11 @@ abstract class Handler
      *
      * @param  mixed  $result
      * @return ($result is Responsable|RedirectResponse ? true : false)
-     */
+     */  
     protected function isResponsable($result)
     {
-        return $result instanceof Responsable ||
-            $result instanceof RedirectResponse;
+        return $result instanceof Responsable
+            || $result instanceof RedirectResponse;
     }
 
     /**
@@ -277,8 +276,8 @@ abstract class Handler
     protected function getException($ids)
     {
         $this->instance->evaluate(
-            fn ($builder) => $builder
-                ->whereNotIn($this->getKey(), $ids)
+            fn ($builder) => 
+                $builder->whereNotIn($this->getKey(), $ids)
         );
     }
 
@@ -291,8 +290,8 @@ abstract class Handler
     protected function getOnly($ids)
     {
         $this->instance->evaluate(
-            fn ($builder) => $builder
-                ->whereIn($this->getKey(), $ids)
+            fn ($builder) => 
+                $builder->whereIn($this->getKey(), $ids)
         );
     }
 }

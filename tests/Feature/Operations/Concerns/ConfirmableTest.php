@@ -11,7 +11,7 @@ beforeEach(function () {
 });
 
 it('sets with instance', function () {
-    expect($this->test->confirm(Confirm::make('name', 'description')->constructive()))
+    expect($this->test->confirmable(Confirm::make('name', 'description')->constructive()))
         ->toBe($this->test)
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
@@ -22,7 +22,7 @@ it('sets with instance', function () {
 });
 
 it('sets with self-call', function () {
-    expect($this->test->confirm(fn (Confirm $confirm) => $confirm
+    expect($this->test->confirmable(fn (Confirm $confirm) => $confirm
         ->title('name')
         ->description('description')
         ->submit('Accept'))
@@ -36,7 +36,7 @@ it('sets with self-call', function () {
 });
 
 it('sets with strings', function () {
-    expect($this->test->confirm('name', 'description'))
+    expect($this->test->confirmable('name', 'description'))
         ->toBe($this->test)
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
@@ -48,7 +48,7 @@ it('sets with strings', function () {
 it('resolves to array', function () {
     $user = User::factory()->create();
 
-    $test = $this->test->confirm(fn (Confirm $confirm) => $confirm
+    $test = $this->test->confirmable(fn (Confirm $confirm) => $confirm
         ->title(fn (User $user) => \sprintf('Delete %s', $user->name))
         ->description(fn (User $user) => \sprintf('Are you sure you want to delete %s?', $user->name))
         ->submit('Delete')

@@ -1,0 +1,23 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\AssociateAction;
+
+/**
+ * @template TDispatch
+ * @template TPayload
+ *
+ * @extends \Honed\Action\Actions\AssociateAction<TDispatch, TPayload>
+ */
+class {{ class }} extends AssociateAction
+{
+    /**
+     * Get the dispatchable class.
+     */
+    public function dispatch()
+    {
+        //
+    }
+}
+

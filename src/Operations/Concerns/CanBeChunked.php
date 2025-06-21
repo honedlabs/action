@@ -15,9 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait CanBeChunked
 {
-    /** @use HasQuery<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>> */
-    use HasQuery;
-
     /**
      * Whether the action should be chunked.
      *
@@ -122,8 +119,12 @@ trait CanBeChunked
         }
 
         return match (true) {
-            $this->isChunkedById() => fn (Builder $builder) => $builder->chunkById($this->getChunkSize(), $handler),
-            $this->isChunked() => fn (Builder $builder) => $builder->chunk($this->getChunkSize(), $handler),
+            $this->isChunkedById() => 
+                fn (Builder $builder) => 
+                    $builder->chunkById($this->getChunkSize(), $handler),
+            $this->isChunked() => 
+                fn (Builder $builder) => 
+                    $builder->chunk($this->getChunkSize(), $handler),
             default => $handler,
         };
     }

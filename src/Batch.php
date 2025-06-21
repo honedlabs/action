@@ -43,6 +43,13 @@ class Batch extends Primitive implements HandlesOperations
     public static $namespace = 'App\\Batches\\';
 
     /**
+     * The identifier to use for evaluation.
+     *
+     * @var string
+     */
+    protected $evaluationIdentifier = 'batch';
+
+    /**
      * How to resolve the batch for the given model name.
      *
      * @var (Closure(class-string):class-string<Batch>)|null

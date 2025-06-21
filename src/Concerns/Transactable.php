@@ -7,7 +7,7 @@ namespace Honed\Action\Concerns;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
-trait CanBeTransaction
+trait Transactable
 {
     /**
      * Indicate whether to wrap the callback in a database transaction.

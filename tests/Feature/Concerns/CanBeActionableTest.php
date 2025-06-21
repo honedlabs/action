@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\CanBeActionable;
+use Honed\Action\Concerns\Actionable;
 
 beforeEach(function () {
     $this->test = new class()
     {
-        use CanBeActionable;
+        use Actionable;
     };
 });
 
@@ -22,11 +22,6 @@ it('has endpoint', function () {
 it('is actionable', function () {
     expect($this->test)
         ->isActionable()->toBeTrue()
-        ->isNotActionable()->toBeFalse()
-        ->notActionable()->toBe($this->test)
-        ->isActionable()->toBeFalse()
-        ->isNotActionable()->toBeTrue()
-        ->actionable()->toBe($this->test)
-        ->isActionable()->toBeTrue()
-        ->isNotActionable()->toBeFalse();
+        ->actionable(false)->toBe($this->test)
+        ->isActionable()->toBeFalse();
 });

@@ -8,8 +8,10 @@ class {{ class }} implements Action
 {
     /**
      * Handle the action.
+     *
+     * @return mixed
      */
-    public function handle(): void
+    public function handle()
     {
         //
     }

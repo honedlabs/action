@@ -18,11 +18,13 @@ it('makes an inline operation by default', function () {
         '--force' => true,
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Operations/View.php'));
+    $file = app_path('Operations/View.php');
+
+    $this->assertFileExists($file);
 
     $this->assertStringContainsString(
         'class View extends InlineOperation',
-        File::get(app_path('Operations/View.php'))
+        File::get($file)
     );
 });
 
@@ -32,11 +34,13 @@ it('bindings for a name', function () {
     ])->expectsQuestion('What should the operation be named?', 'View')
         ->assertSuccessful();
 
-    $this->assertFileExists(app_path('Operations/View.php'));
+    $file = app_path('Operations/View.php');
+
+    $this->assertFileExists($file);
 
     $this->assertStringContainsString(
         'class View extends InlineOperation',
-        File::get(app_path('Operations/View.php'))
+        File::get($file)
     );
 });
 
@@ -47,11 +51,13 @@ it('makes operation types', function ($flag, $class) {
         $flag => true,
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Operations/View.php'));
+    $file = app_path('Operations/View.php');
+
+    $this->assertFileExists($file);
 
     $this->assertStringContainsString(
         "class View extends {$class}",
-        File::get(app_path('Operations/View.php'))
+        File::get($file)
     );
 })->with([
     ['--inline', 'InlineOperation'],
@@ -66,11 +72,13 @@ it('makes operation with type', function ($type, $class) {
         '--type' => $type,
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Operations/View.php'));
+    $file = app_path('Operations/View.php');
+
+    $this->assertFileExists($file);
 
     $this->assertStringContainsString(
         "class View extends {$class}",
-        File::get(app_path('Operations/View.php'))
+        File::get($file)
     );
 })->with([
     ['inline', 'InlineOperation'],

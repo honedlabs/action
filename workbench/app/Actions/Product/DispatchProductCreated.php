@@ -10,15 +10,15 @@ use Workbench\App\Events\ProductCreated;
 /**
  * @template TDispatch of \Workbench\App\Events\ProductCreated
  * @template TPayload of \Workbench\App\Models\Product
+ *
+ * @extends \Honed\Action\Actions\DispatchAction<TDispatch, TPayload>
  */
 class DispatchProductCreated extends DispatchAction
 {
     /**
      * Get the dispatchable class.
-     *
-     * @return class-string<TDispatch>
      */
-    protected function dispatch()
+    public function dispatch()
     {
         return ProductCreated::class;
     }

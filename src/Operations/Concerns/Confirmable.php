@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Concerns;
+namespace Honed\Action\Operations\Concerns;
 
 use Closure;
 use Honed\Action\Confirm;
@@ -12,7 +12,7 @@ use function is_null;
 /**
  * @phpstan-require-extends \Honed\Core\Primitive
  */
-trait HasConfirm
+trait Confirmable
 {
     /**
      * The instance of the confirm.
@@ -28,7 +28,7 @@ trait HasConfirm
      * @param  string|null  $description
      * @return $this
      */
-    public function confirm($confirm, $description = null)
+    public function confirmable($confirm, $description = null)
     {
         match (true) {
             is_null($confirm) => null,

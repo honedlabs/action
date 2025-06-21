@@ -12,7 +12,7 @@ use Throwable;
  */
 trait CanHandleOperations
 {
-    use CanBeActionable;
+    use Actionable;
     use HasEncoder;
     use HasOperations;
 
@@ -80,7 +80,7 @@ trait CanHandleOperations
      */
     public function handle($request)
     {
-        if ($this->isNotActionable()) {
+        if (! $this->isActionable()) {
             abort(404);
         }
 

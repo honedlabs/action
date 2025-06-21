@@ -21,8 +21,6 @@ class ForceDestroyAction extends DatabaseAction
             fn () => $this->forceDestroy($model)
         );
 
-        $this->after($model);
-
         return $model;
     }
 
@@ -35,6 +33,8 @@ class ForceDestroyAction extends DatabaseAction
     protected function forceDestroy($model)
     {
         $model->forceDelete();
+
+        $this->after($model);
     }
 
     /**

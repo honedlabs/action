@@ -15,12 +15,10 @@ it('can be operable', function () {
     expect($this->batch)
         ->operations(InlineOperation::make('create'))->toBe($this->batch)
         ->isOperable()->toBeTrue()
-        ->notOperable()->toBe($this->batch)
-        ->isNotOperable()->toBeTrue()
-        ->getOperations()->toBeEmpty()
-        ->operable()->toBe($this->batch)
-        ->isOperable()->toBeTrue()
-        ->getOperations()->toHaveCount(1);
+        ->getOperations()->toHaveCount(1)
+        ->operable(false)->toBe($this->batch)
+        ->isOperable()->toBeFalse()
+        ->getOperations()->toBeEmpty();
 });
 
 it('adds operations', function () {
@@ -55,12 +53,10 @@ describe('inline operations', function () {
     it('provides', function () {
         expect($this->batch)
             ->isInlinable()->toBeTrue()
-            ->notInlinable()->toBe($this->batch)
-            ->isNotInlinable()->toBeTrue()
-            ->getInlineOperations()->toHaveCount(0)
-            ->inlinable()->toBe($this->batch)
-            ->isInlinable()->toBeTrue()
-            ->getInlineOperations()->toHaveCount(1);
+            ->getInlineOperations()->toHaveCount(1)
+            ->inlinable(false)->toBe($this->batch)
+            ->isInlinable()->toBeFalse()
+            ->getInlineOperations()->toHaveCount(0);
     });
 
     it('adds', function () {
@@ -93,12 +89,10 @@ describe('bulk operations', function () {
     it('provides', function () {
         expect($this->batch)
             ->isBulkable()->toBeTrue()
-            ->notBulkable()->toBe($this->batch)
-            ->isNotBulkable()->toBeTrue()
-            ->getBulkOperations()->toHaveCount(0)
-            ->bulkable()->toBe($this->batch)
-            ->isBulkable()->toBeTrue()
-            ->getBulkOperations()->toHaveCount(1);
+            ->getBulkOperations()->toHaveCount(1)
+            ->bulkable(false)->toBe($this->batch)
+            ->isBulkable()->toBeFalse()
+            ->getBulkOperations()->toBeEmpty();
     });
 
     it('adds', function () {
@@ -107,7 +101,7 @@ describe('bulk operations', function () {
             ->getBulkOperations()->toHaveCount(2)
             ->bulkOperations(false)->toBe($this->batch)
             ->isBulkable()->toBeFalse()
-            ->getBulkOperations()->toHaveCount(0);
+            ->getBulkOperations()->toBeEmpty();
     });
 
     it('has array representation', function () {
@@ -131,12 +125,10 @@ describe('page operations', function () {
     it('provides', function () {
         expect($this->batch)
             ->isPageable()->toBeTrue()
-            ->notPageable()->toBe($this->batch)
-            ->isNotPageable()->toBeTrue()
-            ->getPageOperations()->toHaveCount(0)
-            ->pageable()->toBe($this->batch)
-            ->isPageable()->toBeTrue()
-            ->getPageOperations()->toHaveCount(1);
+            ->getPageOperations()->toHaveCount(1)
+            ->pageable(false)->toBe($this->batch)
+            ->isPageable()->toBeFalse()
+            ->getPageOperations()->toBeEmpty();
     });
 
     it('adds', function () {
@@ -145,7 +137,7 @@ describe('page operations', function () {
             ->getPageOperations()->toHaveCount(2)
             ->pageOperations(false)->toBe($this->batch)
             ->isPageable()->toBeFalse()
-            ->getPageOperations()->toHaveCount(0);
+            ->getPageOperations()->toBeEmpty();
     });
 
     it('has array representation', function () {

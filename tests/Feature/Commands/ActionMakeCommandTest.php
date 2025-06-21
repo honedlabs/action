@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 
 use function Pest\Laravel\artisan;
 
 beforeEach(function () {
+    File::cleanDirectory(app_path('Actions'));
+})->only();
+
+afterEach(function () {
     File::cleanDirectory(app_path('Actions'));
 });
 
@@ -18,15 +23,23 @@ it('makes', function () {
     $this->assertFileExists(app_path('Actions/TestAction.php'));
 });
 
-it('sets verb', function () {
+it('creates actions', function ($name, $action) {
     artisan('make:action', [
-        'name' => 'UpdateAction',
-        '--action' => 'update',
-        '--model' => 'Product',
+        'name' => 'TestAction',
+        '--action' => $name,
     ])->assertSuccessful();
 
-    $this->assertFileExists(app_path('Actions/UpdateAction.php'));
-});
+    $file = app_path('Actions/TestAction.php');
+
+    $this->assertFileExists($file);
+
+    $this->assertStringContainsString(
+        "class TestAction extends {$action}",
+        File::get($file)
+    );
+})->with([
+    fn () => Arr::mapWithKeys(config('action.actions'), fn ($value, $key) => [$key, $value]),
+]);
 
 it('prompts', function () {
     artisan('make:action')

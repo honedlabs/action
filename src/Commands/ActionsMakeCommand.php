@@ -6,6 +6,7 @@ namespace Honed\Action\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,21 +21,7 @@ use function Laravel\Prompts\select;
 #[AsCommand(name: 'make:actions')]
 class ActionsMakeCommand extends Command implements PromptsForMissingInput
 {
-    /**
-     * The actions that can be used in the action.
-     *
-     * @var array<string,string>
-     */
-    public $actions = [
-        'index' => 'Index',
-        'create' => 'Create',
-        'store' => 'Store',
-        'show' => 'Show',
-        'edit' => 'Edit',
-        'update' => 'Update',
-        'delete' => 'Delete',
-        'destroy' => 'Destroy',
-    ];
+    use Concerns\SuggestsModels;
 
     /**
      * The console command name.
@@ -64,13 +51,10 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
      */
     public function handle()
     {
-        /** @var string */
-        $model = $this->argument('model');
+        $model = $this->getModel($this->argument('model'));
 
-        if (! in_array($model, $this->possibleModels())) {
-            error('The model '.$model.' does not exist.');
-
-            return 1;
+        if (! $model) {
+            return $this->missingModel();
         }
 
         /** @var string|null */
@@ -78,10 +62,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
 
         $force = (bool) $this->option('force');
 
-        foreach ($this->actions as $action => $verb) {
-            /** @var string */
-            $model = $this->argument('model');
-
+        foreach ($this->getActions() as $action => $verb) {
             $name = Str::of($path ?? '')
                 ->append('/'.$model)
                 ->append('/'.$verb.$model)
@@ -142,18 +123,35 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
     }
 
     /**
-     * Get a list of possible model names.
+     * Error the command when the model does not exist.
      *
-     * @return array<int, string>
+     * @return int
      */
-    protected function possibleModels()
+    protected function missingModel()
     {
-        $modelPath = is_dir(app_path('Models')) ? app_path('Models') : app_path();
+        error('The model does not exist.');
 
-        return (new Collection(Finder::create()->files()->depth(0)->in($modelPath)))
-            ->map(fn ($file) => $file->getBasename('.php'))
-            ->sort()
-            ->values()
-            ->all();
+        return 1;
+    }
+
+    /**
+     * Get the actions that can be used in the action.
+     *
+     * @return array<string,string>
+     */
+    protected function getActions()
+    {
+        $actions = config('action.model_actions');
+
+        if (is_array($actions) && Arr::isAssoc($actions)) {
+            /** @var array<string,string> */
+            return $actions;
+        }
+
+        return [
+            'store' => 'Store',
+            'update' => 'Update',
+            'destroy' => 'Destroy',
+        ];
     }
 }

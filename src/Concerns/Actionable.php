@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-trait CanBeActionable
+trait Actionable
 {
     /**
      * The endpoint to execute server actions.
@@ -68,17 +68,6 @@ trait CanBeActionable
     }
 
     /**
-     * Set whether the instance cannot execute server actions.
-     *
-     * @param  bool  $actionable
-     * @return $this
-     */
-    public function notActionable($actionable = true)
-    {
-        return $this->actionable(! $actionable);
-    }
-
-    /**
      * Determine if the instance can execute server actions.
      *
      * @return bool
@@ -86,15 +75,5 @@ trait CanBeActionable
     public function isActionable()
     {
         return $this->actionable;
-    }
-
-    /**
-     * Determine if the instance cannot execute server actions.
-     *
-     * @return bool
-     */
-    public function isNotActionable()
-    {
-        return ! $this->isActionable();
     }
 }

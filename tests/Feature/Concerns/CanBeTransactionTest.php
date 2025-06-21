@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\CanBeTransaction;
+use Honed\Action\Concerns\Transactable;
 
 beforeEach(function () {
     $this->test = new class()
     {
-        use CanBeTransaction;
+        use Transactable;
     };
 });
 

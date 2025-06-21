@@ -5,9 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\UpdateAction;
 
 /**
- * @template TModel of \Illuminate\Database\Eloquent\Model
- * 
- * @extends \Honed\Action\Actions\UpdateAction<TModel>
+ * @extends \Honed\Action\Actions\UpdateAction<{{ model }}>
  */
 class {{ class }} extends UpdateAction
 {

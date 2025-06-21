@@ -1,0 +1,42 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\UpsertAction;
+
+/**
+ * @extends \Honed\Action\Actions\UpsertAction<{{ model }}>
+ */
+class {{ class }} extends UpsertAction
+{
+    /**
+     * Get the model to perform the upsert on.
+     *
+     * @return class-string<TModel>
+     */
+    protected function for()
+    {
+        //
+    }
+
+    /**
+     * Get the unique by columns for the upsert.
+     *
+     * @return array<int, string>
+     */
+    protected function uniqueBy()
+    {
+        //
+    }
+
+    /**
+     * Get the columns to update in the upsert.
+     *
+     * @return array<int, string>
+     */
+    protected function update()
+    {
+        //
+    }
+}
+

@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\SyncAction;
+
+/**
+ * @extends \Honed\Action\Actions\SyncAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ */
+class {{ class }} extends SyncAction
+{
+    /**
+     * Get the name of the relationship to use.
+     *
+     * @return string
+     */
+    public function relationship()
+    {
+        //
+    }
+}
+

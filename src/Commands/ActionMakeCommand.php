@@ -6,6 +6,7 @@ namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,21 +21,7 @@ use function Laravel\Prompts\suggest;
 #[AsCommand(name: 'make:action')]
 class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInput
 {
-    /**
-     * The actions that can be used in the action.
-     *
-     * @var array<string,string>
-     */
-    public $actions = [
-        'index' => 'Index',
-        'create' => 'Create',
-        'store' => 'Store',
-        'show' => 'Show',
-        'edit' => 'Edit',
-        'update' => 'Update',
-        'delete' => 'Delete',
-        'destroy' => 'Destroy',
-    ];
+    use Concerns\SuggestsModels;
 
     /**
      * The console command name.
@@ -94,12 +81,12 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
         $model = str_replace('/', '\\', $model);
 
         if (str_starts_with($model, '\\')) {
-            $namespacedModel = mb_trim($model, '\\');
+            $namespacedModel = trim($model, '\\');
         } else {
             $namespacedModel = $this->qualifyModel($model);
         }
 
-        $model = class_basename(mb_trim($model, '\\'));
+        $model = class_basename(trim($model, '\\'));
 
         $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
 
@@ -119,13 +106,10 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
             array_keys($replace), array_values($replace), $stub
         );
 
-        $contract = "use Honed\Action\Contracts\Action;\r\n";
-
         /** @var string */
         return preg_replace(
-            '/'.preg_quote($contract, '/').'/',
-            vsprintf("use %s;\r\nuse %s;\r\n", [
-                'Honed\Action\Contracts\Action',
+            '/(?<=namespace [^;]+;)/',
+            vsprintf("\n\nuse %s;", [
                 $namespacedModel,
             ]),
             $stub
@@ -163,7 +147,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(\mb_trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(\trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }
@@ -194,6 +178,39 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     }
 
     /**
+     * Get the action to be used.
+     *
+     * @return array<string,string>
+     */
+    protected function getActions()
+    {
+        $actions = config('action.actions');
+
+        if (is_array($actions) && Arr::isAssoc($actions)) {
+            /** @var array<string,string> */
+            return $actions;
+        }
+
+        return [
+            'associate' => 'Associate',
+            'attach' => 'Attach',
+            'detach' => 'Detach',
+            'destroy' => 'Destroy',
+            'dispatch' => 'Dispatch',
+            'dissociate' => 'Dissociate',
+            'force-destroy' => 'Force Destroy',
+            'replicate' => 'Replicate',
+            'restore' => 'Restore',
+            'store' => 'Store',
+            'sync' => 'Sync',
+            'toggle' => 'Toggle',
+            'touch' => 'Touch',
+            'update' => 'Update',
+            'upsert' => 'Upsert',
+        ];
+    }
+
+    /**
      * Interact further with the user if they were prompted for missing arguments.
      *
      * @return void
@@ -205,7 +222,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
         }
 
         $actions = [
-            ...$this->actions,
+            ...$this->getActions(),
             'none' => 'None',
         ];
 

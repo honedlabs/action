@@ -7,13 +7,7 @@ namespace Honed\Action\Operations;
 class BulkOperation extends Operation
 {
     use Concerns\CanBeChunked;
-
-    /**
-     * Whether the action keeps the records selected after successful execution.
-     *
-     * @var bool
-     */
-    protected $keepSelected = false;
+    use Concerns\CanKeepSelected;
 
     /**
      * Provide the instance with any necessary setup.
@@ -28,36 +22,15 @@ class BulkOperation extends Operation
     }
 
     /**
-     * Set the action to keep the records selected.
-     *
-     * @param  bool  $keep
-     * @return $this
-     */
-    public function keepSelected($keep = true)
-    {
-        $this->keepSelected = $keep;
-
-        return $this;
-    }
-
-    /**
-     * Determine if the action keeps the records selected.
-     *
-     * @return bool
-     */
-    public function keepsSelected()
-    {
-        return $this->keepSelected;
-    }
-
-    /**
-     * {@inheritdoc}
+     * Get the instance as an array.
+     * 
+     * @return array<string, mixed>
      */
     public function toArray()
     {
         return [
             ...parent::toArray(),
-            'keepSelected' => $this->keepsSelected(),
+            'keep' => $this->keepsSelected(),
         ];
     }
 }
