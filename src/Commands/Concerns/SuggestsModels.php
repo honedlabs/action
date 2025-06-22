@@ -82,7 +82,7 @@ trait SuggestsModels
      */
     protected function qualifyModel(string $model)
     {
-        $model = ltrim($model, '\\/');
+        $model = mb_ltrim($model, '\\/');
 
         $model = str_replace('/', '\\', $model);
 
