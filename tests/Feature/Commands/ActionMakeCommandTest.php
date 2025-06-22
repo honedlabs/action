@@ -3,20 +3,24 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-
-use function Pest\Laravel\artisan;
 
 beforeEach(function () {
     File::cleanDirectory(app_path('Actions'));
-})->only();
+    File::cleanDirectory(app_path('Models'));
+
+    $this->actions = Config::get('action.actions');
+});
 
 afterEach(function () {
     File::cleanDirectory(app_path('Actions'));
+    File::cleanDirectory(app_path('Models'));
+    Config::set('action.actions', $this->actions);
 });
 
 it('makes', function () {
-    artisan('make:action', [
+    $this->artisan('make:action', [
         'name' => 'TestAction',
     ])->assertSuccessful();
 
@@ -24,7 +28,7 @@ it('makes', function () {
 });
 
 it('creates actions', function ($name, $action) {
-    artisan('make:action', [
+    $this->artisan('make:action', [
         'name' => 'TestAction',
         '--action' => $name,
     ])->assertSuccessful();
@@ -42,11 +46,39 @@ it('creates actions', function ($name, $action) {
 ]);
 
 it('prompts', function () {
-    artisan('make:action')
+    $this->artisan('make:model', ['name' => 'Product']);
+
+    $this->artisan('make:action')
         ->expectsQuestion('What should the action be named?', 'StoreAction')
         ->expectsQuestion('What action should be used? (Optional)', 'store')
         ->expectsQuestion('What model should this action be for? (Optional)', 'Product')
+        ->expectsQuestion('A [App\Models\Product] model does not exist. Do you want to generate it?', true)
         ->assertSuccessful();
 
     $this->assertFileExists(app_path('Actions/StoreAction.php'));
+});
+
+it('throws error when invalid action is provided', function () {
+    $this->artisan('make:action', [
+        'name' => 'TestAction',
+        '--action' => 'invalid',
+    ]);
+})->throws(InvalidArgumentException::class);
+
+it('uses default action', function () {
+    Config::set('action.actions', null);
+
+    $this->artisan('make:action', [
+        'name' => 'TestAction',
+        '--action' => 'store',
+    ])->assertSuccessful();
+
+    $file = app_path('Actions/TestAction.php');
+
+    $this->assertFileExists($file);
+
+    $this->assertStringContainsString(
+        'class TestAction extends StoreAction',
+        File::get($file)
+    );
 });

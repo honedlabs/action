@@ -16,6 +16,13 @@ trait CanBeRateLimited
     protected $rateLimit = null;
 
     /**
+     * The key to use for the rate limit.
+     *
+     * @var string|(Closure(mixed...):string|null)
+     */
+    protected $rateLimitBy;
+
+    /**
      * Set the number of attempts allowed within a minute.
      *
      * @param  int|(Closure(mixed...):int|null)|null  $attempts
@@ -37,5 +44,29 @@ trait CanBeRateLimited
     {
         /** @var int|null */
         return $this->evaluate($this->rateLimit);
+    }
+
+    /**
+     * Set the key to use for the rate limit.
+     *
+     * @param  string|(Closure(mixed...):string|null)  $key
+     * @return $this
+     */
+    public function rateLimitBy($key)
+    {
+        $this->rateLimitBy = $key;
+
+        return $this;
+    }
+
+    /**
+     * Get the key to use for the rate limit.
+     *
+     * @return string|null
+     */
+    public function getRateLimitBy()
+    {
+        /** @var string|null */
+        return $this->evaluate($this->rateLimitBy);
     }
 }

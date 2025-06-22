@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\ReplicateAction;
 
 /**
- * @extends \Honed\Action\Actions\ReplicateAction<{{ model }}>
+ * @extends \Honed\Action\Actions\ReplicateAction<\{{ namespacedModel }}>
  */
 class {{ class }} extends ReplicateAction
 {

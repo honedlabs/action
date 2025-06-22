@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\SyncAction;
 
 /**
- * @extends \Honed\Action\Actions\SyncAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\SyncAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends SyncAction
 {

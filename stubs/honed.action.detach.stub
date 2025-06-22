@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\DetachAction;
 
 /**
- * @extends \Honed\Action\Actions\DetachAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\DetachAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends DetachAction
 {

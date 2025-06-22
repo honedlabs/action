@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\DissociateAction;
 
 /**
- * @extends \Honed\Action\Actions\DissociateAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\DissociateAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends DissociateAction
 {

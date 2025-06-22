@@ -27,9 +27,11 @@ trait CanHandleOperations
         try {
             $primitive = static::decode($value);
 
-            return static::canHandleOperations($primitive)
-                ? $primitive::make() // @phpstan-ignore-line
-                : null;
+            if (static::canHandleOperations($primitive)) {
+                return $primitive::make(); // @phpstan-ignore-line
+            }
+
+            return null;
 
         } catch (Throwable $th) {
             return null;
@@ -56,6 +58,7 @@ trait CanHandleOperations
      */
     public function getRouteKey()
     {
+        // return $this->getId();
         return static::encode(static::class);
     }
 

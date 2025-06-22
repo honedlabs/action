@@ -30,8 +30,7 @@ arch('contracts')
 
 arch('commands')
     ->expect('Honed\Action\Commands')
-    ->toBeClasses()
-    ->except('Honed\Action\Commands\Concerns\SuggestsModels')
+    ->classes()
     ->toExtend(Command::class);
 
 arch('exceptions')

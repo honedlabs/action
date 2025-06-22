@@ -2,15 +2,15 @@
 
 namespace {{ namespace }};
 
-use Honed\Action\Actions\AssociateAction;
+use Honed\Action\Actions\DispatchAction;
 
 /**
  * @template TDispatch
  * @template TPayload
  *
- * @extends \Honed\Action\Actions\AssociateAction<TDispatch, TPayload>
+ * @extends \Honed\Action\Actions\DispatchAction<TDispatch, TPayload>
  */
-class {{ class }} extends AssociateAction
+class {{ class }} extends DispatchAction
 {
     /**
      * Get the dispatchable class.

@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\ForceDestroyAction;
 
 /**
- * @extends \Honed\Action\Actions\ForceDestroyAction<{{ model }}>
+ * @extends \Honed\Action\Actions\ForceDestroyAction<{{ namespacedModel }}>
  */
 class {{ class }} extends ForceDestroyAction
 {

@@ -23,18 +23,18 @@ abstract class DispatchAction implements Action
     /**
      * Dispatch the payload.
      *
-     * @param  TPayload  ...$payload
+     * @param  TPayload  $payload
      * @return TInput
      */
-    public function handle(...$payload)
+    public function handle($payload)
     {
-        $prepared = $this->prepare(...$payload);
+        $prepared = $this->prepare($payload);
 
         $event = $this->dispatch();
 
-        $event::dispatch(...$prepared);
+        $event::dispatch($prepared);
 
-        $this->after($event, ...$prepared);
+        $this->after($prepared, $event);
 
         return $prepared;
     }
@@ -42,10 +42,10 @@ abstract class DispatchAction implements Action
     /**
      * Prepare the payload for dispatching.
      *
-     * @param  TPayload  ...$payload
+     * @param  TPayload  $payload
      * @return TInput
      */
-    protected function prepare(...$payload)
+    protected function prepare($payload)
     {
         /** @var TInput */
         return $payload;
@@ -54,11 +54,11 @@ abstract class DispatchAction implements Action
     /**
      * Perform additional logic after the event has been dispatched.
      *
+     * @param  TInput  $payload
      * @param  class-string<TDispatch>  $dispatch
-     * @param  TInput  ...$payload
      * @return void
      */
-    protected function after($dispatch, ...$payload)
+    protected function after($payload, $dispatch)
     {
         //
     }

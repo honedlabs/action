@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\AssociateAction;
 
 /**
- * @extends \Honed\Action\Actions\AssociateAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\AssociateAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends AssociateAction
 {

@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\UpdateAction;
 
 /**
- * @extends \Honed\Action\Actions\UpdateAction<{{ model }}>
+ * @extends \Honed\Action\Actions\UpdateAction<\{{ namespacedModel }}>
  */
 class {{ class }} extends UpdateAction
 {

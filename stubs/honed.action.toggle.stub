@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\ToggleAction;
 
 /**
- * @extends \Honed\Action\Actions\ToggleAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\ToggleAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends ToggleAction
 {

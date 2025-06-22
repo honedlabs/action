@@ -3,9 +3,10 @@
 namespace {{ namespace }};
 
 use Honed\Action\Actions\StoreAction;
+use {{ namespacedModel }};
 
 /**
- * @extends \Honed\Action\Actions\StoreAction<{{ model }}>
+ * @extends \Honed\Action\Actions\StoreAction<\{{ namespacedModel }}>
  */
 class {{ class }} extends StoreAction
 {

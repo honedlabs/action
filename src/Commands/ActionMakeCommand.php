@@ -6,17 +6,18 @@ namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function count;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
+use function trim;
 
 #[AsCommand(name: 'make:action')]
 class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInput
@@ -52,68 +53,44 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function buildClass($name)
     {
-        $stub = parent::buildClass($name);
+        $replace = $this->buildModelReplacements();
 
-        /** @var string|null */
-        $model = $this->option('model');
-
-        /** @var string|null */
         $action = $this->option('action');
 
-        if ($action && ! $model) {
-            error('You must provide a model when specifying the action type.');
+        if ($action && ! in_array($action, array_keys($this->getActions()))) {
+            throw new InvalidArgumentException('You have supplied an invalid action.');
         }
 
-        return $model
-            ? $this->replaceModel($stub, $model)
-            : $stub;
+        return str_replace(
+            array_keys($replace), array_values($replace), parent::buildClass($name)
+        );
     }
 
     /**
-     * Replace the model for the given stub.
+     * Build the model replacement values.
      *
-     * @param  string  $stub
-     * @param  string  $model
-     * @return string
+     * @return array<string, string>
      */
-    protected function replaceModel($stub, $model)
+    protected function buildModelReplacements()
     {
-        $model = str_replace('/', '\\', $model);
+        /** @var string|null $model */
+        $model = $this->option('model');
 
-        if (str_starts_with($model, '\\')) {
-            $namespacedModel = mb_trim($model, '\\');
-        } else {
-            $namespacedModel = $this->qualifyModel($model);
-        }
+        $modelClass = $model ? $this->parseModel($model) : Model::class;
 
-        $model = class_basename(mb_trim($model, '\\'));
+        $this->promptForModelCreation($modelClass);
 
-        $dummyModel = Str::camel($model) === 'user' ? 'model' : $model;
-
-        $replace = [
-            'NamespacedDummyModel' => $namespacedModel,
-            '{{ namespacedModel }}' => $namespacedModel,
-            '{{namespacedModel}}' => $namespacedModel,
-            'DummyModel' => $model,
-            '{{ model }}' => $model,
-            '{{model}}' => $model,
-            'dummyModel' => Str::camel($dummyModel),
-            '{{ modelVariable }}' => Str::camel($dummyModel),
-            '{{modelVariable}}' => Str::camel($dummyModel),
+        return [
+            'DummyFullModelClass' => $modelClass,
+            '{{ namespacedModel }}' => $modelClass,
+            '{{namespacedModel}}' => $modelClass,
+            'DummyModelClass' => class_basename($modelClass),
+            '{{ model }}' => class_basename($modelClass),
+            '{{model}}' => class_basename($modelClass),
+            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
+            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
+            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
         ];
-
-        $stub = str_replace(
-            array_keys($replace), array_values($replace), $stub
-        );
-
-        /** @var string */
-        return preg_replace(
-            '/(?<=namespace [^;]+;)/',
-            vsprintf("\n\nuse %s;", [
-                $namespacedModel,
-            ]),
-            $stub
-        );
     }
 
     /**
@@ -130,13 +107,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
             return $this->resolveStubPath('/stubs/honed.action.stub');
         }
 
-        $stub = Str::of($action)
-            ->lower()
-            ->prepend('/stubs/honed.action.')
-            ->append('.stub')
-            ->value();
-
-        return $this->resolveStubPath($stub);
+        return $this->resolveStubPath("/stubs/honed.action.{$action}.stub");
     }
 
     /**
@@ -147,7 +118,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(\mb_trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }
@@ -172,9 +143,36 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Create the class even if the action already exists.'],
-            ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that the action is for.'],
             ['action', 'a', InputOption::VALUE_REQUIRED, 'The action to be used.'],
+            ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that the action is for.'],
         ];
+    }
+
+    /**
+     * Interact further with the user if they were prompted for missing arguments.
+     *
+     * @return void
+     */
+    protected function afterPromptingForMissingArguments(InputInterface $input, OutputInterface $output)
+    {
+        if ($this->isReservedName($this->getNameInput()) || $this->didReceiveOptions($input)) {
+            return;
+        }
+
+        $actions = [...$this->getActions(), null => 'None'];
+
+        $input->setOption('action', select(
+            'What action should be used? (Optional)',
+            $actions,
+            scroll: count($actions),
+            hint: 'If no action is provided, the default action stub will be used.',
+        ));
+
+        $input->setOption('model', suggest(
+            'What model should this action be for? (Optional)',
+            $this->possibleModels(),
+            required: 'This field is required when an action is selected',
+        ));
     }
 
     /**
@@ -208,44 +206,5 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
             'update' => 'Update',
             'upsert' => 'Upsert',
         ];
-    }
-
-    /**
-     * Interact further with the user if they were prompted for missing arguments.
-     *
-     * @return void
-     */
-    protected function afterPromptingForMissingArguments(InputInterface $input, OutputInterface $output)
-    {
-        if ($this->isReservedName($this->getNameInput()) || $this->didReceiveOptions($input)) {
-            return;
-        }
-
-        $actions = [
-            ...$this->getActions(),
-            'none' => 'None',
-        ];
-
-        $action = select(
-            'What action should be used? (Optional)',
-            $actions,
-            scroll: count($actions),
-            hint: 'If no action is provided, the default action stub will be used.',
-        );
-
-        if ($action === 'none') {
-            return;
-        }
-
-        // If a action is selected, they must also provide a model.
-        $input->setOption('action', $action);
-
-        $model = suggest(
-            'What model should this action be for? (Optional)',
-            $this->possibleModels(),
-            required: 'This field is required when an action is selected',
-        );
-
-        $input->setOption('model', $model);
     }
 }

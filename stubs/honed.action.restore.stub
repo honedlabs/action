@@ -3,9 +3,10 @@
 namespace {{ namespace }};
 
 use Honed\Action\Actions\RestoreAction;
+use {{ namespacedModel }};
 
 /**
- * @extends \Honed\Action\Actions\RestoreAction<{{ model }}>
+ * @extends \Honed\Action\Actions\RestoreAction<\{{ namespacedModel }}>
  */
 class {{ class }} extends RestoreAction
 {

@@ -5,7 +5,7 @@ namespace {{ namespace }};
 use Honed\Action\Actions\AttachAction;
 
 /**
- * @extends \Honed\Action\Actions\AttachAction<{{ model }}, \Illuminate\Database\Eloquent\Model>
+ * @extends \Honed\Action\Actions\AttachAction<\{{ namespacedModel }}, \Illuminate\Database\Eloquent\Model>
  */
 class {{ class }} extends AttachAction
 {

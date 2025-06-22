@@ -196,7 +196,8 @@ class Batch extends Primitive implements HandlesOperations
             'page' => $this->pageOperationsToArray(),
         ];
 
-        if ($this->isActionable()
+        if (
+            $this->isActionable()
             && is_subclass_of($this, static::getParentClass()) // @phpstan-ignore function.alreadyNarrowedType
         ) {
             return [

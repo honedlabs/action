@@ -8,9 +8,16 @@ beforeEach(function () {
     $this->operation = InlineOperation::make('test');
 });
 
-it('sets', function () {
+it('sets number of attempts', function () {
     expect($this->operation)
         ->getRateLimit()->toBeNull()
         ->rateLimit(10)->toBe($this->operation)
         ->getRateLimit()->toBe(10);
+});
+
+it('sets rate limit key', function () {
+    expect($this->operation)
+        ->getRateLimitBy()->toBeNull()
+        ->rateLimitBy('test')->toBe($this->operation)
+        ->getRateLimitBy()->toBe('test');
 });
