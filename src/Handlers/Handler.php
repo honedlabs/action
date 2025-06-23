@@ -108,7 +108,6 @@ abstract class Handler
         $typed = $this->getTypedParameters($model);
 
         if (! $operation->isAllowed($named, $typed)) {
-            // @phpstan-ignore-next-line argument.type
             OperationForbiddenException::throw($operation->getName());
         }
 
