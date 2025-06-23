@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function count;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\suggest;
-use function mb_trim;
+use function trim;
 
 #[AsCommand(name: 'make:action')]
 class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInput
@@ -118,7 +118,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(mb_trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
             : __DIR__.'/../..'.$stub;
     }

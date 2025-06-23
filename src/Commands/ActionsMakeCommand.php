@@ -117,7 +117,7 @@ class ActionsMakeCommand extends Command implements PromptsForMissingInput
         $path = $this->option('path');
 
         if ($path) {
-            return mb_trim($path, ' /').'/'.$name;
+            return trim($path, ' /').'/'.$name;
         }
 
         return $name;

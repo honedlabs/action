@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 return [
-    // Required here to prevent bootstrapping issues during static analysis.
+    Workbench\App\Providers\WorkbenchServiceProvider::class,
     Honed\Action\ActionServiceProvider::class,
+    Inertia\ServiceProvider::class,
 ];

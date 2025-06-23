@@ -198,7 +198,7 @@ class Batch extends Primitive implements HandlesOperations
 
         if (
             $this->isActionable()
-            && is_subclass_of($this, static::getParentClass()) // @phpstan-ignore function.alreadyNarrowedType
+            && is_subclass_of($this, static::getParentClass())
         ) {
             return [
                 ...$operations,
