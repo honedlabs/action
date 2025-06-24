@@ -108,7 +108,7 @@ trait HasEncodableState
     // }
 
     // /**
-    //  * Get the 
+    //  * Get the
     //  */
     // public function getEncodedState()
     // {
