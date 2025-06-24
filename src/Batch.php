@@ -36,13 +36,6 @@ class Batch extends Primitive implements HandlesOperations
     use HasResource;
 
     /**
-     * The default namespace where batches reside.
-     *
-     * @var string
-     */
-    public static $namespace = 'App\\Batches\\';
-
-    /**
      * The identifier to use for evaluation.
      *
      * @var string
@@ -50,9 +43,16 @@ class Batch extends Primitive implements HandlesOperations
     protected $evaluationIdentifier = 'batch';
 
     /**
+     * The default namespace where batches reside.
+     *
+     * @var string
+     */
+    public static $namespace = 'App\\Batches\\';
+
+    /**
      * How to resolve the batch for the given model name.
      *
-     * @var (Closure(class-string):class-string<Batch>)|null
+     * @var (Closure(class-string<\Illuminate\Database\Eloquent\Model>):class-string<Batch>)|null
      */
     protected static $batchNameResolver = null;
 
@@ -98,7 +98,7 @@ class Batch extends Primitive implements HandlesOperations
     /**
      * Get the table name for the given model name.
      *
-     * @param  class-string  $className
+     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $className
      * @return class-string<Batch>
      */
     public static function resolveBatchName($className)
@@ -131,7 +131,7 @@ class Batch extends Primitive implements HandlesOperations
     /**
      * Specify the callback that should be invoked to guess the name of a model batch.
      *
-     * @param  Closure(class-string):class-string<Batch>  $callback
+     * @param  Closure(class-string<\Illuminate\Database\Eloquent\Model>):class-string<Batch>  $callback
      * @return void
      */
     public static function guessBatchNamesUsing($callback)
@@ -140,7 +140,7 @@ class Batch extends Primitive implements HandlesOperations
     }
 
     /**
-     * Flush the batch's global configuration state.
+     * Flush the global configuration state.
      *
      * @return void
      */

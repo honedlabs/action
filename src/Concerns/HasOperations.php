@@ -95,7 +95,7 @@ trait HasOperations
     }
 
     /**
-     * Add an operation to the instance.
+     * Insert an operation.
      *
      * @param  Operation|Batch  $operation
      * @return $this

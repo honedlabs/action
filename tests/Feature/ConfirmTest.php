@@ -86,14 +86,14 @@ describe('evaluation', function () {
         $this->confirm = $this->confirm->record(User::factory()->create());
     });
 
-    it('named dependencies', function ($closure, $class) {
+    it('has named dependencies', function ($closure, $class) {
         expect($this->confirm->evaluate($closure))->toBeInstanceOf($class);
     })->with([
         fn () => [fn ($row) => $row, User::class],
         fn () => [fn ($record) => $record, User::class],
     ]);
 
-    it('typed dependencies', function ($closure, $class) {
+    it('has typed dependencies', function ($closure, $class) {
         expect($this->confirm->evaluate($closure))->toBeInstanceOf($class);
     })->with([
         fn () => [fn (Model $arg) => $arg, User::class],

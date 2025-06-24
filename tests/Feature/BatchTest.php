@@ -61,7 +61,7 @@ it('resolves route binding', function () {
 it('resolves batch', function () {
     UserBatch::guessBatchNamesUsing(function ($class) {
         return Str::of($class)
-            ->afterLast('\\')
+            ->classBasename()
             ->prepend('Workbench\\App\\Batches\\')
             ->append('Batch')
             ->value();
@@ -72,8 +72,6 @@ it('resolves batch', function () {
 
     expect(UserBatch::batchForModel(User::class))
         ->toBeInstanceOf(UserBatch::class);
-
-    UserBatch::flushState();
 });
 
 it('uses namespace', function () {
@@ -81,12 +79,10 @@ it('uses namespace', function () {
 
     expect(UserBatch::resolveBatchName(User::class))
         ->toBe(Str::of(UserBatch::class)
-            ->afterLast('\\')
+            ->classBasename()
             ->prepend('Models\\')
             ->value()
         );
-
-    UserBatch::flushState();
 });
 
 it('has array representation with actions but is anonymous', function () {
@@ -136,21 +132,23 @@ describe('evaluation', function () {
     it('named dependencies', function ($closure, $class) {
         expect($this->batch->evaluate($closure))->toBeInstanceOf($class);
     })->with([
-        fn () => [fn ($row) => $row, User::class],
-        fn () => [fn ($record) => $record, User::class],
-        fn () => [fn ($builder) => $builder, Builder::class],
-        fn () => [fn ($query) => $query, Builder::class],
-        fn () => [fn ($q) => $q, Builder::class],
-        fn () => [fn ($collection) => $collection, Collection::class],
-        fn () => [fn ($records) => $records, Collection::class],
+        'row' => fn () => [fn ($row) => $row, User::class],
+        'record' => fn () => [fn ($record) => $record, User::class],
+        'builder' => fn () => [fn ($builder) => $builder, Builder::class],
+        'query' => fn () => [fn ($query) => $query, Builder::class],
+        'q' => fn () => [fn ($q) => $q, Builder::class],
+        'collection' => fn () => [fn ($collection) => $collection, Collection::class],
+        'records' => fn () => [fn ($records) => $records, Collection::class],
+        'batch' => fn () => [fn ($batch) => $batch, UserBatch::class],
     ]);
 
     it('typed dependencies', function ($closure, $class) {
         expect($this->batch->evaluate($closure))->toBeInstanceOf($class);
     })->with([
-        fn () => [fn (Model $arg) => $arg, User::class],
-        fn () => [fn (User $arg) => $arg, User::class],
-        fn () => [fn (Builder $arg) => $arg, Builder::class],
-        fn () => [fn (Collection $arg) => $arg, Collection::class],
+        'model' => fn () => [fn (Model $arg) => $arg, User::class],
+        'user' => fn () => [fn (User $arg) => $arg, User::class],
+        'builder' => fn () => [fn (Builder $arg) => $arg, Builder::class],
+        'collection' => fn () => [fn (Collection $arg) => $arg, Collection::class],
+        'batch' => fn () => [fn (Batch $arg) => $arg, Batch::class],
     ]);
 });

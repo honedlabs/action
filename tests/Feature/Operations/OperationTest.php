@@ -60,6 +60,7 @@ it('has array representation with route', function () {
                 'url' => route('users.index'),
                 'method' => Request::METHOD_GET,
                 'external' => false,
+                'newTab' => false,
             ],
         ]);
 });
