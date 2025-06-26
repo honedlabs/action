@@ -14,7 +14,7 @@ use Workbench\App\Batches\UserBatch;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
-    $this->group = Batch::make(PageOperation::make('create'));
+    $this->batch = Batch::make(PageOperation::make('create'));
 });
 
 afterEach(function () {
@@ -22,14 +22,14 @@ afterEach(function () {
 });
 
 it('has model', function () {
-    expect($this->group)
+    expect($this->batch)
         ->getRecord()->toBeNull()
-        ->record(User::factory()->create())->toBe($this->group)
+        ->record(User::factory()->create())->toBe($this->batch)
         ->getRecord()->toBeInstanceOf(User::class);
 });
 
 it('has route key name', function () {
-    expect($this->group)
+    expect($this->batch)
         ->getRouteKeyName()->toBe('action');
 });
 
@@ -38,13 +38,13 @@ it('requires builder to handle requests', function () {
         ->fill()
         ->validate();
 
-    expect($this->group->handle($request))
+    expect($this->batch->handle($request))
         ->toBeInstanceOf(RedirectResponse::class);
 })->throws(RuntimeException::class);
 
 it('resolves route binding', function () {
-    expect($this->group)
-        ->resolveRouteBinding($this->group->getRouteKey())
+    expect($this->batch)
+        ->resolveRouteBinding($this->batch->getRouteKey())
         ->toBeNull();
 
     $actions = UserBatch::make();
@@ -86,7 +86,7 @@ it('uses namespace', function () {
 });
 
 it('has array representation with actions but is anonymous', function () {
-    expect($this->group->toArray())
+    expect($this->batch->toArray())
         ->toBeArray()
         ->toHaveKeys([
             'inline',

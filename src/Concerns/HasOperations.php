@@ -58,14 +58,25 @@ trait HasOperations
     /**
      * Set whether the operations should be provided.
      *
-     * @param  bool  $provide
+     * @param  bool  $value
      * @return $this
      */
-    public function operable($provide = true)
+    public function operable($value = true)
     {
-        $this->operable = $provide;
+        $this->operable = $value;
 
         return $this;
+    }
+
+    /**
+     * Set whether the operations should not be provided.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notOperable($value = true)
+    {
+        return $this->operable(! $value);
     }
 
     /**
@@ -76,6 +87,16 @@ trait HasOperations
     public function isOperable()
     {
         return $this->operable;
+    }
+
+    /**
+     * Determine if the operations should not be provided.
+     *
+     * @return bool
+     */
+    public function isNotOperable()
+    {
+        return ! $this->isOperable();
     }
 
     /**
@@ -114,7 +135,7 @@ trait HasOperations
      */
     public function getOperations()
     {
-        if (! $this->isOperable()) {
+        if ($this->isNotOperable()) {
             return [];
         }
 
@@ -159,6 +180,17 @@ trait HasOperations
     }
 
     /**
+     * Set whether the instance should not provide inline operations.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notInlinable($value = true)
+    {
+        return $this->inlinable(! $value);
+    }
+
+    /**
      * Determine if the instance should provide inline operations.
      *
      * @return bool
@@ -169,13 +201,23 @@ trait HasOperations
     }
 
     /**
+     * Determine if the instance is not providing inline operations.
+     *
+     * @return bool
+     */
+    public function isNotInlinable()
+    {
+        return ! $this->isInlinable();
+    }
+
+    /**
      * Retrieve only the allowed inline operations.
      *
      * @return array<int,InlineOperation>
      */
     public function getInlineOperations()
     {
-        if (! $this->isInlinable()) {
+        if ($this->isNotInlinable()) {
             return [];
         }
 
@@ -197,8 +239,7 @@ trait HasOperations
     public function inlineOperationsToArray($model = null)
     {
         return array_map(
-            static fn (InlineOperation $operation) => $operation
-                ->toArray(),
+            static fn (InlineOperation $operation) => $operation->toArray(),
             array_values(
                 array_filter(
                     $this->getInlineOperations(),
@@ -238,6 +279,17 @@ trait HasOperations
     }
 
     /**
+     * Set whether the instance should not provide bulk operations.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notBulkable($value = true)
+    {
+        return $this->bulkable(! $value);
+    }
+
+    /**
      * Determine if the instance should provide bulk operations.
      *
      * @return bool
@@ -248,13 +300,23 @@ trait HasOperations
     }
 
     /**
+     * Determine if the instance is not providing bulk operations.
+     *
+     * @return bool
+     */
+    public function isNotBulkable()
+    {
+        return ! $this->isBulkable();
+    }
+
+    /**
      * Retrieve only the allowed bulk operations.
      *
      * @return array<int,Operation>
      */
     public function getBulkOperations()
     {
-        if (! $this->isBulkable()) {
+        if ($this->isNotBulkable()) {
             return [];
         }
 
@@ -308,6 +370,17 @@ trait HasOperations
     }
 
     /**
+     * Set whether the instance should not provide page operations.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notPageable($value = true)
+    {
+        return $this->pageable(! $value);
+    }
+
+    /**
      * Determine if the instance should provide page operations.
      *
      * @return bool
@@ -318,13 +391,23 @@ trait HasOperations
     }
 
     /**
+     * Determine if the instance is not providing page operations.
+     *
+     * @return bool
+     */
+    public function isNotPageable()
+    {
+        return ! $this->isPageable();
+    }
+
+    /**
      * Retrieve only the allowed page operations.
      *
      * @return array<int,Operation>
      */
     public function getPageOperations()
     {
-        if (! $this->isPageable()) {
+        if ($this->isNotPageable()) {
             return [];
         }
 

@@ -16,8 +16,8 @@ it('can be operable', function () {
         ->operations(InlineOperation::make('create'))->toBe($this->batch)
         ->isOperable()->toBeTrue()
         ->getOperations()->toHaveCount(1)
-        ->operable(false)->toBe($this->batch)
-        ->isOperable()->toBeFalse()
+        ->notOperable()->toBe($this->batch)
+        ->isNotOperable()->toBeTrue()
         ->getOperations()->toBeEmpty();
 });
 
@@ -54,8 +54,8 @@ describe('inline operations', function () {
         expect($this->batch)
             ->isInlinable()->toBeTrue()
             ->getInlineOperations()->toHaveCount(1)
-            ->inlinable(false)->toBe($this->batch)
-            ->isInlinable()->toBeFalse()
+            ->notInlinable()->toBe($this->batch)
+            ->isNotInlinable()->toBeTrue()
             ->getInlineOperations()->toHaveCount(0);
     });
 
@@ -64,7 +64,7 @@ describe('inline operations', function () {
             ->inlineOperations([InlineOperation::make('new')])->toBe($this->batch)
             ->getInlineOperations()->toHaveCount(2)
             ->inlineOperations(false)->toBe($this->batch)
-            ->isInlinable()->toBeFalse()
+            ->isNotInlinable()->toBeTrue()
             ->getInlineOperations()->toHaveCount(0);
     });
 
@@ -90,8 +90,8 @@ describe('bulk operations', function () {
         expect($this->batch)
             ->isBulkable()->toBeTrue()
             ->getBulkOperations()->toHaveCount(1)
-            ->bulkable(false)->toBe($this->batch)
-            ->isBulkable()->toBeFalse()
+            ->notBulkable()->toBe($this->batch)
+            ->isNotBulkable()->toBeTrue()
             ->getBulkOperations()->toBeEmpty();
     });
 
@@ -100,7 +100,7 @@ describe('bulk operations', function () {
             ->bulkOperations([BulkOperation::make('new')])->toBe($this->batch)
             ->getBulkOperations()->toHaveCount(2)
             ->bulkOperations(false)->toBe($this->batch)
-            ->isBulkable()->toBeFalse()
+            ->isNotBulkable()->toBeTrue()
             ->getBulkOperations()->toBeEmpty();
     });
 
@@ -126,8 +126,8 @@ describe('page operations', function () {
         expect($this->batch)
             ->isPageable()->toBeTrue()
             ->getPageOperations()->toHaveCount(1)
-            ->pageable(false)->toBe($this->batch)
-            ->isPageable()->toBeFalse()
+            ->notPageable()->toBe($this->batch)
+            ->isNotPageable()->toBeTrue()
             ->getPageOperations()->toBeEmpty();
     });
 
@@ -136,7 +136,7 @@ describe('page operations', function () {
             ->pageOperations([PageOperation::make('new')])->toBe($this->batch)
             ->getPageOperations()->toHaveCount(2)
             ->pageOperations(false)->toBe($this->batch)
-            ->isPageable()->toBeFalse()
+            ->isNotPageable()->toBeTrue()
             ->getPageOperations()->toBeEmpty();
     });
 

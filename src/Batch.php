@@ -57,18 +57,6 @@ class Batch extends Primitive implements HandlesOperations
     protected static $batchNameResolver = null;
 
     /**
-     * Provide the instance with any necessary setup.
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->definition($this);
-    }
-
-    /**
      * Create a new batch instance.
      *
      * @param  Operation|Batch|array<int, Operation|Batch>  $operations
@@ -153,16 +141,6 @@ class Batch extends Primitive implements HandlesOperations
     }
 
     /**
-     * Get the parent class for the instance.
-     *
-     * @return class-string<Batch>
-     */
-    public static function getParentClass()
-    {
-        return self::class;
-    }
-
-    /**
      * Get the route key for the instance.
      *
      * @return string
@@ -184,33 +162,6 @@ class Batch extends Primitive implements HandlesOperations
     }
 
     /**
-     * Get the instance as an array.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray()
-    {
-        $operations = [
-            'inline' => $this->inlineOperationsToArray($this->getRecord()),
-            'bulk' => $this->bulkOperationsToArray(),
-            'page' => $this->pageOperationsToArray(),
-        ];
-
-        if (
-            $this->isActionable()
-            && is_subclass_of($this, static::getParentClass())
-        ) {
-            return [
-                ...$operations,
-                'id' => $this->getRouteKey(),
-                'endpoint' => $this->getEndpoint(),
-            ];
-        }
-
-        return $operations;
-    }
-
-    /**
      * Get the application namespace for the application.
      *
      * @return string
@@ -224,6 +175,30 @@ class Batch extends Primitive implements HandlesOperations
         } catch (Throwable) {
             return 'App\\';
         }
+    }
+
+    /**
+     * Get the instance as an array.
+     *
+     * @return array<string, mixed>
+     */
+    protected function representation(): array
+    {
+        $operations = [
+            'inline' => $this->inlineOperationsToArray($this->getRecord()),
+            'bulk' => $this->bulkOperationsToArray(),
+            'page' => $this->pageOperationsToArray(),
+        ];
+
+        if ($this->isActionable()) {
+            return [
+                'id' => $this->getRouteKey(),
+                'endpoint' => $this->getEndpoint(),
+                ...$operations,
+            ];
+        }
+
+        return $operations;
     }
 
     /**

@@ -12,7 +12,9 @@ it('sets number of attempts', function () {
     expect($this->operation)
         ->getRateLimit()->toBeNull()
         ->rateLimit(10)->toBe($this->operation)
-        ->getRateLimit()->toBe(10);
+        ->getRateLimit()->toBe(10)
+        ->dontRateLimit()->toBe($this->operation)
+        ->getRateLimit()->toBeNull();
 });
 
 it('sets rate limit key', function () {

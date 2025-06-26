@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 use Honed\Action\Contracts\ShouldChunk;
 use Honed\Action\Contracts\ShouldChunkById;
+use Honed\Action\Operations\BulkOperation;
 use Honed\Action\Operations\Concerns\CanBeChunked;
 
 beforeEach(function () {
-    $this->test = new class()
-    {
-        use CanBeChunked;
-    };
+    $this->operation = BulkOperation::make('test');
 });
 
 it('chunks', function () {
-    expect($this->test)
+    expect($this->operation)
         ->isChunked()->toBeFalse()
-        ->chunk()->toBe($this->test)
-        ->isChunked()->toBeTrue();
+        ->isNotChunked()->toBeTrue()
+        ->chunk()->toBe($this->operation)
+        ->isChunked()->toBeTrue()
+        ->dontChunk()->toBe($this->operation)
+        ->isNotChunked()->toBeTrue();
 });
 
 it('chunks via contract', function () {
@@ -27,14 +28,18 @@ it('chunks via contract', function () {
     };
 
     expect($test)
-        ->isChunked()->toBeTrue();
+        ->isChunked()->toBeTrue()
+        ->isNotChunked()->toBeFalse();
 });
 
 it('chunks by id', function () {
-    expect($this->test)
+    expect($this->operation)
         ->isChunkedById()->toBeFalse()
-        ->chunkById()->toBe($this->test)
-        ->isChunkedById()->toBeTrue();
+        ->isNotChunkedById()->toBeTrue()
+        ->chunkById()->toBe($this->operation)
+        ->isChunkedById()->toBeTrue()
+        ->dontChunkById()->toBe($this->operation)
+        ->isNotChunkedById()->toBeTrue();
 });
 
 it('chunks by id via contract', function () {
@@ -49,8 +54,8 @@ it('chunks by id via contract', function () {
 });
 
 it('has chunk size', function () {
-    expect($this->test)
-        ->getChunkSize()->toBe(500)
-        ->chunkSize(10)->toBe($this->test)
+    expect($this->operation)
+        ->getChunkSize()->toBe(BulkOperation::CHUNK_SIZE)
+        ->chunkSize(10)->toBe($this->operation)
         ->getChunkSize()->toBe(10);
 });

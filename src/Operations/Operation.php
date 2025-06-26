@@ -13,9 +13,10 @@ use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Concerns\HasRoute;
 use Honed\Core\Concerns\HasType;
+use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
 
-abstract class Operation extends Primitive
+abstract class Operation extends Primitive implements NullsAsUndefined
 {
     use Allowable;
     use Concerns\CanBeRateLimited;
@@ -96,11 +97,11 @@ abstract class Operation extends Primitive
     }
 
     /**
-     * Get the instance as an array.
+     * Get the representation of the instance.
      *
      * @return array<string, mixed>
      */
-    public function toArray()
+    protected function representation(): array
     {
         return [
             'name' => $this->getName(),

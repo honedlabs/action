@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
+/**
+ * @phpstan-require-implements \Honed\Action\Contracts\HandlesOperations
+ */
 trait Actionable
 {
     /**
@@ -19,6 +22,16 @@ trait Actionable
      * @var bool
      */
     protected $actionable = true;
+
+    /**
+     * Get the parent class for the instance.
+     *
+     * @return class-string<\Honed\Action\Contracts\HandlesOperations>
+     */
+    public static function getParentClass()
+    {
+        return self::class;
+    }
 
     /**
      * Get the default endpoint to execute server actions.
@@ -57,14 +70,25 @@ trait Actionable
     /**
      * Set whether the instance can execute server actions.
      *
-     * @param  bool  $actionable
+     * @param  bool  $value
      * @return $this
      */
-    public function actionable($actionable = true)
+    public function actionable($value = true)
     {
-        $this->actionable = $actionable;
+        $this->actionable = $value;
 
         return $this;
+    }
+
+    /**
+     * Set whether the instance cannot execute server actions.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notActionable($value = true)
+    {
+        return $this->actionable(! $value);
     }
 
     /**
@@ -74,6 +98,17 @@ trait Actionable
      */
     public function isActionable()
     {
-        return $this->actionable;
+        return $this->actionable
+            && is_subclass_of($this, static::getParentClass());
+    }
+
+    /**
+     * Determine if the instance cannot execute server actions.
+     *
+     * @return bool
+     */
+    public function isNotActionable()
+    {
+        return ! $this->isActionable();
     }
 }

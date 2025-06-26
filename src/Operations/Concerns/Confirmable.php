@@ -7,8 +7,6 @@ namespace Honed\Action\Operations\Concerns;
 use Closure;
 use Honed\Action\Confirm;
 
-use function is_null;
-
 /**
  * @phpstan-require-extends \Honed\Core\Primitive
  */
@@ -24,22 +22,33 @@ trait Confirmable
     /**
      * Set the confirm for the instance.
      *
-     * @param  Confirm|Closure|string|null  $confirm
+     * @param  Confirm|Closure|string|bool  $confirm
      * @param  string|null  $description
      * @return $this
      */
-    public function confirmable($confirm, $description = null)
+    public function confirmable($confirm = true, $description = null)
     {
         match (true) {
-            is_null($confirm) => null,
+            ! $confirm => $this->confirm = null,
             $confirm instanceof Confirm => $this->confirm = $confirm,
             $confirm instanceof Closure => $this->evaluate($confirm),
             default => $this->newConfirm()
-                ->title($confirm)
+                ->title(is_string($confirm) ? $confirm : 'Confirm action')
                 ->description($description)
         };
 
         return $this;
+    }
+
+    /**
+     * Set the instance to not require confirmation.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function notConfirmable($value = true)
+    {
+        return $this->confirmable(! $value);
     }
 
     /**
@@ -50,6 +59,26 @@ trait Confirmable
     public function getConfirm()
     {
         return $this->confirm;
+    }
+
+    /**
+     * Determine if the instance requires confirmation.
+     *
+     * @return bool
+     */
+    public function isConfirmable()
+    {
+        return (bool) $this->confirm;
+    }
+
+    /**
+     * Determine if the instance does not require confirmation.
+     *
+     * @return bool
+     */
+    public function isNotConfirmable()
+    {
+        return ! $this->isConfirmable();
     }
 
     /**

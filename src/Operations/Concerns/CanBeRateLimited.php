@@ -36,6 +36,18 @@ trait CanBeRateLimited
     }
 
     /**
+     * Disable rate limiting.
+     *
+     * @return $this
+     */
+    public function dontRateLimit()
+    {
+        $this->rateLimit = null;
+
+        return $this;
+    }
+
+    /**
      * Get the number of attempts allowed within a minute.
      *
      * @return int|null

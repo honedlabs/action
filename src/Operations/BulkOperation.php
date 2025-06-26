@@ -22,14 +22,14 @@ class BulkOperation extends Operation
     }
 
     /**
-     * Get the instance as an array.
+     * Get the representation of the instance.
      *
      * @return array<string, mixed>
      */
-    public function toArray()
+    protected function representation(): array
     {
         return [
-            ...parent::toArray(),
+            ...parent::representation(),
             'keep' => $this->keepsSelected(),
         ];
     }

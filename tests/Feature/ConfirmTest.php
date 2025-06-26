@@ -55,11 +55,8 @@ it('has array representation', function () {
     expect($this->confirm->toArray())
         ->toBeArray()
         ->toEqual([
-            'title' => null,
-            'description' => null,
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
-            'intent' => null,
         ]);
 });
 
@@ -77,7 +74,6 @@ it('resolves to array', function () {
             'description' => \sprintf('Are you sure you want to delete %s?', $user->name),
             'dismiss' => 'Cancel',
             'submit' => 'Confirm',
-            'intent' => null,
         ]);
 });
 

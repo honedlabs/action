@@ -7,12 +7,14 @@ use Honed\Action\Operations\InlineOperation;
 use Workbench\App\Models\User;
 
 beforeEach(function () {
-    $this->test = InlineOperation::make('test');
+    $this->operation = InlineOperation::make('test');
 });
 
 it('sets with instance', function () {
-    expect($this->test->confirmable(Confirm::make('name', 'description')->constructive()))
-        ->toBe($this->test)
+    expect($this->operation->confirmable(Confirm::make('name', 'description')->constructive()))
+        ->toBe($this->operation)
+        ->isConfirmable()->toBeTrue()
+        ->isNotConfirmable()->toBeFalse()
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
             ->getTitle()->toBe('name')
@@ -21,12 +23,38 @@ it('sets with instance', function () {
         );
 });
 
+it('sets with defaults', function () {
+    expect($this->operation->confirmable())
+        ->toBe($this->operation)
+        ->isConfirmable()->toBeTrue()
+        ->isNotConfirmable()->toBeFalse()
+        ->getConfirm()
+        ->scoped(fn ($confirm) => $confirm
+            ->getTitle()->toBe('Confirm action')
+            ->getDescription()->toBeNull()
+            ->getIntent()->toBeNull()
+            ->getSubmit()->toBe('Confirm')
+        );
+});
+
+it('sets as not confirmable', function () {
+    expect($this->operation)
+        ->confirmable()->toBe($this->operation)
+        ->getConfirm()->toBeInstanceOf(Confirm::class)
+        ->isConfirmable()->toBeTrue()
+        ->notConfirmable()->toBe($this->operation)
+        ->getConfirm()->toBeNull()
+        ->isNotConfirmable()->toBeTrue();
+});
+
 it('sets with self-call', function () {
-    expect($this->test->confirmable(fn (Confirm $confirm) => $confirm
+    expect($this->operation->confirmable(fn (Confirm $confirm) => $confirm
         ->title('name')
         ->description('description')
         ->submit('Accept'))
-    )->toBe($this->test)
+    )->toBe($this->operation)
+        ->isConfirmable()->toBeTrue()
+        ->isNotConfirmable()->toBeFalse()
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
             ->getTitle()->toBe('name')
@@ -36,8 +64,10 @@ it('sets with self-call', function () {
 });
 
 it('sets with strings', function () {
-    expect($this->test->confirmable('name', 'description'))
-        ->toBe($this->test)
+    expect($this->operation->confirmable('name', 'description'))
+        ->toBe($this->operation)
+        ->isConfirmable()->toBeTrue()
+        ->isNotConfirmable()->toBeFalse()
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
             ->getTitle()->toBe('name')
@@ -48,7 +78,7 @@ it('sets with strings', function () {
 it('resolves to array', function () {
     $user = User::factory()->create();
 
-    $test = $this->test->confirmable(fn (Confirm $confirm) => $confirm
+    $test = $this->operation->confirmable(fn (Confirm $confirm) => $confirm
         ->title(fn (User $user) => \sprintf('Delete %s', $user->name))
         ->description(fn (User $user) => \sprintf('Are you sure you want to delete %s?', $user->name))
         ->submit('Delete')

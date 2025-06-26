@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait CanBeChunked
 {
+    public const CHUNK_SIZE = 500;
+
     /**
      * Whether the action should be chunked.
      *
@@ -33,19 +35,30 @@ trait CanBeChunked
      *
      * @var int
      */
-    protected $chunkSize = 500;
+    protected $chunkSize = self::CHUNK_SIZE;
 
     /**
      * Set the action to chunk the records.
      *
-     * @param  bool  $chunk
+     * @param  bool  $value
      * @return $this
      */
-    public function chunk($chunk = true)
+    public function chunk($value = true)
     {
-        $this->chunk = $chunk;
+        $this->chunk = $value;
 
         return $this;
+    }
+
+    /**
+     * Set the action to not chunk the records.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function dontChunk($value = true)
+    {
+        return $this->chunk(! $value);
     }
 
     /**
@@ -59,16 +72,37 @@ trait CanBeChunked
     }
 
     /**
+     * Determine if the action should not use chunking.
+     *
+     * @return bool
+     */
+    public function isNotChunked()
+    {
+        return ! $this->isChunked();
+    }
+
+    /**
      * Set the action to chunk the records by id.
      *
-     * @param  bool  $byId
+     * @param  bool  $value
      * @return $this
      */
-    public function chunkById($byId = true)
+    public function chunkById($value = true)
     {
-        $this->chunkById = $byId;
+        $this->chunkById = $value;
 
         return $this->chunk();
+    }
+
+    /**
+     * Set the action to not chunk the records by id.
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function dontChunkById($value = true)
+    {
+        return $this->chunkById(! $value);
     }
 
     /**
@@ -79,6 +113,16 @@ trait CanBeChunked
     public function isChunkedById()
     {
         return $this->chunkById || $this instanceof ShouldChunkById;
+    }
+
+    /**
+     * Determine if the action should not chunk the records by id.
+     *
+     * @return bool
+     */
+    public function isNotChunkedById()
+    {
+        return ! $this->isChunkedById();
     }
 
     /**

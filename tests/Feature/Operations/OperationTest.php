@@ -36,11 +36,7 @@ it('has array representation', function () {
             'name',
             'label',
             'type',
-            'icon',
-            'extra',
             'action',
-            'confirm',
-            'route',
         ]);
 });
 
@@ -51,10 +47,7 @@ it('has array representation with route', function () {
             'name' => 'test',
             'label' => 'Test',
             'type' => 'inline',
-            'icon' => null,
-            'extra' => null,
             'action' => false,
-            'confirm' => null,
             'default' => false,
             'route' => [
                 'url' => route('users.index'),
@@ -73,12 +66,8 @@ it('resolves to array', function () {
             'name' => 'destroy',
             'label' => 'Destroy '.$user->name,
             'type' => 'inline',
-            'icon' => null,
-            'extra' => null,
             'action' => true,
-            'confirm' => null,
             'default' => false,
-            'route' => null,
         ]);
 });
 

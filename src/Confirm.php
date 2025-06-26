@@ -6,13 +6,14 @@ namespace Honed\Action;
 
 use Closure;
 use Honed\Core\Concerns\HasRecord;
+use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends \Honed\Core\Primitive<string, mixed>
  */
-class Confirm extends Primitive
+class Confirm extends Primitive implements NullsAsUndefined
 {
     use HasRecord;
 
@@ -221,9 +222,11 @@ class Confirm extends Primitive
     }
 
     /**
-     * {@inheritdoc}
+     * Get the representation of the instance.
+     *
+     * @return array<string, mixed>
      */
-    public function toArray()
+    protected function representation(): array
     {
         return [
             'title' => $this->getTitle(),

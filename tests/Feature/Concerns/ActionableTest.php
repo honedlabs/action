@@ -2,26 +2,29 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\Actionable;
+use Honed\Action\Batch;
+use Workbench\App\Batches\UserBatch;
 
 beforeEach(function () {
-    $this->test = new class()
-    {
-        use Actionable;
-    };
+    $this->batch = Batch::make();
 });
 
 it('has endpoint', function () {
-    expect($this->test)
+    expect($this->batch)
         ->getEndpoint()->toBe(config('action.endpoint'))
-        ->endpoint('/example')->toBe($this->test)
+        ->endpoint('/example')->toBe($this->batch)
         ->getEndpoint()->toBe('/example')
         ->getDefaultEndpoint()->toBe(config('action.endpoint'));
 });
 
 it('is actionable', function () {
-    expect($this->test)
+    expect($this->batch)
+        ->isActionable()->toBeFalse();
+
+    $batch = UserBatch::make();
+
+    expect($batch)
         ->isActionable()->toBeTrue()
-        ->actionable(false)->toBe($this->test)
+        ->notActionable()->toBe($batch)
         ->isActionable()->toBeFalse();
 });

@@ -92,7 +92,7 @@ trait CanHandleOperations
     }
 
     /**
-     * Determine if the primitive cannot handle operations.
+     * Determine if the primitive can handle operations.
      *
      * @param  mixed  $primitive
      * @return bool
