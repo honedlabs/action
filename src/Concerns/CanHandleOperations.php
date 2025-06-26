@@ -83,12 +83,29 @@ trait CanHandleOperations
      */
     public function handle($request)
     {
-        if (! $this->isActionable()) {
+        if ($this->isNotActionable()) {
             abort(404);
         }
 
         return App::make($this->getHandler())
             ->handle($this, $request);
+    }
+
+    /**
+     * Get the actionable configuration as an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function actionableToArray()
+    {
+        if ($this->isActionable()) {
+            return [
+                'id' => $this->getRouteKey(),
+                'endpoint' => $this->getEndpoint(),
+            ];
+        }
+
+        return [];
     }
 
     /**

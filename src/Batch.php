@@ -184,21 +184,12 @@ class Batch extends Primitive implements HandlesOperations
      */
     protected function representation(): array
     {
-        $operations = [
+        return [
+            ...$this->actionableToArray(),
             'inline' => $this->inlineOperationsToArray($this->getRecord()),
             'bulk' => $this->bulkOperationsToArray(),
             'page' => $this->pageOperationsToArray(),
         ];
-
-        if ($this->isActionable()) {
-            return [
-                'id' => $this->getRouteKey(),
-                'endpoint' => $this->getEndpoint(),
-                ...$operations,
-            ];
-        }
-
-        return $operations;
     }
 
     /**
