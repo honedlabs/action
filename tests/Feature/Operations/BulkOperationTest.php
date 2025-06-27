@@ -10,8 +10,13 @@ beforeEach(function () {
 
 it('has bulk type', function () {
     expect($this->action)
-        ->getType()->toBe(BulkOperation::BULK)
-        ->isBulk()->toBeTrue();
+        ->isBulk()->toBeTrue()
+        ->toArray()
+        ->scoped(fn ($array) => $array
+            ->toBeArray()
+            ->toHaveKey('type')
+            ->{'type'}->toBe(BulkOperation::BULK)
+        );
 });
 
 it('keeps selected', function () {

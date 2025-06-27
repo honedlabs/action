@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace Honed\Action\Operations;
 
+use Honed\Core\Concerns\CanBeDefault;
 use Honed\Core\Concerns\HasRecord;
-use Honed\Core\Concerns\IsDefault;
 use Illuminate\Database\Eloquent\Model;
 
 class InlineOperation extends Operation
 {
+    use CanBeDefault;
     use HasRecord;
-    use IsDefault;
 
     /**
-     * Provide the instance with any necessary setup.
-     *
-     * @return void
+     * Get the type of the operation.
      */
-    protected function setUp()
+    protected function type(): string
     {
-        parent::setUp();
-
-        $this->type(self::INLINE);
+        return self::INLINE;
     }
 
     /**

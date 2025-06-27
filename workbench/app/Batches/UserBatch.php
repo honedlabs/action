@@ -30,7 +30,7 @@ class UserBatch extends Batch
             ->for(User::class)
             ->operations([
                 InlineOperation::make('show')
-                    ->route(fn ($record) => route('users.show', $record)),
+                    ->url('users.show', '{user}'),
 
                 InlineOperation::make('update.name')
                     ->action(fn ($record) => $record->update(['name' => 'test'])),
@@ -57,7 +57,7 @@ class UserBatch extends Batch
                     ),
 
                 PageOperation::make('create')
-                    ->route('users.create'),
+                    ->url('users.create'),
 
                 PageOperation::make('create.name')
                     ->action(fn () => User::factory()->create([

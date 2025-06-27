@@ -18,7 +18,7 @@ beforeEach(function () {
 it('has implicit route bindings', function () {
     $user = User::factory()->create();
 
-    $this->operation->route('users.show', '{user}');
+    $this->operation->url('users.show', '{user}');
 
     expect($this->operation->record($user)->toArray())
         ->toHaveKey('route')
@@ -37,23 +37,23 @@ it('has array representation', function () {
             'label',
             'type',
             'action',
+            'inertia',
         ]);
 });
 
 it('has array representation with route', function () {
-    expect($this->operation->route('users.index')->toArray())
+    expect($this->operation->url('users.index')->toArray())
         ->toBeArray()
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'type' => 'inline',
+            'type' => InlineOperation::INLINE,
             'action' => false,
             'default' => false,
+            'inertia' => true,
             'route' => [
                 'url' => route('users.index'),
                 'method' => Request::METHOD_GET,
-                'external' => false,
-                'newTab' => false,
             ],
         ]);
 });
@@ -68,6 +68,7 @@ it('resolves to array', function () {
             'type' => 'inline',
             'action' => true,
             'default' => false,
+            'inertia' => true,
         ]);
 });
 

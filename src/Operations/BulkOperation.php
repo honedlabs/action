@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Honed\Action\Operations;
 
+use Honed\Action\Operations\Concerns\CanBeChunked;
+use Honed\Action\Operations\Concerns\CanKeepSelected;
+
 class BulkOperation extends Operation
 {
-    use Concerns\CanBeChunked;
-    use Concerns\CanKeepSelected;
+    use CanBeChunked;
+    use CanKeepSelected;
 
     /**
-     * Provide the instance with any necessary setup.
-     *
-     * @return void
+     * Get the type of the operation.
      */
-    protected function setUp()
+    protected function type(): string
     {
-        parent::setUp();
-
-        $this->type(self::BULK);
+        return self::BULK;
     }
 
     /**

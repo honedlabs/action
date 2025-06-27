@@ -3,10 +3,9 @@
 namespace {{ namespace }};
 
 use Honed\Action\Batch;
-use Honed\Action\Contracts\ShouldExecute;
-use Honed\Action\InlineAction;
-use Honed\Action\BulkAction;
-use Honed\Action\PageAction;
+use Honed\Action\Operations\InlineOperation;
+use Honed\Action\Operations\BulkOperation;
+use Honed\Action\Operations\PageOperation;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -16,16 +15,6 @@ use Honed\Action\PageAction;
  */
 class {{ class }} extends Batch
 {
-    /**
-     * Provide the instance with any necessary setup
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-        //
-    }
-
     /**
      * Define the operations for the batch.
      * 

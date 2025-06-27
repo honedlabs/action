@@ -12,8 +12,12 @@ beforeEach(function () {
 
 it('has inline type', function () {
     expect($this->operation)
-        ->getType()->toBe(InlineOperation::INLINE)
-        ->isInline()->toBeTrue();
+        ->toArray()
+        ->scoped(fn ($array) => $array
+            ->toBeArray()
+            ->toHaveKey('type')
+            ->{'type'}->toBe(InlineOperation::INLINE)
+        );
 });
 
 it('has default', function () {

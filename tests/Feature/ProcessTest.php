@@ -37,11 +37,3 @@ it('handles with error handling', function () {
     expect(FailProcess::make()->handle($this->data))
         ->toBeFalse();
 });
-
-it('binds the container', function () {
-    $process = ProductProcess::make();
-    $container = app();
-
-    expect($process)
-        ->setContainer($container)->toBe($process);
-});

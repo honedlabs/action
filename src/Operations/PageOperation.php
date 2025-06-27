@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Honed\Action\Operations;
 
+use Honed\Action\Operations\Concerns\CanBeChunked;
+
 class PageOperation extends Operation
 {
-    use Concerns\CanBeChunked;
+    use CanBeChunked;
 
     /**
-     * Provide the instance with any necessary setup.
-     *
-     * @return void
+     * Get the type of the operation.
      */
-    protected function setUp()
+    protected function type(): string
     {
-        parent::setUp();
-
-        $this->type(self::PAGE);
+        return self::PAGE;
     }
 }

@@ -10,6 +10,10 @@ beforeEach(function () {
 
 it('has page type', function () {
     expect($this->action)
-        ->getType()->toBe(PageOperation::PAGE)
-        ->isPage()->toBeTrue();
+        ->toArray()
+        ->scoped(fn ($array) => $array
+            ->toBeArray()
+            ->toHaveKey('type')
+            ->{'type'}->toBe(PageOperation::PAGE)
+        );
 });
