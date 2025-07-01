@@ -25,17 +25,6 @@ trait Actionable
     }
 
     /**
-     * Get the default endpoint to execute server actions.
-     */
-    public static function getEndpoint(): string
-    {
-        /** @var string */
-        $endpoint = config('action.endpoint', '_actions');
-
-        return trim($endpoint, '/');
-    }
-
-    /**
      * Set whether the instance can execute server actions.
      *
      * @return $this

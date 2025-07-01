@@ -44,9 +44,9 @@ it('adds operation', function () {
 describe('inline operations', function () {
     beforeEach(function () {
         $this->batch->operations([
-            PageOperation::make('create'),
             InlineOperation::make('edit'),
             BulkOperation::make('delete'),
+            PageOperation::make('create'),
         ]);
     });
 
@@ -68,21 +68,106 @@ describe('inline operations', function () {
             ->getInlineOperations()->toHaveCount(0);
     });
 
-    it('has array representation', function () {
+    it('removes disallowed actions from array representation', function () {
         expect($this->batch)
             ->inlineOperations([
                 InlineOperation::make('new')->allow(fn () => false),
             ])->toBe($this->batch)
             ->inlineOperationsToArray()->toHaveCount(1);
     });
+
+    it('has array representation without action or route', function () {
+        expect($this->batch)
+            ->inlineOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(1)
+                ->{0}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'default',
+                    ])->not->toHaveKeys([
+                        'type',
+                        'confirm',
+                        'icon',
+                        'href',
+                        'method',
+                        'target',
+                    ])
+                )
+            );
+    });
+
+    it('has array representation with action', function () {
+        expect($this->batch)
+            ->inlineOperations([
+                InlineOperation::make('action')->action(fn () => false),
+            ])->toBe($this->batch)
+            ->inlineOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'type'}->toBe('inertia')
+                    ->{'method'}->toBe('post')
+                    ->{'href'}->toBe(route(config('action.name'), [$this->batch, 'action']))
+                )
+            );
+    });
+
+    it('has array representation with url', function () {
+        expect($this->batch)
+            ->inlineOperations([
+                InlineOperation::make('action')->url('users.index')->notInertia(),
+            ])->toBe($this->batch)
+            ->inlineOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'type'}->toBe('anchor')
+                    ->{'method'}->toBe('get')
+                    ->{'href'}->toBe(route('users.index'))
+                )
+            );
+    });
 });
 
 describe('bulk operations', function () {
     beforeEach(function () {
         $this->batch->operations([
-            PageOperation::make('create'),
             InlineOperation::make('edit'),
             BulkOperation::make('delete'),
+            PageOperation::make('create'),
         ]);
     });
 
@@ -104,12 +189,101 @@ describe('bulk operations', function () {
             ->getBulkOperations()->toBeEmpty();
     });
 
-    it('has array representation', function () {
+    it('removes disallowed actions from array representation', function () {
         expect($this->batch)
             ->bulkOperations([
                 BulkOperation::make('new')->allow(fn () => false),
             ])->toBe($this->batch)
             ->bulkOperationsToArray()->toHaveCount(1);
+    });
+
+    it('has array representation without action or route', function () {
+        expect($this->batch)
+            ->bulkOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(1)
+                ->{0}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'keep',
+                    ])->not->toHaveKeys([
+                        'type',
+                        'confirm',
+                        'icon',
+                        'href',
+                        'method',
+                        'target',
+                    ])
+                )
+            );
+    });
+
+    it('has array representation with action', function () {
+        expect($this->batch)
+            ->bulkOperations([
+                BulkOperation::make('action')->action(fn () => false),
+            ])->toBe($this->batch)
+            ->bulkOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                        'keep',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'keep'}->toBeFalse()
+                    ->{'type'}->toBe('inertia')
+                    ->{'method'}->toBe('post')
+                    ->{'href'}->toBe(route(config('action.name'), [$this->batch, 'action']))
+                )
+            );
+    });
+
+    it('has array representation with url', function () {
+        expect($this->batch)
+            ->bulkOperations([
+                BulkOperation::make('action')->url('users.index')->notInertia(),
+            ])->toBe($this->batch)
+            ->bulkOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                        'keep',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'keep'}->toBeFalse()
+                    ->{'type'}->toBe('anchor')
+                    ->{'method'}->toBe('get')
+                    ->{'href'}->toBe(route('users.index'))
+                )
+            );
     });
 });
 
@@ -140,11 +314,95 @@ describe('page operations', function () {
             ->getPageOperations()->toBeEmpty();
     });
 
-    it('has array representation', function () {
+    it('removes disallowed actions from array representation', function () {
         expect($this->batch)
             ->pageOperations([
                 PageOperation::make('new')->allow(fn () => false),
             ])->toBe($this->batch)
             ->pageOperationsToArray()->toHaveCount(1);
+    });
+
+    it('has array representation without action or route', function () {
+        expect($this->batch)
+            ->pageOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(1)
+                ->{0}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                    ])->not->toHaveKeys([
+                        'type',
+                        'confirm',
+                        'icon',
+                        'href',
+                        'method',
+                        'target',
+                    ])
+                )
+            );
+    });
+
+    it('has array representation with action', function () {
+        expect($this->batch)
+            ->pageOperations([
+                PageOperation::make('action')->action(fn () => false),
+            ])->toBe($this->batch)
+            ->pageOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'type'}->toBe('inertia')
+                    ->{'method'}->toBe('post')
+                    ->{'href'}->toBe(route(config('action.name'), [$this->batch, 'action']))
+                )
+            );
+    });
+
+    it('has array representation with url', function () {
+        expect($this->batch)
+            ->pageOperations([
+                PageOperation::make('action')->url('users.index')->notInertia(),
+            ])->toBe($this->batch)
+            ->pageOperationsToArray()
+            ->scoped(fn ($operations) => $operations
+                ->toBeArray()
+                ->toHaveCount(2)
+                ->{1}
+                ->scoped(fn ($operation) => $operation
+                    ->toBeArray()
+                    ->toHaveKeys([
+                        'name',
+                        'label',
+                        'type',
+                        'href',
+                        'method',
+                    ])->not->toHaveKeys([
+                        'confirm',
+                        'icon',
+                        'target',
+                    ])
+                    ->{'type'}->toBe('anchor')
+                    ->{'method'}->toBe('get')
+                    ->{'href'}->toBe(route('users.index'))
+                )
+            );
     });
 });

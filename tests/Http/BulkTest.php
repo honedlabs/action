@@ -17,7 +17,7 @@ beforeEach(function () {
 });
 
 it('handles an action', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -32,7 +32,7 @@ it('handles an action', function () {
 });
 
 it('returns 403 if the action is not allowed', function () {
-    post(route('actions', [$this->batch, 'bulk-description']), [
+    post(route(config('action.name'), [$this->batch, 'bulk-description']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -47,7 +47,7 @@ it('returns 403 if the action is not allowed', function () {
 });
 
 it('returns 404 if the action is not found', function () {
-    post(route('actions', [$this->batch, 'missing']), [
+    post(route(config('action.name'), [$this->batch, 'missing']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -55,7 +55,7 @@ it('returns 404 if the action is not found', function () {
 });
 
 it('returns 405 if the method is not supported', function () {
-    post(route('actions', [$this->batch, 'bulk-name']), [
+    post(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -70,7 +70,7 @@ it('returns 405 if the method is not supported', function () {
 });
 
 it('returns 429 if the rate limit is exceeded', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -83,7 +83,7 @@ it('returns 429 if the rate limit is exceeded', function () {
         ]);
     }
 
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => true,
         'except' => [],
         'only' => [],
@@ -91,7 +91,7 @@ it('returns 429 if the rate limit is exceeded', function () {
 });
 
 it('validates all', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'only' => [],
         'except' => [],
     ])->assertInvalid([
@@ -100,7 +100,7 @@ it('validates all', function () {
 });
 
 it('validates only', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => false,
         'only' => 'missing',
         'except' => [],
@@ -110,7 +110,7 @@ it('validates only', function () {
 });
 
 it('validates except', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => false,
         'only' => [],
         'except' => 'missing',
@@ -120,7 +120,7 @@ it('validates except', function () {
 });
 
 it('validates inputs', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => false,
         'only' => [['missing']],
         'except' => [['missing']],
@@ -128,7 +128,7 @@ it('validates inputs', function () {
 });
 
 it('applies only to selected records', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => false,
         'only' => [1, 2],
         'except' => [],
@@ -150,7 +150,7 @@ it('applies only to selected records', function () {
 });
 
 it('applies except to all records', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => true,
         'only' => [],
         'except' => [1, 2],
@@ -172,7 +172,7 @@ it('applies except to all records', function () {
 });
 
 it('affects no records', function () {
-    patch(route('actions', [$this->batch, 'bulk-name']), [
+    patch(route(config('action.name'), [$this->batch, 'bulk-name']), [
         'all' => false,
         'only' => [],
         'except' => [],
@@ -184,7 +184,7 @@ it('affects no records', function () {
 });
 
 it('handles a chunked operation', function () {
-    post(route('actions', [$this->batch, 'chunk']), [
+    post(route(config('action.name'), [$this->batch, 'chunk']), [
         'all' => true,
         'only' => [],
         'except' => [],
@@ -199,7 +199,7 @@ it('handles a chunked operation', function () {
 });
 
 it('handles a chunked by id operation', function () {
-    post(route('actions', [$this->batch, 'chunk-id']), [
+    post(route(config('action.name'), [$this->batch, 'chunk-id']), [
         'all' => true,
         'only' => [],
         'except' => [],

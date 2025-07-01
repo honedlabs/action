@@ -11,6 +11,7 @@ use Honed\Action\Operations\Concerns\CanRedirect;
 use Honed\Action\Operations\Concerns\Confirmable;
 use Honed\Action\Operations\Concerns\HasAction;
 use Honed\Action\Operations\Concerns\IsInertia;
+use Honed\Action\Unit;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\CanHaveIcon;
 use Honed\Core\Concerns\CanHaveTarget;
@@ -132,29 +133,63 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     }
 
     /**
+     * Determine the type of the operation.
+     *
+     * @return 'anchor' | 'inertia' | null
+     */
+    public function getType(): ?string
+    {
+        if (! $this->hasUrl()) {
+            return null;
+        }
+
+        return $this->isInertia() ? 'inertia' : 'anchor';
+    }
+
+    /**
+     * Mount the operation to a unit.
+     *
+     * @return $this
+     */
+    public function mount(Unit $unit): static
+    {
+        if ($this->hasAction() && ! $this->hasUrl()) {
+            /** @var string $name */
+            $name = config('action.name', 'actions');
+
+            $this->url(route($name, [$unit, $this->getName()], true));
+        }
+
+        return $this;
+    }
+
+    /**
      * Get the representation of the instance.
      *
      * @return array<string, mixed>
      */
     protected function representation(): array
     {
+        $url = $this->hasUrl() ? [
+            'method' => $this->getMethod(),
+            'href' => $this->getUrl(),
+            'target' => $this->getTarget(),
+        ] : [];
+
         return [
             'name' => $this->getName(),
             'label' => $this->getLabel(),
             'icon' => $this->getIcon(),
             'confirm' => $this->getConfirm()?->toArray(),
-            'action' => $this->hasAction(),
-            'inertia' => $this->isInertia() ?: null,
-            'method' => $this->getMethod(),
-            'href' => $this->getUrl(),
-            'target' => $this->getTarget(),
+            'type' => $this->getType(),
+            ...$url,
         ];
     }
 
     /**
      * Get the fallback method
      */
-    protected function getFallbackMethod(): string
+    protected function defaultMethod(): string
     {
         return $this->hasAction() ? Request::METHOD_POST : Request::METHOD_GET;
     }

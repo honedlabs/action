@@ -67,10 +67,15 @@ class ActionServiceProvider extends ServiceProvider
     {
         Router::macro('actions', function () {
             /** @var Router $this */
-            $endpoint = Unit::getEndpoint();
 
-            $this->any($endpoint.'/{unit}/{operation}', ActionController::class)
-                ->name('actions')
+            /** @var string $endpoint */
+            $endpoint = config('action.uri', '_actions/{unit}/{operation}');
+
+            /** @var string $name */
+            $name = config('action.name', 'actions');
+
+            $this->any($endpoint, ActionController::class)
+                ->name($name)
                 ->scopeBindings();
         });
     }

@@ -9,11 +9,6 @@ beforeEach(function () {
     $this->batch = Batch::make();
 });
 
-it('has endpoint', function () {
-    expect($this->batch)
-        ->getEndpoint()->toBe(config('action.endpoint'));
-});
-
 it('is actionable', function () {
     expect($this->batch)
         ->isActionable()->toBeFalse();

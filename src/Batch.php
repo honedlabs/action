@@ -147,6 +147,7 @@ class Batch extends Unit
     protected function representation(): array
     {
         return [
+            'id' => $this->getId(),
             'inline' => $this->inlineOperationsToArray($this->getRecord()),
             'bulk' => $this->bulkOperationsToArray(),
             'page' => $this->pageOperationsToArray(),

@@ -18,12 +18,12 @@ beforeEach(function () {
 });
 
 it('handles a url', function () {
-    get(route('actions', [$this->batch, 'show', 'id' => $this->user->id]))
+    get(route(config('action.name'), [$this->batch, 'show', 'id' => $this->user->id]))
         ->assertRedirect(route('users.show', $this->user->id));
 });
 
 it('handles an action', function () {
-    patch(route('actions', [$this->batch, 'inline-name']), [
+    patch(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => $this->user->id,
     ])->assertRedirect(route('users.show', $this->user->id));
 
@@ -34,7 +34,7 @@ it('handles an action', function () {
 });
 
 it('requires a record id', function () {
-    patch(route('actions', [$this->batch, 'inline-name']))
+    patch(route(config('action.name'), [$this->batch, 'inline-name']))
         ->assertInvalid(['id' => 'required']);
 
     assertDatabaseMissing('users', [
@@ -44,7 +44,7 @@ it('requires a record id', function () {
 });
 
 it('requires a valid record id', function () {
-    patch(route('actions', [$this->batch, 'inline-name']), [
+    patch(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => [1],
     ])->assertInvalid(['id']);
 
@@ -55,7 +55,7 @@ it('requires a valid record id', function () {
 });
 
 it('returns 403 if the action is not allowed', function () {
-    post(route('actions', [$this->batch, 'inline-description']), [
+    post(route(config('action.name'), [$this->batch, 'inline-description']), [
         'id' => $this->user->id,
     ])->assertForbidden();
 
@@ -66,7 +66,7 @@ it('returns 403 if the action is not allowed', function () {
 });
 
 it('returns 404 if the action is not found', function () {
-    post(route('actions', [$this->batch, 'missing']), [
+    post(route(config('action.name'), [$this->batch, 'missing']), [
         'id' => $this->user->id,
     ])->assertNotFound();
 
@@ -77,7 +77,7 @@ it('returns 404 if the action is not found', function () {
 });
 
 it('returns 405 if the method is not supported', function () {
-    post(route('actions', [$this->batch, 'inline-name']), [
+    post(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => $this->user->id,
     ])->assertMethodNotAllowed();
 
@@ -88,7 +88,7 @@ it('returns 405 if the method is not supported', function () {
 });
 
 it('returns 429 if the rate limit is exceeded', function () {
-    patch(route('actions', [$this->batch, 'inline-name']), [
+    patch(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => $this->user->id,
     ])->assertRedirect();
 
@@ -99,7 +99,7 @@ it('returns 429 if the rate limit is exceeded', function () {
 
     $this->user->refresh()->update(['name' => 'new']);
 
-    patch(route('actions', [$this->batch, 'inline-name']), [
+    patch(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => $this->user->id,
     ])->assertStatus(429);
 
@@ -110,7 +110,7 @@ it('returns 429 if the rate limit is exceeded', function () {
 });
 
 it('returns 404 if the record is not found', function () {
-    patch(route('actions', [$this->batch, 'inline-name']), [
+    patch(route(config('action.name'), [$this->batch, 'inline-name']), [
         'id' => 2,
     ])->assertNotFound();
 

@@ -9,12 +9,17 @@ return [
     | Endpoint
     |--------------------------------------------------------------------------
     |
-    | You can specify a global endpoint to handle all action requests
-    | when using the provided Route macro.
+    | You can override the default endpoint for the action handler, this will
+    | allow you to customise the named route and the endpoint which is used
+    | to handle the action requests.
+    |
+    | Ensure you specify the route bindings for the unit and operation classes.
     |
     */
 
-    'endpoint' => '_actions',
+    'uri' => '_actions/{unit}/{operation}',
+
+    'name' => 'actions',
 
     /*
     |--------------------------------------------------------------------------

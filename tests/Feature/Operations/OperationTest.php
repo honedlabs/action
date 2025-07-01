@@ -8,7 +8,6 @@ use Honed\Action\Operations\InlineOperation;
 use Honed\Action\Operations\Operation;
 use Illuminate\Support\Str;
 use League\Uri\UriTemplate\Operator;
-use Symfony\Component\HttpFoundation\Request;
 use Workbench\App\Models\User;
 use Workbench\App\Operations\DestroyOperation;
 
@@ -41,22 +40,19 @@ it('has array representation', function () {
         ->toHaveKeys([
             'name',
             'label',
-            'action',
-            'inertia',
         ]);
 });
 
-it('has array representation with route', function () {
-    expect($this->operation->url('users.index')->toArray())
+it('has array representation with url', function () {
+    expect($this->operation->url('users.index')->notInertia()->toArray())
         ->toBeArray()
         ->toEqual([
             'name' => 'test',
             'label' => 'Test',
-            'action' => false,
             'default' => false,
-            'inertia' => true,
+            'type' => 'anchor',
             'href' => route('users.index'),
-            'method' => Request::METHOD_GET,
+            'method' => 'get',
         ]);
 });
 
@@ -67,10 +63,7 @@ it('resolves to array', function () {
         ->toEqual([
             'name' => 'destroy',
             'label' => 'Destroy '.$user->name,
-            'action' => true,
             'default' => false,
-            'inertia' => true,
-            'method' => Request::METHOD_POST,
         ]);
 });
 

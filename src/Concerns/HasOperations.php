@@ -16,7 +16,7 @@ use function array_values;
  * @template TModel of \Illuminate\Database\Eloquent\Model = \Illuminate\Database\Eloquent\Model
  * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel> = \Illuminate\Database\Eloquent\Builder<TModel>
  *
- * @phpstan-require-extends \Honed\Core\Primitive
+ * @phpstan-require-extends \Honed\Action\Unit
  */
 trait HasOperations
 {
@@ -239,7 +239,7 @@ trait HasOperations
     public function inlineOperationsToArray($model = null)
     {
         return array_map(
-            static fn (InlineOperation $operation) => $operation->toArray(),
+            fn (InlineOperation $operation) => $operation->mount($this)->toArray(),
             array_values(
                 array_filter(
                     $this->getInlineOperations(),
@@ -337,7 +337,7 @@ trait HasOperations
     public function bulkOperationsToArray()
     {
         return array_map(
-            static fn (Operation $operation) => $operation->toArray(),
+            fn (Operation $operation) => $operation->mount($this)->toArray(),
             $this->getBulkOperations()
         );
     }
@@ -428,7 +428,7 @@ trait HasOperations
     public function pageOperationsToArray()
     {
         return array_map(
-            static fn (Operation $operation) => $operation->toArray(),
+            fn (Operation $operation) => $operation->mount($this)->toArray(),
             $this->getPageOperations()
         );
     }
