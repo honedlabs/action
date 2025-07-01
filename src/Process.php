@@ -35,14 +35,12 @@ abstract class Process implements Action
      *
      * @return array<int, class-string>
      */
-    abstract protected function tasks();
+    abstract protected function tasks(): array;
 
     /**
      * Create a new instance of the process.
-     *
-     * @return static
      */
-    public static function make()
+    public static function make(): static
     {
         return resolve(static::class);
     }
@@ -78,20 +76,17 @@ abstract class Process implements Action
     /**
      * Handle the failure of the process.
      *
-     * @param  Throwable  $throwable
      * @return mixed
      */
-    protected function failure($throwable)
+    protected function failure(Throwable $throwable)
     {
         return false;
     }
 
     /**
      * The method to call on each pipe.
-     *
-     * @return string
      */
-    protected function method()
+    protected function method(): string
     {
         return 'handle';
     }
@@ -115,7 +110,7 @@ abstract class Process implements Action
      *
      * @return array<int, callable>
      */
-    protected function pipes()
+    protected function pipes(): array
     {
         return array_map(
             fn ($task) => is_callable($task)

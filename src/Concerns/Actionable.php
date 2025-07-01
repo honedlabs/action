@@ -10,70 +10,35 @@ namespace Honed\Action\Concerns;
 trait Actionable
 {
     /**
-     * The endpoint to execute server actions.
-     *
-     * @var string|null
-     */
-    protected $endpoint;
-
-    /**
      * Whether the instance can execute server actions.
-     *
-     * @var bool
      */
-    protected $actionable = true;
+    protected bool $actionable = true;
 
     /**
      * Get the parent class for the instance.
      *
      * @return class-string<\Honed\Action\Contracts\HandlesOperations>
      */
-    public static function getParentClass()
+    public static function getParentClass(): string
     {
         return self::class;
     }
 
     /**
      * Get the default endpoint to execute server actions.
-     *
-     * @return string
      */
-    public static function getDefaultEndpoint()
+    public static function getEndpoint(): string
     {
         /** @var string */
-        return config('action.endpoint', 'actions');
-    }
-
-    /**
-     * Set the endpoint to execute server actions.
-     *
-     * @param  string|null  $endpoint
-     * @return $this
-     */
-    public function endpoint($endpoint)
-    {
-        $this->endpoint = $endpoint;
-
-        return $this;
-    }
-
-    /**
-     * Get the endpoint to execute server actions.
-     *
-     * @return string
-     */
-    public function getEndpoint()
-    {
-        return $this->endpoint ?? static::getDefaultEndpoint();
+        return config('action.endpoint', '_batch_actions');
     }
 
     /**
      * Set whether the instance can execute server actions.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function actionable($value = true)
+    public function actionable(bool $value = true): static
     {
         $this->actionable = $value;
 
@@ -83,20 +48,17 @@ trait Actionable
     /**
      * Set whether the instance cannot execute server actions.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function notActionable($value = true)
+    public function notActionable(bool $value = true): static
     {
         return $this->actionable(! $value);
     }
 
     /**
      * Determine if the instance can execute server actions.
-     *
-     * @return bool
      */
-    public function isActionable()
+    public function isActionable(): bool
     {
         return $this->actionable
             && is_subclass_of($this, static::getParentClass());
@@ -104,10 +66,8 @@ trait Actionable
 
     /**
      * Determine if the instance cannot execute server actions.
-     *
-     * @return bool
      */
-    public function isNotActionable()
+    public function isNotActionable(): bool
     {
         return ! $this->isActionable();
     }

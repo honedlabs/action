@@ -10,17 +10,7 @@ beforeEach(function () {
     $this->operation = InlineOperation::make('test');
 });
 
-it('has inline type', function () {
-    expect($this->operation)
-        ->toArray()
-        ->scoped(fn ($array) => $array
-            ->toBeArray()
-            ->toHaveKey('type')
-            ->{'type'}->toBe(InlineOperation::INLINE)
-        );
-});
-
-it('has default', function () {
+it('can be default', function () {
     expect($this->operation)
         ->isDefault()->toBeFalse()
         ->default()->toBe($this->operation)

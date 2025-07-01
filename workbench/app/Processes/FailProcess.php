@@ -20,7 +20,7 @@ class FailProcess extends ProductProcess
      *
      * @return array<int, class-string|Closure>
      */
-    protected function tasks()
+    protected function tasks(): array
     {
         return [
             ...parent::tasks(),

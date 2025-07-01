@@ -4,253 +4,180 @@ declare(strict_types=1);
 
 namespace Honed\Action\Handlers;
 
-use Honed\Action\Exceptions\InvalidOperationException;
-use Honed\Action\Exceptions\OperationForbiddenException;
-use Honed\Action\Exceptions\OperationNotFoundException;
-use Honed\Action\Http\Data\BulkData;
-use Honed\Action\Http\Data\InlineData;
-use Honed\Action\Http\Data\PageData;
+use Honed\Action\Handlers\Concerns\Parameterisable;
+use Honed\Action\Handlers\Concerns\Preparable;
 use Honed\Action\Operations\Operation;
+use Honed\Core\Concerns\HasInstance;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpFoundation\Response;
-
-use function array_fill_keys;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 /**
  * @template TClass of \Honed\Core\Primitive
+ *
+ * @mixin TClass
  */
 abstract class Handler
 {
     /**
-     * The instance to be used to resolve the action.
-     *
-     * @var TClass
+     * @use HasInstance<TClass>
      */
-    protected $instance;
+    use HasInstance;
+
+    use Parameterisable;
+    use Preparable;
+
+    /**
+     * Get the resource for the handler.
+     *
+     * @return array<array-key, mixed>|Builder<Model>
+     */
+    abstract protected function getResource(): array|Builder;
 
     /**
      * Get the key to use for selecting records.
-     *
-     * @return string
      */
-    abstract protected function getKey();
+    abstract protected function getKey(): string;
 
     /**
-     * Get the operations to be used to resolve the action.
-     *
-     * @return array<int,Operation>
-     */
-    abstract protected function getOperations();
-
-    /**
-     * Handle the incoming action request.
+     * Create a new instance of the handler.
      *
      * @param  TClass  $instance
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return Responsable|Response
      */
-    public function handle($instance, $request)
+    public static function make($instance): static
     {
-        return $this->instance($instance)->resolve($request);
-    }
-
-    /**
-     * Set the instance to be used to resolve the action.
-     *
-     * @param  TClass  $instance
-     * @return $this
-     */
-    public function instance($instance)
-    {
-        $this->instance = $instance;
-
-        return $this;
-    }
-
-    /**
-     * Get the instance to be used to resolve the action.
-     *
-     * @return TClass
-     */
-    public function getInstance()
-    {
-        return $this->instance;
+        return resolve(static::class)->instance($instance);
     }
 
     /**
      * Handle the incoming request using the operations from the source, and the resource provided.
      *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return Responsable|Response
-     *
-     * @throws InvalidOperationException
-     * @throws OperationNotFoundException
-     * @throws OperationForbiddenException
+     * @throws MethodNotAllowedHttpException
+     * @throws NotFoundHttpException
+     * @throws AccessDeniedHttpException
+     * @throws TooManyRequestsHttpException
      */
-    protected function resolve($request)
+    public function handle(Operation $operation, Request $request): Responsable|Response
     {
-        $data = $request->toData();
-
-        if (! $data) {
-            InvalidOperationException::throw();
+        if (! $request->isMethod($operation->getMethod())) {
+            throw new MethodNotAllowedHttpException(
+                [$operation->getMethod()],
+                "The {$request->getMethod()} method is not supported for this action."
+            );
         }
 
-        [$operation, $model] = $this->prepare($data);
+        $this->prepare($operation, $request);
 
-        if (! $operation) {
-            OperationNotFoundException::throw($data->name);
+        if ($this->isForbidden($operation)) {
+            throw new AccessDeniedHttpException(
+                'You are not allowed to perform this action.'
+            );
         }
 
-        $named = $this->getNamedParameters($model);
-        $typed = $this->getTypedParameters($model);
+        $attempts = $operation->getRateLimit();
 
-        if (! $operation->isAllowed($named, $typed)) {
-            OperationForbiddenException::throw($operation->getName());
+        $response = match (true) {
+            $attempts !== null => $this->callRateLimited($operation, $attempts),
+            default => $this->call($operation),
+        };
+
+        return $this->respond($operation, $response);
+    }
+
+    /**
+     * Determine if the operation is forbidden.
+     */
+    protected function isForbidden(Operation $operation): bool
+    {
+        return ! $operation->isAllowed($this->named, $this->typed);
+    }
+
+    /**
+     * Call the operation callback with a rate limit in place.
+     *
+     *
+     * @throws TooManyRequestsHttpException
+     */
+    protected function callRateLimited(Operation $operation, int $attempts): mixed
+    {
+        $key = $operation->getRateLimitBy($this->named, $this->typed);
+
+        if (RateLimiter::tooManyAttempts($key, $attempts)) {
+            throw new TooManyRequestsHttpException(
+                message: 'You have made too many requests for this action. Please try again later.'
+            );
         }
 
-        $response = $this->instance->evaluate(
-            $operation->callback(), $named, $typed
-        );
+        RateLimiter::increment($key);
+
+        return $this->call($operation);
+    }
+
+    /**
+     * Call the operation callback.
+     */
+    protected function call(Operation $operation): mixed
+    {
+        if ($operation->hasAction()) {
+            return $this->evaluate($operation->getHandler(), $this->named, $this->typed);
+        }
+
+        $url = $operation->getUrl($this->named, $this->typed);
+
+        return $url ? redirect($url) : back();
+    }
+
+    /**
+     * Prepare the data and instance to handle the operation.
+     */
+    protected function prepare(Operation $operation, Request $request): void
+    {
+        /** @var array<array-key, mixed>|Model|Builder<Model> */
+        $resource = match (true) {
+            $operation->isInline() => $this->prepareForInlineOperation($request),
+            $operation->isBulk() => $this->prepareForBulkOperation($request),
+            default => $this->prepareForPageOperation($request)
+        };
+
+        if ($resource) {
+            $this->parameterise($resource);
+        }
+    }
+
+    /**
+     * Respond to the operation.
+     */
+    protected function respond(
+        Operation $operation,
+        mixed $response
+    ): Response|Responsable {
 
         return match (true) {
-            $operation->hasRedirect() => $operation->callRedirect(),
-            $response instanceof Responsable || $response instanceof Response => $response,
+            $operation->hasRedirect() => $operation->callRedirect($this->named, $this->typed),
+            $response instanceof Responsable,
+            $response instanceof Response => $response,
             default => back()
         };
     }
 
     /**
-     * Prepare the data and instance to handle the operation.
-     *
-     * @param  PageData  $data
-     * @return array{Operation|null, Model|null}
-     */
-    protected function prepare($data)
-    {
-        return match (true) {
-            $data instanceof InlineData => $this->prepareForInlineOperation($data),
-            $data instanceof BulkData => $this->prepareForBulkOperation($data),
-            default => $this->prepareForPageOperation($data),
-        };
-    }
-
-    /**
-     * Prepare the data and instance to handle the inline operation.
-     *
-     * @param  InlineData  $data
-     * @return array{Operation|null, Model|null}
-     */
-    protected function prepareForInlineOperation($data)
-    {
-        /** @var Model|null $model */
-        $model = $this->getRecord($data->record);
-
-        if (! $model) {
-            abort(404);
-        }
-
-        $action = Arr::first(
-            $this->getOperations(),
-            fn (Operation $action) => $action->isInline()
-                && $action->getName() === $data->name
-        );
-
-        return [$action, $model];
-    }
-
-    /**
-     * Prepare the data and instance to handle the bulk operation.
-     *
-     * @param  BulkData  $data
-     * @return array{Operation|null, null}
-     */
-    protected function prepareForBulkOperation($data)
-    {
-        $data->all
-            ? $this->getException($data->except)
-            : $this->getOnly($data->only);
-
-        $action = Arr::first(
-            $this->getOperations(),
-            static fn (Operation $action) => $action->isBulk()
-                && $action->getName() === $data->name
-        );
-
-        return [$action, null];
-    }
-
-    /**
-     * Prepare the data and instance to handle the page operation.
-     *
-     * @param  PageData  $data
-     * @return array{Operation|null, null}
-     */
-    protected function prepareForPageOperation($data)
-    {
-        $action = Arr::first(
-            $this->getOperations(),
-            static fn (Operation $action) => $action->isPage()
-                && $action->getName() === $data->name
-        );
-
-        return [$action, null];
-    }
-
-    /**
-     * Get the named parameters for the action.
-     *
-     * @template TResource of array<string,mixed>|\Illuminate\Database\Eloquent\Model
-     *
-     * @param  TResource|null  $resource
-     * @return array<string,TResource>
-     */
-    protected function getNamedParameters($resource)
-    {
-        if (! $resource) {
-            return [];
-        }
-
-        return array_fill_keys(
-            ['model', 'record', 'row'],
-            $resource
-        );
-    }
-
-    /**
-     * Get the typed parameters for the action.
-     *
-     * @template TResource of array<string,mixed>|\Illuminate\Database\Eloquent\Model
-     *
-     * @param  TResource|null  $resource
-     * @return array<class-string,TResource>
-     */
-    protected function getTypedParameters($resource)
-    {
-        if (! $resource || ! $resource instanceof Model) {
-            return [];
-        }
-
-        return array_fill_keys(
-            [Model::class, $resource::class],
-            $resource
-        );
-    }
-
-    /**
      * Get the record for the given id.
      *
-     * @param  int|string  $id
      * @return array<string, mixed>|Model|null
      */
-    protected function getRecord($id)
+    protected function getRecord(int|string $id): array|Model|null
     {
         /** @var array<string, mixed>|Model|null */
         return $this->instance->evaluate(
-            fn ($builder) => $builder
-                ->where($this->getKey(), $id)
-                ->first()
+            // @phpstan-ignore-next-line
+            fn (Builder $builder) => $builder->firstWhere($this->getKey(), $id)
         );
     }
 
@@ -258,25 +185,29 @@ abstract class Handler
      * Apply an exception clause to the record builder.
      *
      * @param  array<int, mixed>  $ids
-     * @return void
+     * @return array<int, mixed>|Builder<Model>
      */
-    protected function getException($ids)
+    protected function getException(array $ids): array|Builder
     {
-        $this->instance->evaluate(
-            fn ($builder) => $builder->whereNotIn($this->getKey(), $ids)
+        /** @var array<int, mixed>|Builder<Model> */
+        return $this->instance->evaluate(
+            // @phpstan-ignore-next-line
+            fn (Builder $builder) => $builder->whereNotIn($this->getKey(), $ids)
         );
     }
 
     /**
-     * Apply an only clause to the record builder.
+     * Apply an inclusion clause to the record builder.
      *
      * @param  array<int, mixed>  $ids
-     * @return void
+     * @return array<int, mixed>|Builder<Model>
      */
-    protected function getOnly($ids)
+    protected function getOnly(array $ids): array|Builder
     {
-        $this->instance->evaluate(
-            fn ($builder) => $builder->whereIn($this->getKey(), $ids)
+        /** @var array<int, mixed>|Builder<Model> */
+        return $this->instance->evaluate(
+            // @phpstan-ignore-next-line
+            fn (Builder $builder) => $builder->whereIn($this->getKey(), $ids)
         );
     }
 }

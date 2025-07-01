@@ -23,40 +23,32 @@ abstract class Assembler
 
     /**
      * Create a new instance of the assembler.
-     *
-     * @return static
      */
-    public static function make()
+    public static function make(): static
     {
         return resolve(static::class);
     }
 
     /**
      * Get as an inline action
-     *
-     * @return InlineOperation
      */
-    public static function inline()
+    public static function inline(): InlineOperation
     {
         return static::create(InlineOperation::class);
     }
 
     /**
      * Get as a bulk action
-     *
-     * @return BulkOperation
      */
-    public static function bulk()
+    public static function bulk(): BulkOperation
     {
         return static::create(BulkOperation::class);
     }
 
     /**
      * Get as a page action
-     *
-     * @return PageOperation
      */
-    public static function page()
+    public static function page(): PageOperation
     {
         return static::create(PageOperation::class);
     }
@@ -69,7 +61,7 @@ abstract class Assembler
      * @param  class-string<TOperation>  $type
      * @return TOperation
      */
-    protected static function create($type)
+    protected static function create(string $type): Operation
     {
         return static::make()->definition(new $type());
     }

@@ -13,24 +13,23 @@ trait HasEncoder
     /**
      * The encoding closure.
      *
-     * @var Closure(mixed):string|null
+     * @var Closure(string):string|null
      */
     protected static $encoder;
 
     /**
      * The decoding closure.
      *
-     * @var Closure(string):mixed|null
+     * @var Closure(string):string|null
      */
     protected static $decoder;
 
     /**
      * Set the encoder.
      *
-     * @param  (Closure(mixed):string)|null  $encoder
-     * @return void
+     * @param  (Closure(string):string)|null  $encoder
      */
-    public static function encoder($encoder = null)
+    public static function encoder(?Closure $encoder = null): void
     {
         static::$encoder = $encoder;
     }
@@ -38,10 +37,9 @@ trait HasEncoder
     /**
      * Set the decoder.
      *
-     * @param  (Closure(string):mixed)|null  $decoder
-     * @return void
+     * @param  (Closure(string):string)|null  $decoder
      */
-    public static function decoder($decoder = null)
+    public static function decoder(?Closure $decoder = null): void
     {
         static::$decoder = $decoder;
     }
@@ -49,27 +47,35 @@ trait HasEncoder
     /**
      * Encode a value using the encoder.
      *
-     * @param  mixed  $value
      * @return string
      */
-    public static function encode($value)
+    public static function encode(string $value)
     {
         return isset(static::$encoder)
             ? call_user_func(static::$encoder, $value)
-            : encrypt($value);
+            : base64_encode($value);
     }
 
     /**
      * Decode a value using the decoder.
      *
-     * @param  string  $value
-     * @return mixed
+     * @return string
      */
-    public static function decode($value)
+    public static function decode(string $value)
     {
         // @phpstan-ignore-next-line
         return isset(static::$decoder)
             ? call_user_func(static::$decoder, $value)
-            : decrypt($value);
+            : base64_decode($value);
+    }
+
+    /**
+     * Get the id of the instance.
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return static::encode(static::class);
     }
 }

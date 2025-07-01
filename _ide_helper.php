@@ -3,7 +3,7 @@
 namespace Illuminate\Routing {
 
     /**
-     * @method void actions() Register the routes to handle actions.
+     * @method void batch() Register the routes to handle batch actions.
      */
     class Router { }
 }
@@ -11,7 +11,7 @@ namespace Illuminate\Routing {
 namespace Illuminate\Support\Facades {
 
     /**
-     * @method void actions() Register the routes to handle actions.
+     * @method void batch() Register the routes to handle batch actions.
      */
     class Route { }
 }

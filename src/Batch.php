@@ -37,10 +37,8 @@ class Batch extends Primitive implements HandlesOperations
 
     /**
      * The default namespace where batches reside.
-     *
-     * @var string
      */
-    public static $namespace = 'App\\Batches\\';
+    public static string $namespace = 'App\\Batches\\';
 
     /**
      * The identifier to use for evaluation.
@@ -54,15 +52,14 @@ class Batch extends Primitive implements HandlesOperations
      *
      * @var (Closure(class-string<Model>):class-string<Batch>)|null
      */
-    protected static $batchNameResolver = null;
+    protected static ?Closure $batchNameResolver = null;
 
     /**
      * Create a new batch instance.
      *
      * @param  Operation|Batch|array<int, Operation|Batch>  $operations
-     * @return static
      */
-    public static function make($operations = [])
+    public static function make(Operation|self|array $operations = []): static
     {
         return resolve(static::class)
             ->operations($operations);
@@ -74,9 +71,8 @@ class Batch extends Primitive implements HandlesOperations
      * @template TClass of \Illuminate\Database\Eloquent\Model
      *
      * @param  class-string<TClass>  $modelName
-     * @return self
      */
-    public static function batchForModel($modelName)
+    public static function batchForModel(string $modelName): self
     {
         $batch = static::resolveBatchName($modelName);
 
@@ -89,7 +85,7 @@ class Batch extends Primitive implements HandlesOperations
      * @param  class-string<Model>  $className
      * @return class-string<Batch>
      */
-    public static function resolveBatchName($className)
+    public static function resolveBatchName(string $className): string
     {
         $resolver = static::$batchNameResolver ?? function (string $className) {
             $appNamespace = static::appNamespace();
@@ -107,11 +103,8 @@ class Batch extends Primitive implements HandlesOperations
 
     /**
      * Specify the default namespace that contains the application's model batches.
-     *
-     * @param  string  $namespace
-     * @return void
      */
-    public static function useNamespace($namespace)
+    public static function useNamespace(string $namespace): void
     {
         static::$namespace = $namespace;
     }
@@ -120,19 +113,16 @@ class Batch extends Primitive implements HandlesOperations
      * Specify the callback that should be invoked to guess the name of a model batch.
      *
      * @param  Closure(class-string<Model>):class-string<Batch>  $callback
-     * @return void
      */
-    public static function guessBatchNamesUsing($callback)
+    public static function guessBatchNamesUsing(Closure $callback): void
     {
         static::$batchNameResolver = $callback;
     }
 
     /**
      * Flush the global configuration state.
-     *
-     * @return void
      */
-    public static function flushState()
+    public static function flushState(): void
     {
         static::$encoder = null;
         static::$decoder = null;
@@ -142,12 +132,10 @@ class Batch extends Primitive implements HandlesOperations
 
     /**
      * Get the route key for the instance.
-     *
-     * @return string
      */
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
-        return 'action';
+        return 'batch';
     }
 
     /**
@@ -155,7 +143,7 @@ class Batch extends Primitive implements HandlesOperations
      *
      * @return class-string<Handlers\Handler<self>>
      */
-    public function getHandler() // @phpstan-ignore-line
+    public function getHandler(): string
     {
         /** @var class-string<Handlers\Handler<self>> */
         return config('action.handler', BatchHandler::class);
@@ -163,10 +151,8 @@ class Batch extends Primitive implements HandlesOperations
 
     /**
      * Get the application namespace for the application.
-     *
-     * @return string
      */
-    protected static function appNamespace()
+    protected static function appNamespace(): string
     {
         try {
             return Container::getInstance()
@@ -206,10 +192,9 @@ class Batch extends Primitive implements HandlesOperations
     /**
      * Provide a selection of default dependencies for evaluation by name.
      *
-     * @param  string  $parameterName
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
+    protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
         return match ($parameterName) {
             'model', 'record', 'row' => [$this->getRecord()],
@@ -222,10 +207,9 @@ class Batch extends Primitive implements HandlesOperations
     /**
      * Provide a selection of default dependencies for evaluation by type.
      *
-     * @param  string  $parameterType
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
+    protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
         $record = $this->getRecord();
 
@@ -242,10 +226,9 @@ class Batch extends Primitive implements HandlesOperations
     /**
      * Provide a base selection of default dependencies for evaluation by type.
      *
-     * @param  string  $parameterType
      * @return array<int, mixed>
      */
-    protected function resolveBatchClosureDependencyForEvaluationByType($parameterType)
+    protected function resolveBatchClosureDependencyForEvaluationByType(string $parameterType): array
     {
         return match ($parameterType) {
             Builder::class, BuilderContract::class => [$this->getBuilder()],

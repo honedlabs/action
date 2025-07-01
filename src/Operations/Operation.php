@@ -13,30 +13,30 @@ use Honed\Action\Operations\Concerns\HasAction;
 use Honed\Action\Operations\Concerns\IsInertia;
 use Honed\Core\Concerns\Allowable;
 use Honed\Core\Concerns\CanHaveIcon;
+use Honed\Core\Concerns\CanHaveTarget;
 use Honed\Core\Concerns\CanHaveUrl;
 use Honed\Core\Concerns\HasLabel;
+use Honed\Core\Concerns\HasMethod;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
+use Illuminate\Contracts\Routing\UrlRoutable;
+use Illuminate\Http\Request;
 
-abstract class Operation extends Primitive implements NullsAsUndefined
+class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
 {
     use Allowable;
     use CanBeRateLimited;
     use CanHaveIcon;
+    use CanHaveTarget;
     use CanHaveUrl;
     use CanRedirect;
     use Confirmable;
     use HasAction;
     use HasLabel;
+    use HasMethod;
     use HasName;
     use IsInertia;
-
-    public const INLINE = 'inline';
-
-    public const BULK = 'bulk';
-
-    public const PAGE = 'page';
 
     /**
      * The identifier to use for evaluation.
@@ -46,18 +46,11 @@ abstract class Operation extends Primitive implements NullsAsUndefined
     protected $evaluationIdentifier = 'operation';
 
     /**
-     * Get the type of the operation.
-     */
-    abstract protected function type(): string;
-
-    /**
      * Create a new action instance.
      *
-     * @param  string  $name
      * @param  string|Closure(mixed...):string|null  $label
-     * @return static
      */
-    public static function make($name, $label = null)
+    public static function make(string $name, string|Closure|null $label = null): static
     {
         return resolve(static::class)
             ->name($name)
@@ -65,41 +58,75 @@ abstract class Operation extends Primitive implements NullsAsUndefined
     }
 
     /**
-     * Execute the inline action on the given record.
-     *
-     * @return Closure|null
+     * Get the route key for the model.
      */
-    public function callback()
+    public function getRouteKeyName(): string
+    {
+        return 'operation';
+    }
+
+    /**
+     * Get the value of the model's route key.
+     */
+    public function getRouteKey(): string
+    {
+        /** @var string */
+        return $this->getName();
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param  string  $value
+     * @param  string|null  $field
+     * @return static|null
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->getName() === $value ? $this : null;
+    }
+
+    /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  string  $value
+     * @param  string|null  $field
+     * @return static|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field = null)
+    {
+        return $this->resolveRouteBinding($value, $field);
+    }
+
+    /**
+     * Execute the inline action on the given record.
+     */
+    public function callback(): ?Closure
     {
         return $this->getHandler();
     }
 
     /**
      * Determine if the action is an inline action.
-     *
-     * @return bool
      */
-    public function isInline()
+    public function isInline(): bool
     {
         return $this instanceof InlineOperation;
     }
 
     /**
      * Determine if the action is a bulk action.
-     *
-     * @return bool
      */
-    public function isBulk()
+    public function isBulk(): bool
     {
         return $this instanceof BulkOperation;
     }
 
     /**
      * Determine if the action is a page action.
-     *
-     * @return bool
      */
-    public function isPage()
+    public function isPage(): bool
     {
         return $this instanceof PageOperation;
     }
@@ -114,22 +141,30 @@ abstract class Operation extends Primitive implements NullsAsUndefined
         return [
             'name' => $this->getName(),
             'label' => $this->getLabel(),
-            'type' => $this->type(),
             'icon' => $this->getIcon(),
-            'action' => $this->hasAction(),
             'confirm' => $this->getConfirm()?->toArray(),
-            'route' => $this->urlToArray(),
+            'action' => $this->hasAction(),
             'inertia' => $this->isInertia() ?: null,
+            'method' => $this->getMethod(),
+            'href' => $this->getUrl(),
+            'target' => $this->getTarget(),
         ];
+    }
+
+    /**
+     * Get the fallback method
+     */
+    protected function getFallbackMethod(): string
+    {
+        return $this->hasAction() ? Request::METHOD_POST : Request::METHOD_GET;
     }
 
     /**
      * Provide a selection of default dependencies for evaluation by name.
      *
-     * @param  string  $parameterName
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
+    protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
         if (isset($this->parameters[$parameterName])) {
             return [$this->parameters[$parameterName]];
@@ -144,10 +179,9 @@ abstract class Operation extends Primitive implements NullsAsUndefined
     /**
      * Provide a selection of default dependencies for evaluation by type.
      *
-     * @param  string  $parameterType
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
+    protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
         return match ($parameterType) {
             self::class => [$this],

@@ -30,3 +30,9 @@ it('encodes using custom encoder', function () {
 
     expect($decoded)->toBe('test');
 });
+
+it('encodes id', function () {
+    $batch = Batch::make();
+
+    expect($batch->getId())->toBe(Batch::encode($batch::class));
+});

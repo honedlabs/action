@@ -12,28 +12,28 @@ beforeEach(function () {
 
 it('has title', function () {
     expect($this->confirm)
-        ->getTitle()->toBeNull()
-        ->title('name')->toBe($this->confirm)
-        ->getTitle()->toBe('name');
+        ->getTitle()->toBe(Confirm::TITLE)
+        ->title('title')->toBe($this->confirm)
+        ->getTitle()->toBe('title');
 });
 
 it('has description', function () {
     expect($this->confirm)
-        ->getDescription()->toBeNull()
+        ->getDescription()->toBe(Confirm::DESCRIPTION)
         ->description('description')->toBe($this->confirm)
         ->getDescription()->toBe('description');
 });
 
 it('has dismiss', function () {
     expect($this->confirm)
-        ->getDismiss()->toBe('Cancel')
+        ->getDismiss()->toBe(Confirm::DISMISS)
         ->dismiss('Back')->toBe($this->confirm)
         ->getDismiss()->toBe('Back');
 });
 
 it('has submit', function () {
     expect($this->confirm)
-        ->getSubmit()->toBe('Confirm')
+        ->getSubmit()->toBe(Confirm::SUBMIT)
         ->submit('Accept')->toBe($this->confirm)
         ->getSubmit()->toBe('Accept');
 });
@@ -55,8 +55,10 @@ it('has array representation', function () {
     expect($this->confirm->toArray())
         ->toBeArray()
         ->toEqual([
-            'dismiss' => 'Cancel',
-            'submit' => 'Confirm',
+            'title' => Confirm::TITLE,
+            'description' => Confirm::DESCRIPTION,
+            'submit' => Confirm::SUBMIT,
+            'dismiss' => Confirm::DISMISS,
         ]);
 });
 

@@ -4,57 +4,54 @@ declare(strict_types=1);
 
 namespace Tests\Pest\Handler;
 
-use Honed\Action\Testing\PageRequest;
 use Workbench\App\Batches\UserBatch;
 
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\get;
+use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
 beforeEach(function () {
-    $this->request = PageRequest::fake()
-        ->for(UserBatch::class)
-        ->fill();
+    $this->batch = UserBatch::make();
 });
 
-it('executes the action', function () {
-    $data = $this->request
-        ->name('create.name')
-        ->getData();
+it('handles a url', function () {
+    get(route('batch', [$this->batch, 'create']))
+        ->assertRedirect(route('users.create'));
+});
 
-    $response = post(route('actions'), $data);
+it('handles an action', function () {
+    post(route('batch', [$this->batch, 'create.name']))
+        ->assertRedirect();
 
-    $response->assertRedirect();
-
-    $this->assertDatabaseHas('users', [
+    assertDatabaseHas('users', [
         'name' => 'name',
     ]);
 });
 
-it('is 404 for no name match', function () {
-    $data = $this->request
-        ->name('missing')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertNotFound();
+it('returns 403 if the action is not allowed', function () {
+    post(route('batch', [$this->batch, 'create.description']))
+        ->assertForbidden();
 });
 
-it('is 403 if the action is not allowed', function () {
-    $data = $this->request
-        ->name('create.description')
-        ->getData();
-
-    $response = post(route('actions'), $data);
-
-    $response->assertForbidden();
+it('returns 404 if the action is not found', function () {
+    post(route('batch', [$this->batch, 'missing']))
+        ->assertNotFound();
 });
 
-it('does not execute route actions', function () {
-    $data = $this->request
-        ->name('create')
-        ->getData();
+it('returns 405 if the method is not supported', function () {
+    patch(route('batch', [$this->batch, 'create.name']))
+        ->assertMethodNotAllowed();
+});
 
-    $response = post(route('actions'), $data);
+it('returns 429 if the rate limit is exceeded', function () {
+    post(route('batch', [$this->batch, 'create.name']))
+        ->assertRedirect();
 
-    $response->assertRedirect();
+    assertDatabaseHas('users', [
+        'name' => 'name',
+    ]);
+
+    post(route('batch', [$this->batch, 'create.name']))
+        ->assertStatus(429);
 });

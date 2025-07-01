@@ -15,6 +15,12 @@ class TestCase extends Orchestra
     use RefreshDatabase;
     use WithWorkbench;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // $this->withoutExceptionHandling();
+    }
+
     /**
      * Define database migrations.
      *

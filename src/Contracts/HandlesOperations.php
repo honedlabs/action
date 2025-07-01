@@ -4,40 +4,37 @@ declare(strict_types=1);
 
 namespace Honed\Action\Contracts;
 
+use Honed\Action\Operations\Operation;
 use Illuminate\Contracts\Routing\UrlRoutable;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @phpstan-require-extends \Honed\Core\Primitive
- */
 interface HandlesOperations extends UrlRoutable
 {
     /**
      * Find a primitive class from the encoded value.
-     *
-     * @param  string  $value
-     * @return static|null
      */
-    public static function find($value);
+    public static function find(string $value): ?static;
 
     /**
      * Get the parent class for the instance.
      *
-     * @return class-string<HandlesOperations>
+     * @return class-string<self>
      */
-    public static function getParentClass();
+    public static function getParentClass(): string;
 
     /**
      * Get the handler for the instance.
      *
-     * @return class-string<\Honed\Action\Handlers\Handler<self>>
+     * @return class-string
      */
-    public function getHandler(); // @phpstan-ignore-line
+    public function getHandler(): string;
 
     /**
      * Handle the incoming action request.
      *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Responsable|Response
      */
-    public function handle($request);
+    public function handle(Operation $operation, Request $request): mixed;
 }

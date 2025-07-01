@@ -8,30 +8,25 @@ trait CanKeepSelected
 {
     /**
      * Whether the action keeps the records selected after successful execution.
-     *
-     * @var bool
      */
-    protected $keepSelected = false;
+    protected bool $keepSelected = false;
 
     /**
      * Set the action to keep the records selected.
      *
-     * @param  bool  $keep
      * @return $this
      */
-    public function keepSelected($keep = true)
+    public function keepSelected(bool $value = true): static
     {
-        $this->keepSelected = $keep;
+        $this->keepSelected = $value;
 
         return $this;
     }
 
     /**
      * Determine if the action keeps the records selected.
-     *
-     * @return bool
      */
-    public function keepsSelected()
+    public function keepsSelected(): bool
     {
         return $this->keepSelected;
     }

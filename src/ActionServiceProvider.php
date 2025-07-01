@@ -10,7 +10,7 @@ use Honed\Action\Commands\AssemblerMakeCommand;
 use Honed\Action\Commands\BatchMakeCommand;
 use Honed\Action\Commands\OperationMakeCommand;
 use Honed\Action\Commands\ProcessMakeCommand;
-use Honed\Action\Http\Controllers\ActionController;
+use Honed\Action\Http\Controllers\BatchController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,10 +18,8 @@ class ActionServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/action.php', 'action');
 
@@ -30,10 +28,8 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if ($this->app->runningInConsole()) {
 
@@ -52,10 +48,8 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Register the publishing for the package.
-     *
-     * @return void
      */
-    protected function offerPublishing()
+    protected function offerPublishing(): void
     {
         $this->publishes([
             __DIR__.'/../config/action.php' => config_path('action.php'),
@@ -68,22 +62,16 @@ class ActionServiceProvider extends ServiceProvider
 
     /**
      * Register the route macro for the action handler.
-     *
-     * @return void
      */
-    protected function registerRoutesMacro()
+    protected function registerRoutesMacro(): void
     {
-        Router::macro('actions', function () {
+        Router::macro('batch', function () {
             /** @var Router $this */
-            $methods = ['post', 'patch', 'put'];
+            $endpoint = Batch::getEndpoint();
 
-            $endpoint = Batch::getDefaultEndpoint();
-
-            $this->match($methods, $endpoint, [ActionController::class, 'dispatch'])
-                ->name('actions');
-
-            $this->match($methods, $endpoint.'/{action}', [ActionController::class, 'invoke'])
-                ->name('actions.invoke');
+            $this->any($endpoint.'/{batch}/{operation}', BatchController::class)
+                ->name('batch')
+                ->scopeBindings();
         });
     }
 }

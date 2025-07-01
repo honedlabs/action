@@ -16,7 +16,7 @@ it('can redirect', function () {
         ->getRedirect()->toBeNull()
         ->hasRedirect()->toBeFalse()
         ->redirect('users.index')->toBe($this->operation)
-        ->getRedirect()->toBe('users.index')
+        ->getRedirect()->toBeInstanceOf(RedirectResponse::class)
         ->hasRedirect()->toBeTrue();
 });
 
@@ -31,6 +31,7 @@ it('calls redirect', function ($redirect, $expected) {
         );
 })->with([
     'no redirect' => fn () => [null, url('/')],
+    'redirect response' => fn () => [redirect()->route('users.index'), route('users.index')],
     'url' => fn () => ['/users', route('users.index')],
     'route' => fn () => ['users.index', route('users.index')],
     'closure' => fn () => [fn () => to_route('users.index'), route('users.index')],

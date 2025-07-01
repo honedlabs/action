@@ -20,7 +20,7 @@ trait HasBatch
      *
      * @return TBatch
      */
-    public static function batch()
+    public static function batch(): Batch
     {
         return static::newBatch()
             ?? Batch::batchForModel(static::class);
@@ -31,7 +31,7 @@ trait HasBatch
      *
      * @return TBatch
      */
-    protected static function newBatch()
+    protected static function newBatch(): ?Batch
     {
         if (isset(static::$batch)) {
             return static::$batch::make();
@@ -49,7 +49,7 @@ trait HasBatch
      *
      * @return class-string<TBatch>|null
      */
-    protected static function getUseBatchAttribute()
+    protected static function getUseBatchAttribute(): ?string
     {
         $attributes = (new ReflectionClass(static::class))
             ->getAttributes(UseBatch::class);

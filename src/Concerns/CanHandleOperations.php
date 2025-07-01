@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Honed\Action\Concerns;
 
-use Illuminate\Support\Facades\App;
+use Honed\Action\Operations\Operation;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
@@ -18,11 +22,8 @@ trait CanHandleOperations
 
     /**
      * Decode and retrieve a primitive class.
-     *
-     * @param  string  $value
-     * @return static|null
      */
-    public static function find($value)
+    public static function find(string $value): ?static
     {
         try {
             $primitive = static::decode($value);
@@ -44,10 +45,17 @@ trait CanHandleOperations
      * @param  string  $childType
      * @param  string  $value
      * @param  string|null  $field
-     * @return static|null
+     * @return mixed
      */
     public function resolveChildRouteBinding($childType, $value, $field = null)
     {
+        if ($childType === 'operation') {
+            return Arr::first(
+                $this->getOperations(),
+                static fn ($operation) => $operation->getName() === $value
+            );
+        }
+
         return $this->resolveRouteBinding($value, $field);
     }
 
@@ -78,17 +86,13 @@ trait CanHandleOperations
     /**
      * Handle the incoming action request.
      *
-     * @param  \Honed\Action\Http\Requests\InvokableRequest  $request
-     * @return \Illuminate\Contracts\Support\Responsable|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @return Responsable|Response
      */
-    public function handle($request)
+    public function handle(Operation $operation, Request $request): mixed
     {
-        if ($this->isNotActionable()) {
-            abort(404);
-        }
+        $handler = $this->getHandler();
 
-        return App::make($this->getHandler())
-            ->handle($this, $request);
+        return $handler::make($this)->handle($operation, $request);
     }
 
     /**
@@ -96,7 +100,7 @@ trait CanHandleOperations
      *
      * @return array<string, mixed>
      */
-    public function actionableToArray()
+    public function actionableToArray(): array
     {
         if ($this->isActionable()) {
             return [
@@ -110,11 +114,8 @@ trait CanHandleOperations
 
     /**
      * Determine if the primitive can handle operations.
-     *
-     * @param  mixed  $primitive
-     * @return bool
      */
-    protected static function canHandleOperations($primitive)
+    protected static function canHandleOperations(mixed $primitive): bool
     {
         return is_string($primitive)
             && class_exists($primitive)

@@ -11,10 +11,7 @@ beforeEach(function () {
 
 it('has endpoint', function () {
     expect($this->batch)
-        ->getEndpoint()->toBe(config('action.endpoint'))
-        ->endpoint('/example')->toBe($this->batch)
-        ->getEndpoint()->toBe('/example')
-        ->getDefaultEndpoint()->toBe(config('action.endpoint'));
+        ->getEndpoint()->toBe(config('action.endpoint'));
 });
 
 it('is actionable', function () {

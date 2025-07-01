@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 use Honed\Action\Batch;
 use Honed\Action\Operations\PageOperation;
-use Honed\Action\Testing\RequestFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Workbench\App\Batches\UserBatch;
 use Workbench\App\Models\User;
@@ -28,21 +26,11 @@ it('has model', function () {
         ->getRecord()->toBeInstanceOf(User::class);
 });
 
-it('has route key name', function () {
-    expect($this->batch)
-        ->getRouteKeyName()->toBe('action');
-});
-
-it('requires builder to handle requests', function () {
-    $request = RequestFactory::page()
-        ->fill()
-        ->validate();
-
-    expect($this->batch->handle($request))
-        ->toBeInstanceOf(RedirectResponse::class);
-})->throws(RuntimeException::class);
-
 it('resolves route binding', function () {
+    expect($this->batch)
+        ->getRouteKeyName()->toBe('batch')
+        ->getRouteKey()->toBe(Batch::encode($this->batch::class));
+
     expect($this->batch)
         ->resolveRouteBinding($this->batch->getRouteKey())
         ->toBeNull();

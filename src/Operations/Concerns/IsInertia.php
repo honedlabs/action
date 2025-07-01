@@ -8,18 +8,15 @@ trait IsInertia
 {
     /**
      * Whether the operation should be executed via Inertia.
-     *
-     * @var bool
      */
-    protected $inertia = true;
+    protected bool $inertia = true;
 
     /**
      * Set whether the instance uses inertia.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function inertia($value = true)
+    public function inertia(bool $value = true): static
     {
         $this->inertia = $value;
 
@@ -29,10 +26,9 @@ trait IsInertia
     /**
      * Set whether the instance does not use inertia.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function notInertia($value = true)
+    public function notInertia(bool $value = true): static
     {
         return $this->inertia(! $value);
     }

@@ -17,6 +17,14 @@ class Confirm extends Primitive implements NullsAsUndefined
 {
     use HasRecord;
 
+    public const TITLE = 'Confirmation required';
+
+    public const DESCRIPTION = 'Are you sure you want to perform this action?';
+
+    public const SUBMIT = 'Confirm';
+
+    public const DISMISS = 'Cancel';
+
     public const CONSTRUCTIVE = 'constructive';
 
     public const DESTRUCTIVE = 'destructive';
@@ -26,47 +34,47 @@ class Confirm extends Primitive implements NullsAsUndefined
     /**
      * The title of the confirm.
      *
-     * @var string|Closure(mixed...):string|null
+     * @var string|Closure(mixed...):string
      */
-    protected $title;
+    protected string|Closure $title = self::TITLE;
 
     /**
      * The description of the confirm
      *
-     * @var string|Closure(mixed...):string|null
+     * @var string|Closure(mixed...):string
      */
-    protected $description;
+    protected string|Closure $description = self::DESCRIPTION;
 
     /**
      * The intent of the confirm.
-     *
-     * @var string|null
      */
-    protected $intent;
+    protected ?string $intent = null;
 
     /**
      * The message to display on the submit button.
      *
      * @var string|Closure(mixed...):string
      */
-    protected $submit = 'Confirm';
+    protected string|Closure $submit = self::SUBMIT;
 
     /**
      * The message to display on the dismiss button.
      *
      * @var string|Closure(mixed...):string
      */
-    protected $dismiss = 'Cancel';
+    protected string|Closure $dismiss = self::DISMISS;
 
     /**
      * Create a new confirm instance.
      *
-     * @param  string|Closure(mixed...):string|null  $title
-     * @param  string|Closure(mixed...):string|null  $description
+     * @param  string|Closure(mixed...):string  $title
+     * @param  string|Closure(mixed...):string  $description
      * @return static
      */
-    public static function make($title = null, $description = null)
-    {
+    public static function make(
+        string|Closure $title = self::TITLE,
+        string|Closure $description = self::DESCRIPTION
+    ) {
         return resolve(static::class)
             ->title($title)
             ->description($description);
@@ -75,10 +83,10 @@ class Confirm extends Primitive implements NullsAsUndefined
     /**
      * Set the title of the confirm.
      *
-     * @param  string|Closure(mixed...):string|null  $title
+     * @param  string|Closure(mixed...):string  $title
      * @return $this
      */
-    public function title($title)
+    public function title(string|Closure $title)
     {
         $this->title = $title;
 
@@ -87,22 +95,20 @@ class Confirm extends Primitive implements NullsAsUndefined
 
     /**
      * Get the title of the confirm.
-     *
-     * @return string|null
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        /** @var string|null */
+        /** @var string */
         return $this->evaluate($this->title);
     }
 
     /**
      * Set the description of the confirm.
      *
-     * @param  string|Closure(mixed...):string|null  $description
+     * @param  string|Closure(mixed...):string  $description
      * @return $this
      */
-    public function description($description)
+    public function description(string|Closure $description): static
     {
         $this->description = $description;
 
@@ -111,22 +117,19 @@ class Confirm extends Primitive implements NullsAsUndefined
 
     /**
      * Get the description of the confirm.
-     *
-     * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
-        /** @var string|null */
+        /** @var string */
         return $this->evaluate($this->description);
     }
 
     /**
      * Set the intent of the confirm.
      *
-     * @param  string|null  $intent
      * @return $this
      */
-    public function intent($intent)
+    public function intent(?string $intent): static
     {
         $this->intent = $intent;
 
@@ -138,7 +141,7 @@ class Confirm extends Primitive implements NullsAsUndefined
      *
      * @return $this
      */
-    public function constructive()
+    public function constructive(): static
     {
         return $this->intent(self::CONSTRUCTIVE);
     }
@@ -148,7 +151,7 @@ class Confirm extends Primitive implements NullsAsUndefined
      *
      * @return $this
      */
-    public function destructive()
+    public function destructive(): static
     {
         return $this->intent(self::DESTRUCTIVE);
     }
@@ -158,17 +161,15 @@ class Confirm extends Primitive implements NullsAsUndefined
      *
      * @return $this
      */
-    public function informative()
+    public function informative(): static
     {
         return $this->intent(self::INFORMATIVE);
     }
 
     /**
      * Get the intent of the confirm.
-     *
-     * @return string|null
      */
-    public function getIntent()
+    public function getIntent(): ?string
     {
         return $this->intent;
     }
@@ -179,7 +180,7 @@ class Confirm extends Primitive implements NullsAsUndefined
      * @param  string|Closure(mixed...):string  $submit
      * @return $this
      */
-    public function submit($submit)
+    public function submit(string|Closure $submit): static
     {
         $this->submit = $submit;
 
@@ -188,10 +189,8 @@ class Confirm extends Primitive implements NullsAsUndefined
 
     /**
      * Get the submit message for the confirm.
-     *
-     * @return string
      */
-    public function getSubmit()
+    public function getSubmit(): string
     {
         /** @var string */
         return $this->evaluate($this->submit);
@@ -203,7 +202,7 @@ class Confirm extends Primitive implements NullsAsUndefined
      * @param  string|Closure(mixed...):string  $dismiss
      * @return $this
      */
-    public function dismiss($dismiss)
+    public function dismiss(string|Closure $dismiss): static
     {
         $this->dismiss = $dismiss;
 
@@ -212,10 +211,8 @@ class Confirm extends Primitive implements NullsAsUndefined
 
     /**
      * Get the dismiss message for the confirm.
-     *
-     * @return string
      */
-    public function getDismiss()
+    public function getDismiss(): string
     {
         /** @var string */
         return $this->evaluate($this->dismiss);
@@ -240,10 +237,9 @@ class Confirm extends Primitive implements NullsAsUndefined
     /**
      * Provide a selection of default dependencies for evaluation by name.
      *
-     * @param  string  $parameterName
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByName($parameterName)
+    protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
         return match ($parameterName) {
             'model', 'record', 'row' => [$this->getRecord()],
@@ -254,10 +250,10 @@ class Confirm extends Primitive implements NullsAsUndefined
     /**
      * Provide a selection of default dependencies for evaluation by type.
      *
-     * @param  string  $parameterType
+     * @param  class-string  $parameterType
      * @return array<int, mixed>
      */
-    protected function resolveDefaultClosureDependencyForEvaluationByType($parameterType)
+    protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
         $record = $this->getRecord();
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Honed\Action\Commands;
 
-use Honed\Action\Operations\Operation;
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
@@ -53,9 +52,9 @@ class OperationMakeCommand extends GeneratorCommand
     protected function getOperationStub()
     {
         return match (true) {
-            (bool) $this->option(Operation::INLINE), $this->option('type') === Operation::INLINE => '/stubs/honed.operation.inline.stub',
-            (bool) $this->option(Operation::BULK), $this->option('type') === Operation::BULK => '/stubs/honed.operation.bulk.stub',
-            (bool) $this->option(Operation::PAGE), $this->option('type') === Operation::PAGE => '/stubs/honed.operation.page.stub',
+            (bool) $this->option('inline'), $this->option('type') === 'inline' => '/stubs/honed.operation.inline.stub',
+            (bool) $this->option('bulk'), $this->option('type') === 'bulk' => '/stubs/honed.operation.bulk.stub',
+            (bool) $this->option('page'), $this->option('type') === 'page' => '/stubs/honed.operation.page.stub',
             default => '/stubs/honed.operation.inline.stub',
         };
     }

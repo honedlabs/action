@@ -19,7 +19,7 @@ it('sets number of attempts', function () {
 
 it('sets rate limit key', function () {
     expect($this->operation)
-        ->getRateLimitBy()->toBeNull()
+        ->getRateLimitBy()->toBe(InlineOperation::class.':')
         ->rateLimitBy('test')->toBe($this->operation)
         ->getRateLimitBy()->toBe('test');
 });

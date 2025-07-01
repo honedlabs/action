@@ -29,7 +29,7 @@ class ProductProcess extends Process
      *
      * @return array<int, class-string|Closure>
      */
-    protected function tasks()
+    protected function tasks(): array
     {
         return [
             StoreProduct::class,

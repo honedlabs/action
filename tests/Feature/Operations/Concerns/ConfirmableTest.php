@@ -30,10 +30,11 @@ it('sets with defaults', function () {
         ->isNotConfirmable()->toBeFalse()
         ->getConfirm()
         ->scoped(fn ($confirm) => $confirm
-            ->getTitle()->toBe('Confirm action')
-            ->getDescription()->toBeNull()
+            ->getTitle()->toBe(Confirm::TITLE)
+            ->getDescription()->toBe(Confirm::DESCRIPTION)
             ->getIntent()->toBeNull()
-            ->getSubmit()->toBe('Confirm')
+            ->getSubmit()->toBe(Confirm::SUBMIT)
+            ->getDismiss()->toBe(Confirm::DISMISS)
         );
 });
 

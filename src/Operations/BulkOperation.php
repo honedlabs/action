@@ -13,14 +13,6 @@ class BulkOperation extends Operation
     use CanKeepSelected;
 
     /**
-     * Get the type of the operation.
-     */
-    protected function type(): string
-    {
-        return self::BULK;
-    }
-
-    /**
      * Get the representation of the instance.
      *
      * @return array<string, mixed>

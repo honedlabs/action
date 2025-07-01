@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use Honed\Action\Batch;
-use Honed\Action\Testing\RequestFactory;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Workbench\App\Batches\UserBatch;
 
 beforeEach(function () {
@@ -28,10 +26,6 @@ it('resolves route binding', function () {
         ->resolveRouteBinding(UserBatch::make()->getRouteKey())
         ->toBeInstanceOf(UserBatch::class);
 });
-
-it('fails handling', function () {
-    $this->batch->handle(RequestFactory::page());
-})->throws(NotFoundHttpException::class);
 
 it('has actionable array', function () {
     expect($this->batch->actionableToArray())

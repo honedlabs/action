@@ -18,32 +18,25 @@ trait CanBeChunked
 
     /**
      * Whether the action should be chunked.
-     *
-     * @var bool
      */
-    protected $chunk = false;
+    protected bool $chunk = false;
 
     /**
      * Whether the bulk action should chunk the records by id.
-     *
-     * @var bool
      */
-    protected $chunkById = false;
+    protected bool $chunkById = false;
 
     /**
      * The size of the chunk to use when chunking the records.
-     *
-     * @var int
      */
-    protected $chunkSize = self::CHUNK_SIZE;
+    protected int $chunkSize = self::CHUNK_SIZE;
 
     /**
      * Set the action to chunk the records.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function chunk($value = true)
+    public function chunk(bool $value = true): static
     {
         $this->chunk = $value;
 
@@ -53,30 +46,25 @@ trait CanBeChunked
     /**
      * Set the action to not chunk the records.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function dontChunk($value = true)
+    public function dontChunk(bool $value = true): static
     {
         return $this->chunk(! $value);
     }
 
     /**
      * Determine if the action should use chunking.
-     *
-     * @return bool
      */
-    public function isChunked()
+    public function isChunked(): bool
     {
         return $this->chunk || $this instanceof ShouldChunk;
     }
 
     /**
      * Determine if the action should not use chunking.
-     *
-     * @return bool
      */
-    public function isNotChunked()
+    public function isNotChunked(): bool
     {
         return ! $this->isChunked();
     }
@@ -84,10 +72,9 @@ trait CanBeChunked
     /**
      * Set the action to chunk the records by id.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function chunkById($value = true)
+    public function chunkById(bool $value = true): static
     {
         $this->chunkById = $value;
 
@@ -97,30 +84,25 @@ trait CanBeChunked
     /**
      * Set the action to not chunk the records by id.
      *
-     * @param  bool  $value
      * @return $this
      */
-    public function dontChunkById($value = true)
+    public function dontChunkById(bool $value = true): static
     {
         return $this->chunkById(! $value);
     }
 
     /**
      * Determine if the action should chunk the records by id.
-     *
-     * @return bool
      */
-    public function isChunkedById()
+    public function isChunkedById(): bool
     {
         return $this->chunkById || $this instanceof ShouldChunkById;
     }
 
     /**
      * Determine if the action should not chunk the records by id.
-     *
-     * @return bool
      */
-    public function isNotChunkedById()
+    public function isNotChunkedById(): bool
     {
         return ! $this->isChunkedById();
     }
@@ -128,10 +110,9 @@ trait CanBeChunked
     /**
      * Set the size of the chunk to use when chunking the records.
      *
-     * @param  int  $size
      * @return $this
      */
-    public function chunkSize($size)
+    public function chunkSize(int $size): static
     {
         $this->chunkSize = $size;
 
@@ -140,20 +121,16 @@ trait CanBeChunked
 
     /**
      * Get the size of the chunk to use when chunking the records.
-     *
-     * @return int
      */
-    public function getChunkSize()
+    public function getChunkSize(): int
     {
         return $this->chunkSize;
     }
 
     /**
      * Execute the inline action on the given record.
-     *
-     * @return Closure|null
      */
-    public function callback()
+    public function callback(): ?Closure
     {
         $handler = $this->getHandler();
 
