@@ -10,7 +10,7 @@ use Honed\Action\Commands\AssemblerMakeCommand;
 use Honed\Action\Commands\BatchMakeCommand;
 use Honed\Action\Commands\OperationMakeCommand;
 use Honed\Action\Commands\ProcessMakeCommand;
-use Honed\Action\Http\Controllers\BatchController;
+use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -65,12 +65,12 @@ class ActionServiceProvider extends ServiceProvider
      */
     protected function registerRoutesMacro(): void
     {
-        Router::macro('batch', function () {
+        Router::macro('actions', function () {
             /** @var Router $this */
-            $endpoint = Batch::getEndpoint();
+            $endpoint = Unit::getEndpoint();
 
-            $this->any($endpoint.'/{batch}/{operation}', BatchController::class)
-                ->name('batch')
+            $this->any($endpoint.'/{unit}/{operation}', ActionController::class)
+                ->name('actions')
                 ->scopeBindings();
         });
     }

@@ -16,12 +16,12 @@ beforeEach(function () {
 });
 
 it('handles a url', function () {
-    get(route('batch', [$this->batch, 'create']))
+    get(route('actions', [$this->batch, 'create']))
         ->assertRedirect(route('users.create'));
 });
 
 it('handles an action', function () {
-    post(route('batch', [$this->batch, 'create.name']))
+    post(route('actions', [$this->batch, 'create.name']))
         ->assertRedirect();
 
     assertDatabaseHas('users', [
@@ -30,28 +30,28 @@ it('handles an action', function () {
 });
 
 it('returns 403 if the action is not allowed', function () {
-    post(route('batch', [$this->batch, 'create.description']))
+    post(route('actions', [$this->batch, 'create.description']))
         ->assertForbidden();
 });
 
 it('returns 404 if the action is not found', function () {
-    post(route('batch', [$this->batch, 'missing']))
+    post(route('actions', [$this->batch, 'missing']))
         ->assertNotFound();
 });
 
 it('returns 405 if the method is not supported', function () {
-    patch(route('batch', [$this->batch, 'create.name']))
+    patch(route('actions', [$this->batch, 'create.name']))
         ->assertMethodNotAllowed();
 });
 
 it('returns 429 if the rate limit is exceeded', function () {
-    post(route('batch', [$this->batch, 'create.name']))
+    post(route('actions', [$this->batch, 'create.name']))
         ->assertRedirect();
 
     assertDatabaseHas('users', [
         'name' => 'name',
     ]);
 
-    post(route('batch', [$this->batch, 'create.name']))
+    post(route('actions', [$this->batch, 'create.name']))
         ->assertStatus(429);
 });

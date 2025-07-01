@@ -7,6 +7,7 @@ namespace Honed\Action\Handlers;
 use Honed\Action\Handlers\Concerns\Parameterisable;
 use Honed\Action\Handlers\Concerns\Preparable;
 use Honed\Action\Operations\Operation;
+use Honed\Action\Unit;
 use Honed\Core\Concerns\HasInstance;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,11 +21,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 /**
- * @template TClass of \Honed\Core\Primitive
+ * @template TClass of \Honed\Action\Unit = \Honed\Action\Unit
  *
  * @mixin TClass
  */
-abstract class Handler
+class Handler
 {
     /**
      * @use HasInstance<TClass>
@@ -35,23 +36,11 @@ abstract class Handler
     use Preparable;
 
     /**
-     * Get the resource for the handler.
-     *
-     * @return array<array-key, mixed>|Builder<Model>
-     */
-    abstract protected function getResource(): array|Builder;
-
-    /**
-     * Get the key to use for selecting records.
-     */
-    abstract protected function getKey(): string;
-
-    /**
      * Create a new instance of the handler.
      *
      * @param  TClass  $instance
      */
-    public static function make($instance): static
+    public static function make(Unit $instance): static
     {
         return resolve(static::class)->instance($instance);
     }
@@ -89,6 +78,25 @@ abstract class Handler
         };
 
         return $this->respond($operation, $response);
+    }
+
+    /**
+     * Get the resource for the handler.
+     *
+     * @return array<array-key, mixed>|Builder<Model>
+     */
+    protected function getResource(): array|Builder
+    {
+        return $this->instance->getBuilder();
+    }
+
+    /**
+     * Get the key to use for selecting records.
+     */
+    protected function getKey(): string
+    {
+        return $this->instance->getKey()
+            ?? $this->getBuilder()->getModel()->getKeyName();
     }
 
     /**

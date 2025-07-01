@@ -5,22 +5,11 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Closure;
-use Honed\Action\Concerns\CanHandleOperations;
-use Honed\Action\Concerns\HasKey;
-use Honed\Action\Contracts\Handler;
-use Honed\Action\Contracts\HandlesOperations;
-use Honed\Action\Handlers\BatchHandler;
 use Honed\Action\Operations\Operation;
 use Honed\Core\Concerns\HasRecord;
-use Honed\Core\Concerns\HasResource;
-use Honed\Core\Primitive;
 use Illuminate\Container\Container;
-use Illuminate\Contracts\Database\Eloquent\Builder as BuilderContract;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection as DatabaseCollection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -28,12 +17,9 @@ use Throwable;
  * @template TModel of \Illuminate\Database\Eloquent\Model = \Illuminate\Database\Eloquent\Model
  * @template TBuilder of \Illuminate\Database\Eloquent\Builder<TModel> = \Illuminate\Database\Eloquent\Builder<TModel>
  */
-class Batch extends Primitive implements HandlesOperations
+class Batch extends Unit
 {
-    use CanHandleOperations;
-    use HasKey;
     use HasRecord;
-    use HasResource;
 
     /**
      * The default namespace where batches reside.
@@ -63,6 +49,16 @@ class Batch extends Primitive implements HandlesOperations
     {
         return resolve(static::class)
             ->operations($operations);
+    }
+
+    /**
+     * Get the parent class for the instance.
+     *
+     * @return class-string<self>
+     */
+    public static function getParentClass(): string
+    {
+        return self::class;
     }
 
     /**
@@ -124,29 +120,9 @@ class Batch extends Primitive implements HandlesOperations
      */
     public static function flushState(): void
     {
-        static::$encoder = null;
-        static::$decoder = null;
         static::$batchNameResolver = null;
         static::$namespace = 'App\\Batches\\';
-    }
-
-    /**
-     * Get the route key for the instance.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'batch';
-    }
-
-    /**
-     * Get the handler for the instance.
-     *
-     * @return class-string<Handlers\Handler<self>>
-     */
-    public function getHandler(): string
-    {
-        /** @var class-string<Handlers\Handler<self>> */
-        return config('action.handler', BatchHandler::class);
+        parent::flushState();
     }
 
     /**
@@ -171,7 +147,6 @@ class Batch extends Primitive implements HandlesOperations
     protected function representation(): array
     {
         return [
-            ...$this->actionableToArray(),
             'inline' => $this->inlineOperationsToArray($this->getRecord()),
             'bulk' => $this->bulkOperationsToArray(),
             'page' => $this->pageOperationsToArray(),
@@ -198,8 +173,6 @@ class Batch extends Primitive implements HandlesOperations
     {
         return match ($parameterName) {
             'model', 'record', 'row' => [$this->getRecord()],
-            'builder', 'query', 'q' => [$this->getBuilder()],
-            'collection', 'records' => [$this->getBuilder()->get()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
         };
     }
@@ -214,25 +187,11 @@ class Batch extends Primitive implements HandlesOperations
         $record = $this->getRecord();
 
         if (! $record instanceof Model) {
-            return $this->resolveBatchClosureDependencyForEvaluationByType($parameterType);
+            return parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType);
         }
 
         return match ($parameterType) {
             Model::class, $record::class => [$record],
-            default => $this->resolveBatchClosureDependencyForEvaluationByType($parameterType),
-        };
-    }
-
-    /**
-     * Provide a base selection of default dependencies for evaluation by type.
-     *
-     * @return array<int, mixed>
-     */
-    protected function resolveBatchClosureDependencyForEvaluationByType(string $parameterType): array
-    {
-        return match ($parameterType) {
-            Builder::class, BuilderContract::class => [$this->getBuilder()],
-            Collection::class, DatabaseCollection::class => [$this->getBuilder()->get()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType),
         };
     }

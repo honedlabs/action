@@ -9,7 +9,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::batch();
+Route::actions();
 
 Route::get('/users', fn () => view('Welcome'))
     ->name('users.index');

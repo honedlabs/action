@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'endpoint' => '_batch_actions',
+    'endpoint' => '_actions',
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'handler' => Honed\Action\Handlers\BatchHandler::class,
+    'handler' => null,
 
     /*
     |--------------------------------------------------------------------------

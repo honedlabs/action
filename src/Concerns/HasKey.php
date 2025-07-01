@@ -9,17 +9,16 @@ trait HasKey
     /**
      * The key to use for selecting records.
      *
-     * @var string|null
+     * @var ?string
      */
     protected $key;
 
     /**
      * Set the key to use for selecting records.
      *
-     * @param  string|null  $key
      * @return $this
      */
-    public function key($key)
+    public function key(?string $key): static
     {
         $this->key = $key;
 
@@ -28,10 +27,8 @@ trait HasKey
 
     /**
      * Get the key to use for selecting records.
-     *
-     * @return string|null
      */
-    public function getKey()
+    public function getKey(): ?string
     {
         return $this->key;
     }
