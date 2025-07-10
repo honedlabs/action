@@ -18,7 +18,7 @@ class DispatchProductCreated extends DispatchAction
     /**
      * Get the dispatchable class.
      */
-    public function dispatch()
+    public function dispatch(): string
     {
         return ProductCreated::class;
     }

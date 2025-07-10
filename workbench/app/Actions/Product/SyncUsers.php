@@ -16,10 +16,8 @@ class SyncUsers extends SyncAction
 {
     /**
      * Get the relation name, must be a belongs to many relationship.
-     *
-     * @return string
      */
-    public function relationship()
+    public function relationship(): string
     {
         return 'users';
     }

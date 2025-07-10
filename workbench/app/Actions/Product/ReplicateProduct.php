@@ -18,7 +18,7 @@ class ReplicateProduct extends ReplicateAction
      *
      * @return array<int, string>
      */
-    protected function except()
+    protected function except(): array
     {
         return ['price'];
     }

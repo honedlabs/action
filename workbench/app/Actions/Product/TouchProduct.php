@@ -20,7 +20,7 @@ class TouchProduct extends TouchAction
      *
      * @return array<int, string>
      */
-    public function touches()
+    public function touches(): array
     {
         return ['updated_at', 'created_at'];
     }

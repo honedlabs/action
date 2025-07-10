@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  */
@@ -28,9 +30,8 @@ class ForceDestroyAction extends DatabaseAction
      * Destroy the model(s).
      *
      * @param  TModel  $model
-     * @return void
      */
-    protected function forceDestroy($model)
+    protected function forceDestroy($model): void
     {
         $model->forceDelete();
 
@@ -41,9 +42,8 @@ class ForceDestroyAction extends DatabaseAction
      * Perform additional logic after the model has been deleted.
      *
      * @param  TModel  $model
-     * @return void
      */
-    protected function after($model)
+    protected function after($model): void
     {
         //
     }

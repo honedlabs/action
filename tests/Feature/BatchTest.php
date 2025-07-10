@@ -91,6 +91,8 @@ describe('evaluation', function () {
     beforeEach(function () {
         $this->batch = UserBatch::make()
             ->record(User::factory()->create());
+
+        $this->batch->define();
     });
 
     it('named dependencies', function ($closure, $class) {

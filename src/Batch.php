@@ -23,8 +23,10 @@ class Batch extends Unit
 
     /**
      * The default namespace where batches reside.
+     *
+     * @var string
      */
-    public static string $namespace = 'App\\Batches\\';
+    public static $namespace = 'App\\Batches\\';
 
     /**
      * The identifier to use for evaluation.
@@ -38,7 +40,7 @@ class Batch extends Unit
      *
      * @var (Closure(class-string<Model>):class-string<Batch>)|null
      */
-    protected static ?Closure $batchNameResolver = null;
+    protected static $batchNameResolver = null;
 
     /**
      * Create a new batch instance.
@@ -146,23 +148,14 @@ class Batch extends Unit
      */
     protected function representation(): array
     {
+        $this->define();
+
         return [
             'id' => $this->getId(),
             'inline' => $this->inlineOperationsToArray($this->getRecord()),
             'bulk' => $this->bulkOperationsToArray(),
             'page' => $this->pageOperationsToArray(),
         ];
-    }
-
-    /**
-     * Define the operations for the batch.
-     *
-     * @param  $this  $batch
-     * @return $this
-     */
-    protected function definition(self $batch): self
-    {
-        return $batch;
     }
 
     /**

@@ -30,6 +30,8 @@ trait HasBatch
      * Create a new action group instance for the model.
      *
      * @return TBatch
+     *
+     * @internal
      */
     protected static function newBatch(): ?Batch
     {
@@ -48,6 +50,8 @@ trait HasBatch
      * Get the actions from the UseBatch class attribute.
      *
      * @return class-string<TBatch>|null
+     *
+     * @internal
      */
     protected static function getUseBatchAttribute(): ?string
     {

@@ -16,10 +16,8 @@ class DissociateUser extends DissociateAction
 {
     /**
      * Get the relation name, must be a belongs to relationship.
-     *
-     * @return string
      */
-    public function relationship()
+    public function relationship(): string
     {
         return 'user';
     }

@@ -19,7 +19,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return class-string<TModel>
      */
-    protected function for()
+    protected function for(): string
     {
         return Product::class;
     }
@@ -29,7 +29,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return array<int, string>
      */
-    protected function uniqueBy()
+    protected function uniqueBy(): array
     {
         return ['id'];
     }
@@ -39,7 +39,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return array<int, string>
      */
-    protected function update()
+    protected function update(): array
     {
         return ['name'];
     }

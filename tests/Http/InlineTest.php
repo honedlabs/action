@@ -15,6 +15,8 @@ beforeEach(function () {
     $this->user = User::factory()->create();
 
     $this->batch = UserBatch::make();
+
+    $this->batch->define();
 });
 
 it('handles a url', function () {

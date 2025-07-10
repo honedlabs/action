@@ -41,9 +41,8 @@ class RestoreAction extends DatabaseAction
      * Perform additional logic after the model(s) have been restored.
      *
      * @param  TModel|\Illuminate\Database\Eloquent\Collection<int, TModel>  $models
-     * @return void
      */
-    protected function after($models)
+    protected function after($models): void
     {
         //
     }

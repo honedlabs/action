@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Honed\Action\Actions;
 
 use Honed\Action\Actions\Concerns\InteractsWithFormData;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -22,7 +23,7 @@ abstract class StoreAction extends DatabaseAction
      *
      * @return class-string<TModel>
      */
-    abstract protected function for();
+    abstract protected function for(): string;
 
     /**
      * Store the input data in the database.
@@ -30,7 +31,7 @@ abstract class StoreAction extends DatabaseAction
      * @param  TInput  $input
      * @return TModel $model
      */
-    public function handle($input)
+    public function handle($input): Model
     {
         return $this->transact(
             fn () => $this->store($input)
@@ -43,7 +44,7 @@ abstract class StoreAction extends DatabaseAction
      * @param  TInput  $input
      * @return array<string, mixed>
      */
-    protected function prepare($input)
+    protected function prepare($input): array
     {
         return $this->only(
             $this->normalize($input)
@@ -56,7 +57,7 @@ abstract class StoreAction extends DatabaseAction
      * @param  TInput  $input
      * @return TModel
      */
-    protected function store($input)
+    protected function store($input): Model
     {
         $prepared = $this->prepare($input);
 
@@ -75,9 +76,8 @@ abstract class StoreAction extends DatabaseAction
      * @param  TModel  $model
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
-     * @return void
      */
-    protected function after($model, $input, $prepared)
+    protected function after(Model $model, $input, $prepared): void
     {
         //
     }

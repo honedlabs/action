@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  */
@@ -27,7 +29,7 @@ class TouchAction extends DatabaseAction
      * @param  TModel  $model
      * @return TModel $model
      */
-    public function handle($model)
+    public function handle(Model $model): Model
     {
         return $this->transact(
             fn () => $this->touch($model)
@@ -39,9 +41,8 @@ class TouchAction extends DatabaseAction
      *
      * @param  TModel  $model
      * @param  array<int, string>  $touches
-     * @return void
      */
-    protected function touchEach($model, $touches)
+    protected function touchEach(Model $model, array $touches): void
     {
         foreach ($touches as $touch) {
             $model->touch($touch);
@@ -54,7 +55,7 @@ class TouchAction extends DatabaseAction
      * @param  TModel  $model
      * @return TModel
      */
-    protected function touch($model)
+    protected function touch(Model $model): Model
     {
         $touches = $this->touches();
 
@@ -74,9 +75,8 @@ class TouchAction extends DatabaseAction
      *
      * @param  TModel  $model
      * @param  true|string|array<int, string>|null  $touches
-     * @return void
      */
-    protected function after($model, $touches)
+    protected function after(Model $model, $touches): void
     {
         //
     }

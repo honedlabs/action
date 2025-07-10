@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Actions;
 
 use Honed\Action\Contracts\Relatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 
 /**
@@ -29,7 +31,7 @@ abstract class ToggleAction extends DatabaseAction implements Relatable
      * @param  TInput  $attributes
      * @return TModel
      */
-    public function handle($model, $toggles, $attributes = [])
+    public function handle(Model $model, $toggles, $attributes = []): Model
     {
         $this->transact(
             fn () => $this->toggle($model, $toggles, $attributes)
@@ -42,11 +44,11 @@ abstract class ToggleAction extends DatabaseAction implements Relatable
      * Get the relation for the model.
      *
      * @param  TModel  $model
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<TModel, TToggle>
+     * @return BelongsToMany<TModel, TToggle>
      */
-    protected function getRelation($model)
+    protected function getRelation(Model $model): BelongsToMany
     {
-        /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<TModel, TToggle> */
+        /** @var BelongsToMany<TModel, TToggle> */
         return $model->{$this->relationship()}();
     }
 
@@ -57,7 +59,7 @@ abstract class ToggleAction extends DatabaseAction implements Relatable
      * @param  TInput  $attributes
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($toggles, $attributes)
+    protected function prepare($toggles, $attributes): array
     {
         /** @var array<int, int|string|TToggle> */
         $toggles = $this->arrayable($toggles);
@@ -78,9 +80,8 @@ abstract class ToggleAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
      * @param  TInput  $attributes
-     * @return void
      */
-    protected function toggle($model, $toggles, $attributes)
+    protected function toggle(Model $model, $toggles, $attributes): void
     {
         $toggling = $this->prepare($toggles, $attributes);
 
@@ -94,9 +95,8 @@ abstract class ToggleAction extends DatabaseAction implements Relatable
      *
      * @param  TModel  $model
      * @param  array<mixed>  $toggled
-     * @return void
      */
-    protected function after($model, $toggled)
+    protected function after(Model $model, $toggled): void
     {
         //
     }

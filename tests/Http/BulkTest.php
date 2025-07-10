@@ -14,6 +14,8 @@ beforeEach(function () {
     User::factory()->count(10)->create();
 
     $this->batch = UserBatch::make();
+
+    $this->batch->define();
 });
 
 it('handles an action', function () {

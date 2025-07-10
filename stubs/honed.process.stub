@@ -17,7 +17,7 @@ class {{ class }} extends Process
      *
      * @return array<int, class-string|\Closure>
      */
-    protected function tasks()
+    protected function tasks(): array
     {
         return [
 

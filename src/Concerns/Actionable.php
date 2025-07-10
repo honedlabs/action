@@ -18,6 +18,8 @@ trait Actionable
      * Get the parent class for the instance.
      *
      * @return class-string<self>
+     *
+     * @internal
      */
     public static function getParentClass(): string
     {

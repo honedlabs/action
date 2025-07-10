@@ -6,6 +6,7 @@ namespace Honed\Action\Actions;
 
 use Honed\Action\Contracts\Relatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
@@ -19,7 +20,7 @@ abstract class DissociateAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @return TModel
      */
-    public function handle($model)
+    public function handle(Model $model): Model
     {
         return $this->transact(
             fn () => $this->dissociate($model)
@@ -30,11 +31,11 @@ abstract class DissociateAction extends DatabaseAction implements Relatable
      * Get the relation for the model.
      *
      * @param  TModel  $model
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<TParent, TModel>
+     * @return BelongsTo<TParent, TModel>
      */
-    protected function getRelation($model)
+    protected function getRelation(Model $model): BelongsTo
     {
-        /** @var \Illuminate\Database\Eloquent\Relations\BelongsTo<TParent, TModel> */
+        /** @var BelongsTo<TParent, TModel> */
         return $model->{$this->relationship()}();
     }
 
@@ -44,7 +45,7 @@ abstract class DissociateAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @return TModel
      */
-    protected function dissociate($model)
+    protected function dissociate(Model $model): Model
     {
         $this->getRelation($model)->dissociate();
 
@@ -59,9 +60,8 @@ abstract class DissociateAction extends DatabaseAction implements Relatable
      * Perform additional logic after the model has been detached.
      *
      * @param  TModel  $model
-     * @return void
      */
-    protected function after($model)
+    protected function after(Model $model): void
     {
         //
     }

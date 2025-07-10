@@ -18,7 +18,7 @@ abstract class DispatchAction implements Action
      *
      * @return class-string<TDispatch>
      */
-    abstract public function dispatch();
+    abstract public function dispatch(): string;
 
     /**
      * Dispatch the payload.
@@ -56,9 +56,8 @@ abstract class DispatchAction implements Action
      *
      * @param  TInput  $payload
      * @param  class-string<TDispatch>  $dispatch
-     * @return void
      */
-    protected function after($payload, $dispatch)
+    protected function after($payload, $dispatch): void
     {
         //
     }

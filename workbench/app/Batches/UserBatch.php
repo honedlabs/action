@@ -19,14 +19,13 @@ use Workbench\App\Models\User;
 class UserBatch extends Batch
 {
     /**
-     * Define the operations for the batch.
+     * Define the batch.
      *
-     * @param  $this  $batch
      * @return $this
      */
-    protected function definition(Batch $batch): Batch
+    protected function definition(): static
     {
-        return $batch
+        return $this
             ->for(User::class)
             ->inlineOperations([
                 InlineOperation::make('show')

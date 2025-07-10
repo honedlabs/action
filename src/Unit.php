@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Concerns\Actionable;
-use Honed\Action\Concerns\HasEncoder;
 use Honed\Action\Concerns\HasKey;
 use Honed\Action\Concerns\HasOperations;
+use Honed\Action\Concerns\Rememberable;
 use Honed\Action\Contracts\HandlesOperations;
 use Honed\Action\Handlers\Handler;
 use Honed\Action\Operations\Operation;
+use Honed\Core\Concerns\Encodable;
 use Honed\Core\Concerns\HasRecord;
 use Honed\Core\Concerns\HasResource;
 use Honed\Core\Primitive;
@@ -32,11 +33,12 @@ use Throwable;
 class Unit extends Primitive implements HandlesOperations
 {
     use Actionable;
-    use HasEncoder;
+    use Encodable;
     use HasKey;
     use HasOperations;
     use HasRecord;
     use HasResource;
+    use Rememberable;
 
     /**
      * Decode and retrieve a primitive class.
@@ -117,6 +119,8 @@ class Unit extends Primitive implements HandlesOperations
     public function resolveChildRouteBinding($childType, $value, $field = null)
     {
         if ($childType === 'operation') {
+            $this->define();
+
             return Arr::first(
                 $this->getOperations(),
                 static fn ($operation) => $operation->getName() === $value
@@ -131,6 +135,8 @@ class Unit extends Primitive implements HandlesOperations
      */
     public function handle(Operation $operation, Request $request): Responsable|Response
     {
+        $this->setRemembered($request);
+
         $handler = $this->getHandler();
 
         return $handler::make($this)->handle($operation, $request);
@@ -153,6 +159,8 @@ class Unit extends Primitive implements HandlesOperations
      */
     protected function representation(): array
     {
+        $this->define();
+
         return [
             'inline' => $this->inlineOperationsToArray(),
             'bulk' => $this->bulkOperationsToArray(),

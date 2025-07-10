@@ -31,7 +31,7 @@ abstract class AttachAction extends DatabaseAction implements Relatable
      * @param  TInput  $attributes
      * @return TModel
      */
-    public function handle($model, $attachments, $attributes = [])
+    public function handle(Model $model, $attachments, $attributes = []): Model
     {
         $this->transact(
             fn () => $this->attach($model, $attachments, $attributes)
@@ -46,7 +46,7 @@ abstract class AttachAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @return BelongsToMany<TModel, TAttach>
      */
-    protected function getRelation($model)
+    protected function getRelation(Model $model): BelongsToMany
     {
         /** @var BelongsToMany<TModel, TAttach> */
         return $model->{$this->relationship()}();
@@ -59,7 +59,7 @@ abstract class AttachAction extends DatabaseAction implements Relatable
      * @param  TInput  $attributes
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($attachments, $attributes)
+    protected function prepare($attachments, $attributes): array
     {
         /** @var array<int, int|string|TAttach> */
         $attachments = $this->arrayable($attachments);
@@ -83,9 +83,8 @@ abstract class AttachAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @param  int|string|TAttach|iterable<int, int|string|TAttach>  $attachments
      * @param  TInput  $attributes
-     * @return void
      */
-    protected function attach($model, $attachments, $attributes)
+    protected function attach(Model $model, $attachments, $attributes): void
     {
         /** @var array<int, int|string|TAttach> */
         $attachments = $this->arrayable($attachments);
@@ -103,9 +102,8 @@ abstract class AttachAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @param  int|string|TAttach|array<int, int|string|TAttach>  $attachments
      * @param  TInput  $attributes
-     * @return void
      */
-    protected function after($model, $attachments, $attributes)
+    protected function after(Model $model, $attachments, $attributes): void
     {
         //
     }

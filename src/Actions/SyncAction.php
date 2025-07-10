@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Actions;
 
 use Honed\Action\Contracts\Relatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 
 /**
@@ -23,7 +25,7 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      * @param  array<string, mixed>  $attributes
      * @return TModel
      */
-    public function handle($model, $syncs, $attributes = [])
+    public function handle(Model $model, $syncs, array $attributes = []): Model
     {
         $this->transact(
             fn () => $this->sync($model, $syncs, $attributes)
@@ -36,11 +38,11 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      * Get the relation for the model.
      *
      * @param  TModel  $model
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<TModel, TSync>
+     * @return BelongsToMany<TModel, TSync>
      */
-    protected function getRelation($model)
+    protected function getRelation(Model $model): BelongsToMany
     {
-        /** @var \Illuminate\Database\Eloquent\Relations\BelongsToMany<TModel, TSync> */
+        /** @var BelongsToMany<TModel, TSync> */
         return $model->{$this->relationship()}();
     }
 
@@ -51,7 +53,7 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      * @param  array<string, mixed>  $attributes
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($syncs, $attributes)
+    protected function prepare($syncs, array $attributes): array
     {
         /** @var array<int, int|string|TSync> */
         $syncs = $this->arrayable($syncs);
@@ -69,7 +71,7 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      *
      * @return array<string, mixed>
      */
-    protected function pivot()
+    protected function pivot(): array
     {
         return [];
     }
@@ -80,9 +82,8 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @param  int|string|TSync|array<int, int|string|TSync>  $syncs
      * @param  array<string, mixed>  $attributes
-     * @return void
      */
-    protected function sync($model, $syncs, $attributes)
+    protected function sync(Model $model, $syncs, array $attributes): void
     {
         $syncing = $this->prepare($syncs, $attributes);
 
@@ -102,17 +103,15 @@ abstract class SyncAction extends DatabaseAction implements Relatable
      * @param  array<int, int|string>  $updated
      * @return void
      */
-    protected function after($model, $attached, $detached, $updated)
+    protected function after(Model $model, array $attached, array $detached, array $updated)
     {
         //
     }
 
     /**
      * Indicate whether the relationship sync should detach records.
-     *
-     * @return bool
      */
-    protected function shouldDetach()
+    protected function shouldDetach(): bool
     {
         return true;
     }

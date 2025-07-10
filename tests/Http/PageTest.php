@@ -13,6 +13,8 @@ use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->batch = UserBatch::make();
+
+    $this->batch->define();
 });
 
 it('handles a url', function () {

@@ -149,6 +149,9 @@ trait HasOperations
             }
         }
 
+        // Sort operations by their order (lower values first)
+        // usort($operations, static fn (Operation $a, Operation $b) => $a->getOrder() <=> $b->getOrder());
+
         return $operations;
     }
 
@@ -222,12 +225,17 @@ trait HasOperations
         }
 
         /** @var array<int,InlineOperation> */
-        return array_values(
+        $operations = array_values(
             array_filter(
                 $this->getOperations(),
                 static fn (Operation $operation) => $operation->isInline()
             )
         );
+
+        // Sort inline operations by their order (lower values first)
+        // usort($operations, static fn (InlineOperation $a, InlineOperation $b) => $a->getOrder() <=> $b->getOrder());
+
+        return $operations;
     }
 
     /**
@@ -320,13 +328,18 @@ trait HasOperations
             return [];
         }
 
-        return array_values(
+        $operations = array_values(
             array_filter(
                 $this->getOperations(),
                 static fn (Operation $operation) => $operation->isBulk() &&
                     $operation->isAllowed()
             )
         );
+
+        // Sort bulk operations by their order (lower values first)
+        usort($operations, static fn (Operation $a, Operation $b) => $a->getOrder() <=> $b->getOrder());
+
+        return $operations;
     }
 
     /**
@@ -411,13 +424,18 @@ trait HasOperations
             return [];
         }
 
-        return array_values(
+        $operations = array_values(
             array_filter(
                 $this->getOperations(),
                 static fn (Operation $operation) => $operation->isPage() &&
                     $operation->isAllowed()
             )
         );
+
+        // Sort page operations by their order (lower values first)
+        usort($operations, static fn (Operation $a, Operation $b) => $a->getOrder() <=> $b->getOrder());
+
+        return $operations;
     }
 
     /**

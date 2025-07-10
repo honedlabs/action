@@ -19,10 +19,12 @@ use Honed\Core\Concerns\CanHaveUrl;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasMethod;
 use Honed\Core\Concerns\HasName;
+use Honed\Core\Concerns\HasOrder;
 use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
 {
@@ -37,6 +39,7 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     use HasLabel;
     use HasMethod;
     use HasName;
+    use HasOrder;
     use IsInertia;
 
     /**
@@ -109,6 +112,14 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     }
 
     /**
+     * Get the order of the operation.
+     */
+    public function getOrder(): int
+    {
+        return 0;
+    }
+
+    /**
      * Determine if the action is an inline action.
      */
     public function isInline(): bool
@@ -157,6 +168,8 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
             /** @var string $name */
             $name = config('action.name', 'actions');
 
+            // URL::signedRoute()
+
             $this->url(route($name, [$unit, $this->getName()], true));
         }
 
@@ -170,6 +183,8 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
      */
     protected function representation(): array
     {
+        $this->define();
+
         $url = $this->hasUrl() ? [
             'method' => $this->getMethod(),
             'href' => $this->getUrl(),

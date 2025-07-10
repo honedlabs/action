@@ -19,7 +19,7 @@ class StoreProduct extends StoreAction
      *
      * @return class-string<TModel>
      */
-    protected function for()
+    protected function for(): string
     {
         return Product::class;
     }

@@ -8,8 +8,6 @@ interface Relatable
 {
     /**
      * Get the name of the relationship to use.
-     *
-     * @return string
      */
-    public function relationship();
+    public function relationship(): string;
 }

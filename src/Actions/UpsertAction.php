@@ -22,21 +22,21 @@ abstract class UpsertAction extends DatabaseAction
      *
      * @return class-string<TModel>
      */
-    abstract protected function for();
+    abstract protected function for(): string;
 
     /**
      * Get the unique by columns for the upsert.
      *
      * @return array<int, string>
      */
-    abstract protected function uniqueBy();
+    abstract protected function uniqueBy(): array;
 
     /**
      * Get the columns to update in the upsert.
      *
      * @return array<int, string>
      */
-    abstract protected function update();
+    abstract protected function update(): array;
 
     /**
      * Upsert the input data in the database.
@@ -59,7 +59,7 @@ abstract class UpsertAction extends DatabaseAction
      * @param  TInput  $values
      * @return array<int, array<string, mixed>>
      */
-    protected function prepare($values)
+    protected function prepare($values): array
     {
         if (! is_array($values)) {
             return [$this->only(
@@ -74,9 +74,8 @@ abstract class UpsertAction extends DatabaseAction
      * Upsert the record in the database.
      *
      * @param  TInput  $values
-     * @return void
      */
-    protected function upsert($values)
+    protected function upsert($values): void
     {
         $prepared = $this->prepare($values);
 
@@ -93,9 +92,8 @@ abstract class UpsertAction extends DatabaseAction
      *
      * @param  TInput  $values
      * @param  array<int, array<string, mixed>>  $prepared
-     * @return void
      */
-    protected function after($values, $prepared)
+    protected function after($values, array $prepared): void
     {
         //
     }

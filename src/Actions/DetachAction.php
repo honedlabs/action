@@ -23,7 +23,7 @@ abstract class DetachAction extends DatabaseAction implements Relatable
      * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
      * @return TModel
      */
-    public function handle($model, $detachments)
+    public function handle(Model $model, $detachments): Model
     {
         $this->transact(
             fn () => $this->detach($model, $detachments)
@@ -38,7 +38,7 @@ abstract class DetachAction extends DatabaseAction implements Relatable
      * @param  TModel  $model
      * @return BelongsToMany<TModel, TDetach>
      */
-    protected function getRelation($model)
+    protected function getRelation(Model $model): BelongsToMany
     {
         /** @var BelongsToMany<TModel, TDetach> */
         return $model->{$this->relationship()}();
@@ -50,7 +50,7 @@ abstract class DetachAction extends DatabaseAction implements Relatable
      * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
      * @return array<int, int|string>
      */
-    protected function prepare($detachments)
+    protected function prepare($detachments): array
     {
         /** @var array<int, int|string|TDetach> */
         $detachments = $this->arrayable($detachments);
@@ -66,9 +66,8 @@ abstract class DetachAction extends DatabaseAction implements Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
-     * @return void
      */
-    protected function detach($model, $detachments)
+    protected function detach(Model $model, $detachments): void
     {
         $detaching = $this->prepare($detachments);
 
@@ -82,9 +81,8 @@ abstract class DetachAction extends DatabaseAction implements Relatable
      *
      * @param  TModel  $model
      * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
-     * @return void
      */
-    protected function after($model, $detachments)
+    protected function after(Model $model, $detachments): void
     {
         //
     }

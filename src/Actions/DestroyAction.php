@@ -31,9 +31,8 @@ class DestroyAction extends DatabaseAction
      * Destroy the model(s).
      *
      * @param  TType  $model
-     * @return void
      */
-    protected function destroy($model)
+    protected function destroy($model): void
     {
         if ($model instanceof Collection) {
             foreach ($model as $item) {
@@ -50,9 +49,8 @@ class DestroyAction extends DatabaseAction
      * Perform additional logic after the model has been deleted.
      *
      * @param  TType  $model
-     * @return void
      */
-    protected function after($model)
+    protected function after($model): void
     {
         //
     }

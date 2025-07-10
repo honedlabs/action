@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TInput of mixed = array<string, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
@@ -22,7 +24,7 @@ class UpdateAction extends DatabaseAction
      * @param  TInput  $input
      * @return TModel $model
      */
-    public function handle($model, $input)
+    public function handle(Model $model, $input): Model
     {
         return $this->transact(
             fn () => $this->update($model, $input)
@@ -32,11 +34,11 @@ class UpdateAction extends DatabaseAction
     /**
      * Prepare the input for the update method.
      *
-     * @param  TInput  $input
      * @param  TModel  $model
+     * @param  TInput  $input
      * @return array<string, mixed>
      */
-    protected function prepare($model, $input)
+    protected function prepare(Model $model, $input): array
     {
         return $this->only(
             $this->normalize($input)
@@ -50,7 +52,7 @@ class UpdateAction extends DatabaseAction
      * @param  TInput  $input
      * @return TModel
      */
-    protected function update($model, $input)
+    protected function update(Model $model, $input): Model
     {
         $prepared = $this->prepare($model, $input);
 
@@ -67,9 +69,8 @@ class UpdateAction extends DatabaseAction
      * @param  TModel  $model
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
-     * @return void
      */
-    protected function after($model, $input, $prepared)
+    protected function after(Model $model, $input, array $prepared): void
     {
         //
     }
