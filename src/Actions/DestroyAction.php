@@ -4,53 +4,58 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Honed\Action\Contracts\FromModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TType of TModel|\Illuminate\Database\Eloquent\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, \Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model> = TModel
+ *
+ * @implements \Honed\Action\Contracts\FromModel<TModel>
  */
-class DestroyAction extends DatabaseAction
+abstract class DestroyAction extends DatabaseAction implements FromModel
 {
     /**
-     * Destroy the model(s).
+     * Destroy the given ids.
      *
-     * @param  TType  $model
-     * @return TType
+     * @template T of int|string|TModel
+     *
+     * @param  T|array<int, T>|Collection<int, T>  $ids
      */
-    public function handle($model)
+    public function handle($ids): void
     {
-        $this->transact(
-            fn () => $this->destroy($model)
+        $this->transaction(
+            fn () => $this->execute($ids)
         );
-
-        return $model;
     }
 
     /**
-     * Destroy the model(s).
+     * Execute the action.
      *
-     * @param  TType  $model
+     * @template T of int|string|TModel
+     *
+     * @param  T|array<int, T>|Collection<int, T>  $ids
      */
-    protected function destroy($model): void
+    protected function execute($ids): void
     {
-        if ($model instanceof Collection) {
-            foreach ($model as $item) {
-                $item->delete();
-            }
-        } else {
-            $model->delete();
+        if ($ids instanceof Model) {
+            $ids = $ids->getKey();
         }
 
-        $this->after($model);
+        /** @var int|string $ids */
+        $this->from()::destroy($ids);
+
+        $this->after($ids);
     }
 
     /**
-     * Perform additional logic after the model has been deleted.
+     * Perform additional logic after the action has been executed.
      *
-     * @param  TType  $model
+     * @template T of int|string|TModel
+     *
+     * @param  T|array<int, T>|Collection<int, T>  $ids
      */
-    protected function after($model): void
+    protected function after($ids): void
     {
         //
     }

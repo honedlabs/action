@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use Honed\Action\Concerns\CanChunk;
 use Honed\Action\Contracts\ShouldChunk;
 use Honed\Action\Contracts\ShouldChunkById;
 use Honed\Action\Operations\BulkOperation;
-use Honed\Action\Operations\Concerns\CanBeChunked;
 
 beforeEach(function () {
     $this->operation = BulkOperation::make('test');
@@ -24,7 +24,7 @@ it('chunks', function () {
 it('chunks via contract', function () {
     $test = new class() implements ShouldChunk
     {
-        use CanBeChunked;
+        use CanChunk;
     };
 
     expect($test)
@@ -45,7 +45,7 @@ it('chunks by id', function () {
 it('chunks by id via contract', function () {
     $test = new class() implements ShouldChunkById
     {
-        use CanBeChunked;
+        use CanChunk;
     };
 
     expect($test)

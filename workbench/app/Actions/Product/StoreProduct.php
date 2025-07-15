@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Workbench\App\Actions\Product;
 
 use Honed\Action\Actions\StoreAction;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Workbench\App\Models\Product;
 
 /**
@@ -19,7 +20,7 @@ class StoreProduct extends StoreAction
      *
      * @return class-string<TModel>
      */
-    protected function for(): string
+    public function from(): string|Builder
     {
         return Product::class;
     }

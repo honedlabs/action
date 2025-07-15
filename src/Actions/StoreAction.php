@@ -10,20 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TInput of mixed = array<string, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
+ *
+ * @extends \Honed\Action\Actions\EloquentAction<TModel>
  */
-abstract class StoreAction extends DatabaseAction
+abstract class StoreAction extends EloquentAction
 {
     /**
      * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
      */
     use InteractsWithFormData;
-
-    /**
-     * Get the model to store the input data in.
-     *
-     * @return class-string<TModel>
-     */
-    abstract protected function for(): string;
 
     /**
      * Store the input data in the database.
@@ -33,8 +28,8 @@ abstract class StoreAction extends DatabaseAction
      */
     public function handle($input): Model
     {
-        return $this->transact(
-            fn () => $this->store($input)
+        return $this->transaction(
+            fn () => $this->execute($input)
         );
     }
 
@@ -52,18 +47,17 @@ abstract class StoreAction extends DatabaseAction
     }
 
     /**
-     * Store the record in the database.
+     * Execute the action.
      *
      * @param  TInput  $input
      * @return TModel
      */
-    protected function store($input): Model
+    protected function execute($input): Model
     {
         $prepared = $this->prepare($input);
 
-        $class = $this->for();
-
-        $model = (new $class())->query()->create($prepared);
+        /** @var TModel */
+        $model = $this->query()->create($prepared);
 
         $this->after($model, $input, $prepared);
 
@@ -71,13 +65,13 @@ abstract class StoreAction extends DatabaseAction
     }
 
     /**
-     * Perform additional database transactions after the model has been updated.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      */
-    protected function after(Model $model, $input, $prepared): void
+    protected function after(Model $model, $input, array $prepared): void
     {
         //
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Workbench\App\Actions\Product;
 
 use Honed\Action\Actions\UpsertAction;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Workbench\App\Models\Product;
 
 /**
@@ -19,7 +20,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return class-string<TModel>
      */
-    protected function for(): string
+    public function from(): string|Builder
     {
         return Product::class;
     }
@@ -29,7 +30,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return array<int, string>
      */
-    protected function uniqueBy(): array
+    public function uniqueBy(): array
     {
         return ['id'];
     }
@@ -39,7 +40,7 @@ class UpsertProduct extends UpsertAction
      *
      * @return array<int, string>
      */
-    protected function update(): array
+    public function update(): array
     {
         return ['name'];
     }

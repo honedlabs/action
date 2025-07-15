@@ -52,7 +52,7 @@ abstract class DispatchAction implements Action
     }
 
     /**
-     * Perform additional logic after the event has been dispatched.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TInput  $payload
      * @param  class-string<TDispatch>  $dispatch

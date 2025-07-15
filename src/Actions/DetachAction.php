@@ -4,50 +4,43 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Contracts\Relatable;
+use Honed\Action\Actions\Concerns\InteractsWithModels;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TDetach of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends \Honed\Action\Actions\BelongsToManyAction<TModel, TDetach>
  */
-abstract class DetachAction extends DatabaseAction implements Relatable
+abstract class DetachAction extends BelongsToManyAction
 {
-    use Concerns\InteractsWithModels;
+    use InteractsWithModels;
 
     /**
      * Detach models from the parent model.
      *
+     * @template T of int|string|TDetach|null
+     *
      * @param  TModel  $model
-     * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      * @return TModel
      */
     public function handle(Model $model, $detachments): Model
     {
-        $this->transact(
-            fn () => $this->detach($model, $detachments)
+        $this->transaction(
+            fn () => $this->execute($model, $detachments)
         );
 
         return $model;
     }
 
     /**
-     * Get the relation for the model.
-     *
-     * @param  TModel  $model
-     * @return BelongsToMany<TModel, TDetach>
-     */
-    protected function getRelation(Model $model): BelongsToMany
-    {
-        /** @var BelongsToMany<TModel, TDetach> */
-        return $model->{$this->relationship()}();
-    }
-
-    /**
      * Convert the detachments to an array of keys.
      *
-     * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
+     * @template T of int|string|TDetach|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      * @return array<int, int|string>
      */
     protected function prepare($detachments): array
@@ -62,25 +55,29 @@ abstract class DetachAction extends DatabaseAction implements Relatable
     }
 
     /**
-     * Store the detachments in the database.
+     * Execute the action.
+     *
+     * @template T of int|string|TDetach|null
      *
      * @param  TModel  $model
-     * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      */
-    protected function detach(Model $model, $detachments): void
+    protected function execute(Model $model, $detachments): void
     {
         $detaching = $this->prepare($detachments);
 
-        $this->getRelation($model)->detach($detaching, $this->shouldTouch());
+        $this->getRelationship($model)->detach($detaching, $this->touch());
 
         $this->after($model, $detachments);
     }
 
     /**
-     * Perform additional logic after the model has been detached.
+     * Perform additional logic after the action has been executed.
+     *
+     * @template T of int|string|TDetach|null
      *
      * @param  TModel  $model
-     * @param  int|string|TDetach|array<int, int|string|TDetach>  $detachments
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      */
     protected function after(Model $model, $detachments): void
     {

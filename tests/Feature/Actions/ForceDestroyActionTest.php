@@ -4,57 +4,42 @@ declare(strict_types=1);
 
 use Workbench\App\Actions\Product\ForceDestroyProduct;
 use Workbench\App\Models\Product;
-use Workbench\App\Models\User;
 
 beforeEach(function () {
     $this->action = new ForceDestroyProduct();
-
-    $this->product = Product::factory()->create();
-
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-    ]);
 });
 
-it('force destroys a model', function () {
-    $this->action->handle($this->product);
+it('destroys model', function () {
+    $product = Product::factory()->create();
+
+    $this->action->handle($product);
 
     $this->assertDatabaseMissing('products', [
-        'id' => $this->product->id,
+        'id' => $product->id,
     ]);
 });
 
-it('force destroys models from builder', function () {
-    $products = Product::factory(3)
-        ->create();
+it('destroys ids', function () {
+    $products = Product::factory(2)->create();
 
-    $this->action->handle(Product::query()->whereIn('id', $products->pluck('id')));
+    $this->action->handle($products->pluck('id'));
 
-    $this->assertDatabaseHas('products', [
-        'id' => $this->product->id,
-    ]);
-
-    $products->each(function ($product) {
+    foreach ($products as $product) {
         $this->assertDatabaseMissing('products', [
             'id' => $product->id,
         ]);
-    });
+    }
 });
 
-it('force destroys models from relationship', function () {
-    $user = User::query()->find(1);
-
-    $products = Product::factory(3)
+it('destroys model collection', function () {
+    $products = Product::factory()
+        ->count(3)
         ->create();
 
-    $this->action->handle($user->products());
-
-    $this->assertDatabaseMissing('products', [
-        'id' => $this->product->id,
-    ]);
+    $this->action->handle($products);
 
     $products->each(function ($product) {
-        $this->assertDatabaseHas('products', [
+        $this->assertDatabaseMissing('products', [
             'id' => $product->id,
         ]);
     });

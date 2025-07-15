@@ -112,14 +112,6 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     }
 
     /**
-     * Get the order of the operation.
-     */
-    public function getOrder(): int
-    {
-        return 0;
-    }
-
-    /**
      * Determine if the action is an inline action.
      */
     public function isInline(): bool

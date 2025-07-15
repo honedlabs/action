@@ -4,99 +4,97 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
-use Honed\Action\Contracts\Relatable;
+use Honed\Action\Actions\Concerns\InteractsWithFormData;
+use Honed\Action\Actions\Concerns\InteractsWithModels;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TToggle of \Illuminate\Database\Eloquent\Model
  * @template TInput of mixed = array<string, mixed>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
+ *
+ * @extends \Honed\Action\Actions\BelongsToManyAction<TModel, TToggle>
  */
-abstract class ToggleAction extends DatabaseAction implements Relatable
+abstract class ToggleAction extends BelongsToManyAction
 {
     /**
      * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
      */
-    use Concerns\InteractsWithFormData;
+    use InteractsWithFormData;
 
-    use Concerns\InteractsWithModels;
+    use InteractsWithModels;
 
     /**
      * Toggle the models in the relationship.
      *
+     * @template T of int|string|TToggle|null
+     *
      * @param  TModel  $model
-     * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
      * @param  TInput  $attributes
      * @return TModel
      */
-    public function handle(Model $model, $toggles, $attributes = []): Model
+    public function handle(Model $model, $ids, $attributes = []): Model
     {
-        $this->transact(
-            fn () => $this->toggle($model, $toggles, $attributes)
+        $this->transaction(
+            fn () => $this->execute($model, $ids, $attributes)
         );
 
         return $model;
     }
 
     /**
-     * Get the relation for the model.
-     *
-     * @param  TModel  $model
-     * @return BelongsToMany<TModel, TToggle>
-     */
-    protected function getRelation(Model $model): BelongsToMany
-    {
-        /** @var BelongsToMany<TModel, TToggle> */
-        return $model->{$this->relationship()}();
-    }
-
-    /**
      * Prepare the models and attributes for the toggle method.
      *
-     * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
+     * @template T of int|string|TToggle|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
      * @param  TInput  $attributes
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($toggles, $attributes): array
+    protected function prepare($ids, $attributes): array
     {
         /** @var array<int, int|string|TToggle> */
-        $toggles = $this->arrayable($toggles);
+        $ids = $this->arrayable($ids);
 
         $attributes = $this->normalize($attributes);
 
         return Arr::mapWithKeys(
-            $toggles,
-            fn ($togglement) => [
-                $this->getKey($togglement) => $attributes,
+            $ids,
+            fn ($id) => [
+                $this->getKey($id) => $attributes,
             ]
         );
     }
 
     /**
-     * Toggle the models in the relationship.
+     * Execute the action.
+     *
+     * @template T of int|string|TToggle|null
      *
      * @param  TModel  $model
-     * @param  int|string|TToggle|array<int, int|string|TToggle>  $toggles
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
      * @param  TInput  $attributes
      */
-    protected function toggle(Model $model, $toggles, $attributes): void
+    protected function execute(Model $model, $ids, $attributes): void
     {
-        $toggling = $this->prepare($toggles, $attributes);
+        $toggling = $this->prepare($ids, $attributes);
 
-        $toggled = $this->getRelation($model)->toggle($toggling, $this->shouldTouch());
+        /** @var array{attached: array<int, int|string>, detached: array<int, int|string>} */
+        $toggled = $this->getRelationship($model)->toggle($toggling, $this->touch());
 
-        $this->after($model, $toggled);
+        $this->after($model, $toggled['attached'], $toggled['detached']);
     }
 
     /**
-     * Perform additional logic after the model has been toggleed.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
-     * @param  array<mixed>  $toggled
+     * @param  array<int, int|string>  $attached
+     * @param  array<int, int|string>  $detached
      */
-    protected function after(Model $model, $toggled): void
+    protected function after(Model $model, array $attached, array $detached): void
     {
         //
     }

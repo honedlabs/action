@@ -10,7 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\ValidatedInput;
 
 /**
- * @template TInput of mixed
+ * @template TInput
  */
 trait InteractsWithFormData
 {

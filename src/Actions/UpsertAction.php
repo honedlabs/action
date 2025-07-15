@@ -4,39 +4,21 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Honed\Action\Actions\Concerns\InteractsWithFormData;
+use Honed\Action\Contracts\Upsertable;
+
 use function is_array;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @template TInput of mixed = array<int, array<string, mixed>>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
  */
-abstract class UpsertAction extends DatabaseAction
+abstract class UpsertAction extends DatabaseAction implements Upsertable
 {
     /**
      * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
      */
-    use Concerns\InteractsWithFormData;
-
-    /**
-     * Get the model to perform the upsert on.
-     *
-     * @return class-string<TModel>
-     */
-    abstract protected function for(): string;
-
-    /**
-     * Get the unique by columns for the upsert.
-     *
-     * @return array<int, string>
-     */
-    abstract protected function uniqueBy(): array;
-
-    /**
-     * Get the columns to update in the upsert.
-     *
-     * @return array<int, string>
-     */
-    abstract protected function update(): array;
+    use InteractsWithFormData;
 
     /**
      * Upsert the input data in the database.
@@ -46,8 +28,8 @@ abstract class UpsertAction extends DatabaseAction
      */
     public function handle($values)
     {
-        $this->transact(
-            fn () => $this->upsert($values)
+        $this->transaction(
+            fn () => $this->execute($values)
         );
 
         return $values;
@@ -62,33 +44,36 @@ abstract class UpsertAction extends DatabaseAction
     protected function prepare($values): array
     {
         if (! is_array($values)) {
-            return [$this->only(
-                $this->normalize($values)
-            )];
+            return [
+                $this->only($this->normalize($values)),
+            ];
         }
 
         return $values;
     }
 
     /**
-     * Upsert the record in the database.
+     * Execute the action.
      *
      * @param  TInput  $values
      */
-    protected function upsert($values): void
+    protected function execute($values): void
     {
         $prepared = $this->prepare($values);
 
-        $class = $this->for();
+        $source = $this->from();
 
-        (new $class())->query()
-            ->upsert($prepared, $this->uniqueBy(), $this->update());
+        if (is_string($source)) {
+            $source = $source::query();
+        }
+
+        $source->upsert($prepared, $this->uniqueBy(), $this->update());
 
         $this->after($values, $prepared);
     }
 
     /**
-     * Perform additional database transactions after the model has been updated.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TInput  $values
      * @param  array<int, array<string, mixed>>  $prepared

@@ -10,6 +10,7 @@ beforeEach(function () {
     $this->action = new DissociateUser();
 
     $this->user = User::factory()->create();
+
     $this->product = Product::factory()
         ->for($this->user)
         ->create();

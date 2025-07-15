@@ -14,10 +14,10 @@ abstract class Assembler
     /**
      * Define the parameters of the operation.
      *
-     * @template TOperation of Operation
+     * @template T of \Honed\Action\Operations\Operation
      *
-     * @param  TOperation  $operation
-     * @return TOperation
+     * @param  T  $operation
+     * @return T
      */
     abstract protected function definition(Operation $operation): Operation;
 
@@ -32,37 +32,58 @@ abstract class Assembler
     /**
      * Get as an inline action
      */
-    public static function inline(): InlineOperation
+    public static function inline(?string $namespace = null): InlineOperation
     {
-        return static::create(InlineOperation::class);
+        return static::namespace(InlineOperation::class, $namespace);
     }
 
     /**
      * Get as a bulk action
      */
-    public static function bulk(): BulkOperation
+    public static function bulk(?string $namespace = null): BulkOperation
     {
-        return static::create(BulkOperation::class);
+        return static::namespace(BulkOperation::class, $namespace ?? 'bulk');
     }
 
     /**
      * Get as a page action
      */
-    public static function page(): PageOperation
+    public static function page(?string $namespace = null): PageOperation
     {
-        return static::create(PageOperation::class);
+        return static::namespace(PageOperation::class, $namespace ?? 'page');
     }
 
     /**
      * The type of the action to be generated.
      *
-     * @template TOperation of Operation
+     * @template T of \Honed\Action\Operations\Operation
      *
-     * @param  class-string<TOperation>  $type
-     * @return TOperation
+     * @param  class-string<T>  $type
+     * @return T
      */
     protected static function create(string $type): Operation
     {
-        return static::make()->definition(new $type());
+        /** @var T */
+        $operation = resolve($type);
+
+        return static::make()->definition($operation);
+    }
+
+    /**
+     * Create a new operation with a namespace.
+     *
+     * @template T of \Honed\Action\Operations\Operation
+     *
+     * @param  class-string<T>  $type
+     * @return T
+     */
+    protected static function namespace(string $type, ?string $name = null): Operation
+    {
+        $operation = static::create($type);
+
+        // @phpstan-ignore-next-line method.unresolvableReturnType
+        return $operation
+            ->when($operation->hasName() && $name, static fn (Operation $operation) => $operation->name($operation->getName().'_'.$name)
+            );
     }
 }

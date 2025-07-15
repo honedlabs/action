@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Action\Concerns\Transactable;
+use Honed\Action\Actions\Concerns\Transactable;
 
 beforeEach(function () {
     $this->test = new class()
@@ -12,20 +12,29 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    $this->test->shouldBeTransaction(false);
+    $this->test->outsideTransaction();
 });
 
 it('can be a transaction', function () {
     expect($this->test)
+        ->isNotTransaction()->toBeTrue()
         ->isTransaction()->toBeFalse()
-        ->transaction()->toBe($this->test)
-        ->isTransaction()->toBeTrue();
+        ->transact()->toBe($this->test)
+        ->isTransaction()->toBeTrue()
+        ->dontTransact()->toBe($this->test)
+        ->isNotTransaction()->toBeTrue();
 });
 
 it('configures to be a transaction', function () {
-    $this->test->shouldBeTransaction(true);
+    $this->test->withinTransaction();
 
     expect($this->test)
         ->isTransaction()->toBeTrue();
 
+    $this->test->outsideTransaction();
+
+    expect($this->test)
+        ->isTransaction()->toBeFalse()
+        ->transact()->toBe($this->test)
+        ->isTransaction()->toBeTrue();
 });

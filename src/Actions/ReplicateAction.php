@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Action\Actions;
 
+use Honed\Action\Actions\Concerns\InteractsWithFormData;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,7 +16,7 @@ class ReplicateAction extends DatabaseAction
     /**
      * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
      */
-    use Concerns\InteractsWithFormData;
+    use InteractsWithFormData;
 
     /**
      * Store the input data in the database.
@@ -26,13 +27,13 @@ class ReplicateAction extends DatabaseAction
      */
     public function handle(Model $model, $attributes = []): Model
     {
-        return $this->transact(
-            fn () => $this->replicate($model, $attributes)
+        return $this->transaction(
+            fn () => $this->execute($model, $attributes)
         );
     }
 
     /**
-     * Prepare the attributes to override on replication
+     * Prepare the attributes to override on replication.
      *
      * @param  TInput  $attributes
      * @return array<string, mixed>
@@ -55,13 +56,13 @@ class ReplicateAction extends DatabaseAction
     }
 
     /**
-     * Store the record in the database.
+     * Execute the action.
      *
      * @param  TModel  $model
      * @param  TInput  $attributes
      * @return TModel
      */
-    protected function replicate(Model $model, $attributes): Model
+    protected function execute(Model $model, $attributes): Model
     {
         $new = $model->replicate($this->except());
 
@@ -73,19 +74,20 @@ class ReplicateAction extends DatabaseAction
 
         $new->save();
 
-        $this->after($new, $model, $attributes);
+        $this->after($new, $model, $attributes, $prepared);
 
         return $new;
     }
 
     /**
-     * Perform additional logic after the model has been replicated.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $new
      * @param  TModel  $old
      * @param  TInput  $attributes
+     * @param  array<string, mixed>  $prepared
      */
-    protected function after(Model $new, Model $old, $attributes): void
+    protected function after(Model $new, Model $old, $attributes, array $prepared): void
     {
         //
     }

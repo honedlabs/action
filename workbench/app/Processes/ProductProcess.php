@@ -22,7 +22,7 @@ class ProductProcess extends Process
      *
      * @var bool
      */
-    protected static $transaction = true;
+    protected $transact = true;
 
     /**
      * The tasks to be sequentially executed.

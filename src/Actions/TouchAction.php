@@ -31,8 +31,8 @@ class TouchAction extends DatabaseAction
      */
     public function handle(Model $model): Model
     {
-        return $this->transact(
-            fn () => $this->touch($model)
+        return $this->transaction(
+            fn () => $this->execute($model)
         );
     }
 
@@ -42,7 +42,7 @@ class TouchAction extends DatabaseAction
      * @param  TModel  $model
      * @param  array<int, string>  $touches
      */
-    protected function touchEach(Model $model, array $touches): void
+    protected function touch(Model $model, array $touches): void
     {
         foreach ($touches as $touch) {
             $model->touch($touch);
@@ -50,19 +50,19 @@ class TouchAction extends DatabaseAction
     }
 
     /**
-     * Update the record in the database.
+     * Execute the action.
      *
      * @param  TModel  $model
      * @return TModel
      */
-    protected function touch(Model $model): Model
+    protected function execute(Model $model): Model
     {
         $touches = $this->touches();
 
         match (true) {
             $touches === true => $model->touchOwners(),
             is_null($touches) => $model->touch(),
-            default => $this->touchEach($model, (array) $touches)
+            default => $this->touch($model, (array) $touches)
         };
 
         $this->after($model, $touches);
@@ -71,7 +71,7 @@ class TouchAction extends DatabaseAction
     }
 
     /**
-     * Perform additional database transactions after the model has been updated.
+     * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      * @param  true|string|array<int, string>|null  $touches

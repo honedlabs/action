@@ -16,12 +16,11 @@ use Honed\Action\Operations\PageOperation;
 class {{ class }} extends Batch
 {
     /**
-     * Define the operations for the batch.
+     * Define the batch.
      * 
-     * @param $this $batch
      * @return $this
      */
-    protected function definition(Batch $batch): Batch
+    protected function definition(): static
     {
         return $batch;
     }

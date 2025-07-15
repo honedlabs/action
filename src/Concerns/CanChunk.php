@@ -2,34 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Honed\Action\Operations\Concerns;
+namespace Honed\Action\Concerns;
 
-use Closure;
 use Honed\Action\Contracts\ShouldChunk;
 use Honed\Action\Contracts\ShouldChunkById;
-use Illuminate\Database\Eloquent\Builder;
 
-/**
- * @phpstan-require-extends \Honed\Action\Operations\Operation
- */
-trait CanBeChunked
+trait CanChunk
 {
     public const CHUNK_SIZE = 500;
 
     /**
      * Whether the action should be chunked.
+     *
+     * @var bool
      */
-    protected bool $chunk = false;
+    protected $chunk = false;
 
     /**
      * Whether the bulk action should chunk the records by id.
+     *
+     * @var bool
      */
-    protected bool $chunkById = false;
+    protected $chunkById = false;
 
     /**
      * The size of the chunk to use when chunking the records.
+     *
+     * @var int
      */
-    protected int $chunkSize = self::CHUNK_SIZE;
+    protected $chunkSize = self::CHUNK_SIZE;
 
     /**
      * Set the action to chunk the records.
@@ -125,23 +126,5 @@ trait CanBeChunked
     public function getChunkSize(): int
     {
         return $this->chunkSize;
-    }
-
-    /**
-     * Execute the inline action on the given record.
-     */
-    public function callback(): ?Closure
-    {
-        $handler = $this->getHandler();
-
-        if (! $handler) {
-            return null;
-        }
-
-        return match (true) {
-            $this->isChunkedById() => fn (Builder $builder) => $builder->chunkById($this->getChunkSize(), $handler),
-            $this->isChunked() => fn (Builder $builder) => $builder->chunk($this->getChunkSize(), $handler),
-            default => $handler,
-        };
     }
 }

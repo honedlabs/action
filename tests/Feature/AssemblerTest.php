@@ -24,7 +24,7 @@ it('creates bulk operation', function () {
     expect($this->assembler->bulk())
         ->toBeInstanceOf(BulkOperation::class)
         ->isBulk()->toBeTrue()
-        ->getName()->toBe('update')
+        ->getName()->toBe('update_bulk')
         ->getLabel()->toBe('Update')
         ->getIcon()->toBe('heroicon-o-pencil');
 });
@@ -33,7 +33,7 @@ it('creates page operation', function () {
     expect($this->assembler->page())
         ->toBeInstanceOf(PageOperation::class)
         ->isPage()->toBeTrue()
-        ->getName()->toBe('update')
+        ->getName()->toBe('update_page')
         ->getLabel()->toBe('Update')
         ->getIcon()->toBe('heroicon-o-pencil');
 });

@@ -43,6 +43,16 @@ class Batch extends Unit
     protected static $batchNameResolver = null;
 
     /**
+     * Provide the instance with any necessary setup.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->define();
+    }
+
+    /**
      * Create a new batch instance.
      *
      * @param  Operation|Batch|array<int, Operation|Batch>  $operations
@@ -148,8 +158,6 @@ class Batch extends Unit
      */
     protected function representation(): array
     {
-        $this->define();
-
         return [
             'id' => $this->getId(),
             'inline' => $this->inlineOperationsToArray($this->getRecord()),
