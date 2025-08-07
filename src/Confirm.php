@@ -225,6 +225,8 @@ class Confirm extends Primitive implements NullsAsUndefined
      */
     protected function representation(): array
     {
+        $this->define();
+
         return [
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),

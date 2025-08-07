@@ -47,12 +47,11 @@ abstract class BulkAction extends EloquentAction
      *
      * @template T of int|string|null
      *
-     * @param  T|array<int, T>|Collection<int, T>  $models
+     * @param  T|array<int, T>|Collection<int, T>|EloquentCollection<int, TModel>  $models
      * @return \Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>
      */
     protected function getQuery($models): Builder
     {
-        /** @var array<int, T>|Collection<int, T> $models */
         $models = match (true) {
             $models instanceof EloquentCollection => $models->modelKeys(),
             is_array($models) => $models,

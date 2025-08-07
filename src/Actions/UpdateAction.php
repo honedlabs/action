@@ -19,13 +19,13 @@ class UpdateAction extends DatabaseAction
     use InteractsWithFormData;
 
     /**
-     * Update the provided model using the input.
+     * Update the model.
      *
      * @param  TModel  $model
      * @param  TInput  $input
      * @return TModel $model
      */
-    public function handle(Model $model, $input): Model
+    public function handle(Model $model, $input = []): Model
     {
         return $this->transaction(
             fn () => $this->execute($model, $input)

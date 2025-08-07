@@ -31,7 +31,7 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
      * @param  TInput  $input
      * @return TNew $model
      */
-    public function handle(Model $parent, $input): Model
+    public function handle(Model $parent, $input = []): Model
     {
         return $this->transaction(
             fn () => $this->execute($parent, $input)

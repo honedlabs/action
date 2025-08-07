@@ -26,7 +26,7 @@ abstract class StoreAction extends EloquentAction
      * @param  TInput  $input
      * @return TModel $model
      */
-    public function handle($input): Model
+    public function handle($input = []): Model
     {
         return $this->transaction(
             fn () => $this->execute($input)

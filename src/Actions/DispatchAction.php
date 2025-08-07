@@ -26,7 +26,7 @@ abstract class DispatchAction implements Action
      * @param  TPayload  $payload
      * @return TInput
      */
-    public function handle($payload)
+    public function handle($payload = [])
     {
         $prepared = $this->prepare($payload);
 
