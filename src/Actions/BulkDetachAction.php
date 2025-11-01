@@ -40,8 +40,10 @@ abstract class BulkDetachAction extends BulkAction
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
      */
-    protected function execute($models, $ids): void
+    public function execute($models, $ids): void
     {
+        $this->before($models, $ids);
+
         $action = $this->getAction();
 
         $this->run(
@@ -53,6 +55,17 @@ abstract class BulkDetachAction extends BulkAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|null
+     * @template U of int|string|TDetach|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
+     * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
+     */
+    public function before($models, $ids): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @template T of int|string|null
@@ -61,8 +74,5 @@ abstract class BulkDetachAction extends BulkAction
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
      */
-    protected function after($models, $ids): void
-    {
-        //
-    }
+    public function after($models, $ids): void {}
 }

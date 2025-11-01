@@ -57,11 +57,9 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
      * @param  TInput  $input
      * @return array<string, mixed>
      */
-    protected function prepare($parent, $input): array
+    public function attributes($parent, $input): array
     {
-        return $this->only(
-            $this->normalize($input)
-        );
+        return $this->normalize($input);
     }
 
     /**
@@ -71,9 +69,11 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
      * @param  TInput  $input
      * @return TNew
      */
-    protected function execute($parent, $input): Model
+    public function execute($parent, $input): Model
     {
-        $prepared = $this->prepare($parent, $input);
+        $this->before($parent, $input);
+
+        $prepared = $this->attributes($parent, $input);
 
         /** @var TNew */
         $model = $this->getRelationship($parent)
@@ -85,6 +85,14 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TParent  $parent
+     * @param  TInput  $input
+     */
+    public function before(Model $parent, $input): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TParent  $parent
@@ -92,8 +100,5 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      */
-    protected function after(Model $parent, Model $model, $input, array $prepared): void
-    {
-        //
-    }
+    public function after(Model $parent, Model $model, $input, array $prepared): void {}
 }

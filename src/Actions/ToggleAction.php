@@ -32,13 +32,13 @@ abstract class ToggleAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return TModel
      */
-    public function handle(Model $model, $ids, $attributes = []): Model
+    public function handle(Model $model, $ids, $input = []): Model
     {
         $this->transaction(
-            fn () => $this->execute($model, $ids, $attributes)
+            fn () => $this->execute($model, $ids, $input)
         );
 
         return $model;
@@ -50,15 +50,15 @@ abstract class ToggleAction extends BelongsToManyAction
      * @template T of int|string|TToggle|null
      *
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($ids, $attributes): array
+    public function attributes($ids, $input): array
     {
         /** @var array<int, int|string|TToggle> */
         $ids = $this->arrayable($ids);
 
-        $attributes = $this->normalize($attributes);
+        $attributes = $this->normalize($input);
 
         return Arr::mapWithKeys(
             $ids,
@@ -75,11 +75,13 @@ abstract class ToggleAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      */
-    protected function execute(Model $model, $ids, $attributes): void
+    public function execute(Model $model, $ids, $input): void
     {
-        $toggling = $this->prepare($ids, $attributes);
+        $this->before($model, $ids, $input);
+
+        $toggling = $this->attributes($ids, $input);
 
         /** @var array{attached: array<int, int|string>, detached: array<int, int|string>} */
         $toggled = $this->getRelationship($model)->toggle($toggling, $this->touch());
@@ -88,14 +90,22 @@ abstract class ToggleAction extends BelongsToManyAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TToggle|null
+     *
+     * @param  TModel  $model
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $ids
+     * @param  TInput  $input
+     */
+    public function before(Model $model, $ids, $input): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      * @param  array<int, int|string>  $attached
      * @param  array<int, int|string>  $detached
      */
-    protected function after(Model $model, array $attached, array $detached): void
-    {
-        //
-    }
+    public function after(Model $model, array $attached, array $detached): void {}
 }

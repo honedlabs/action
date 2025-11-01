@@ -36,8 +36,10 @@ abstract class BulkDissociateAction extends BulkAction
      *
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      */
-    protected function execute($models): void
+    public function execute($models): void
     {
+        $this->before($models);
+
         $action = $this->getAction();
 
         $this->run(
@@ -49,14 +51,20 @@ abstract class BulkDissociateAction extends BulkAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
+     */
+    public function before($models): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @template T of int|string|null
      *
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      */
-    protected function after($models): void
-    {
-        //
-    }
+    public function after($models): void {}
 }

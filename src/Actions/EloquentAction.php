@@ -25,7 +25,7 @@ abstract class EloquentAction extends DatabaseAction
      *
      * @return \Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>
      */
-    protected function query(): Builder
+    public function query(): Builder
     {
         $source = $this->from();
 

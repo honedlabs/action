@@ -33,8 +33,10 @@ abstract class DissociateAction extends BelongsToAction
      * @param  TModel  $model
      * @return TModel
      */
-    protected function execute(Model $model): Model
+    public function execute(Model $model): Model
     {
+        $this->before($model);
+
         $this->getRelationship($model)->dissociate();
 
         $model->save();
@@ -45,12 +47,16 @@ abstract class DissociateAction extends BelongsToAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     */
+    public function before(Model $model): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      */
-    protected function after(Model $model): void
-    {
-        //
-    }
+    public function after(Model $model): void {}
 }

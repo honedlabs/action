@@ -22,35 +22,34 @@ class ReplicateAction extends DatabaseAction
      * Store the input data in the database.
      *
      * @param  TModel  $model
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return TModel $model
      */
-    public function handle(Model $model, $attributes = []): Model
+    public function handle(Model $model, $input = []): Model
     {
         return $this->transaction(
-            fn () => $this->execute($model, $attributes)
+            fn () => $this->execute($model, $input)
         );
     }
 
     /**
      * Prepare the attributes to override on replication.
      *
-     * @param  TInput  $attributes
+     * @param  TModel  $model
+     * @param  TInput  $input
      * @return array<string, mixed>
      */
-    protected function prepare($attributes): array
+    public function attributes(Model $model, $input): array
     {
-        return $this->only(
-            $this->normalize($attributes)
-        );
+        return $this->normalize($input);
     }
 
     /**
      * Get the attributes to exclude from the replication.
      *
-     * @return array<int, string>
+     * @return list<string>
      */
-    protected function except(): array
+    public function except(): array
     {
         return [];
     }
@@ -59,36 +58,43 @@ class ReplicateAction extends DatabaseAction
      * Execute the action.
      *
      * @param  TModel  $model
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return TModel
      */
-    protected function execute(Model $model, $attributes): Model
+    public function execute(Model $model, $input): Model
     {
+        $this->before($model, $input);
+
         $new = $model->replicate($this->except());
 
-        $prepared = $this->prepare($attributes);
+        $attributes = $this->attributes($model, $input);
 
-        if (filled($prepared)) {
-            $new->fill($prepared);
+        if (filled($attributes)) {
+            $new->fill($attributes);
         }
 
         $new->save();
 
-        $this->after($new, $model, $attributes, $prepared);
+        $this->after($new, $model, $input, $attributes);
 
         return $new;
     }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     * @param  TInput  $input
+     */
+    public function before(Model $model, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $new
      * @param  TModel  $old
-     * @param  TInput  $attributes
-     * @param  array<string, mixed>  $prepared
+     * @param  TInput  $input
+     * @param  array<string, mixed>  $attributes
      */
-    protected function after(Model $new, Model $old, $attributes, array $prepared): void
-    {
-        //
-    }
+    public function after(Model $new, Model $old, $input, array $attributes): void {}
 }

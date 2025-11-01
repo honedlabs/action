@@ -102,10 +102,7 @@ class UpdatePivotAction extends DatabaseAction
      * @param  TPivot  $pivot
      * @param  TInput  $input
      */
-    public function before(Model $model, Model $pivot, $input): void
-    {
-        //
-    }
+    public function before(Model $model, Model $pivot, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -115,8 +112,5 @@ class UpdatePivotAction extends DatabaseAction
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      */
-    public function after(Model $model, Model $pivot, $input, array $prepared): void
-    {
-        //
-    }
+    public function after(Model $model, Model $pivot, $input, array $prepared): void {}
 }

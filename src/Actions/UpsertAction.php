@@ -45,7 +45,7 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
     {
         if (! is_array($values)) {
             return [
-                $this->only($this->normalize($values)),
+                $this->normalize($values),
             ];
         }
 
@@ -59,6 +59,8 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
      */
     public function execute($values): void
     {
+        $this->before($values);
+
         $attributes = $this->attributes($values);
 
         $source = $this->from();
@@ -73,13 +75,17 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TInput  $values
+     */
+    public function before($values): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TInput  $values
      * @param  array<int, array<string, mixed>>  $attributes
      */
-    public function after($values, array $attributes): void
-    {
-        //
-    }
+    public function after($values, array $attributes): void {}
 }

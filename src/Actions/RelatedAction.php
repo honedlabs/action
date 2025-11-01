@@ -89,6 +89,8 @@ abstract class RelatedAction extends DatabaseAction implements FromRelationship
     {
         $related = $this->getRelated($model);
 
+        $this->before($model, $related, $input);
+
         $attributes = $this->attributes($model, $related, $input);
 
         $this->act($related, $attributes);
@@ -112,6 +114,15 @@ abstract class RelatedAction extends DatabaseAction implements FromRelationship
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     * @param  null|TRelated|TRelation<TRelated, TModel, *>  $related
+     * @param  TInput  $input
+     */
+    public function before(Model $model, $related, $input): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
@@ -119,8 +130,5 @@ abstract class RelatedAction extends DatabaseAction implements FromRelationship
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      */
-    public function after(Model $model, $related, $input, array $prepared): void
-    {
-        //
-    }
+    public function after(Model $model, $related, $input, array $prepared): void {}
 }

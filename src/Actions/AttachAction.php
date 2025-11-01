@@ -32,13 +32,13 @@ abstract class AttachAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $attachments
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return TModel
      */
-    public function handle(Model $model, $attachments, $attributes = []): Model
+    public function handle(Model $model, $attachments, $input = []): Model
     {
         $this->transaction(
-            fn () => $this->execute($model, $attachments, $attributes)
+            fn () => $this->execute($model, $attachments, $input)
         );
 
         return $model;
@@ -50,18 +50,15 @@ abstract class AttachAction extends BelongsToManyAction
      * @template T of int|string|TAttach|null
      *
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $attachments
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($attachments, $attributes): array
+    public function attributes($attachments, $input): array
     {
         /** @var array<int, int|string|TAttach> */
         $attachments = $this->arrayable($attachments);
 
-        /** @var array<string, mixed> */
-        $attributes = $this->only(
-            $this->normalize($attributes)
-        );
+        $attributes = $this->normalize($input);
 
         return Arr::mapWithKeys(
             $attachments,
@@ -78,19 +75,32 @@ abstract class AttachAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $attachments
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      */
-    protected function execute(Model $model, $attachments, $attributes): void
+    protected function execute(Model $model, $attachments, $input): void
     {
+        $this->before($model, $attachments, $input);
+
         /** @var array<int, int|string|TAttach> */
         $attachments = $this->arrayable($attachments);
 
-        $attaching = $this->prepare($attachments, $attributes);
+        $attaching = $this->attributes($attachments, $input);
 
         $this->getRelationship($model)->attach($attaching, touch: $this->touch());
 
-        $this->after($model, $attachments, $attributes);
+        $this->after($model, $attachments, $input);
     }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TAttach|null
+     *
+     * @param  TModel  $model
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $attachments
+     * @param  TInput  $input
+     */
+    protected function before(Model $model, $attachments, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -99,10 +109,7 @@ abstract class AttachAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $attachments
-     * @param  TInput  $attributes
+     * @param  TInput  $input
      */
-    protected function after(Model $model, $attachments, $attributes): void
-    {
-        //
-    }
+    protected function after(Model $model, $attachments, $input): void {}
 }

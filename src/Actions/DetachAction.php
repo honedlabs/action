@@ -43,7 +43,7 @@ abstract class DetachAction extends BelongsToManyAction
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      * @return array<int, int|string>
      */
-    protected function prepare($detachments): array
+    public function attributes($detachments): array
     {
         /** @var array<int, int|string|TDetach> */
         $detachments = $this->arrayable($detachments);
@@ -62,14 +62,26 @@ abstract class DetachAction extends BelongsToManyAction
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      */
-    protected function execute(Model $model, $detachments): void
+    public function execute(Model $model, $detachments): void
     {
-        $detaching = $this->prepare($detachments);
+        $this->before($model, $detachments);
+
+        $detaching = $this->attributes($detachments);
 
         $this->getRelationship($model)->detach($detaching, $this->touch());
 
         $this->after($model, $detachments);
     }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TDetach|null
+     *
+     * @param  TModel  $model
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
+     */
+    public function before(Model $model, $detachments): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -79,8 +91,5 @@ abstract class DetachAction extends BelongsToManyAction
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $detachments
      */
-    protected function after(Model $model, $detachments): void
-    {
-        //
-    }
+    public function after(Model $model, $detachments): void {}
 }

@@ -36,8 +36,10 @@ abstract class DestroyAction extends DatabaseAction implements FromModel
      *
      * @param  T|array<int, T>|Collection<int, T>  $ids
      */
-    protected function execute($ids): void
+    public function execute($ids): void
     {
+        $this->before($ids);
+
         if ($ids instanceof Model) {
             $ids = $ids->getKey();
         }
@@ -49,14 +51,20 @@ abstract class DestroyAction extends DatabaseAction implements FromModel
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TModel
+     *
+     * @param  T|array<int, T>|Collection<int, T>  $ids
+     */
+    public function before($ids): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @template T of int|string|TModel
      *
      * @param  T|array<int, T>|Collection<int, T>  $ids
      */
-    protected function after($ids): void
-    {
-        //
-    }
+    public function after($ids): void {}
 }

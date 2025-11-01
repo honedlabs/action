@@ -64,11 +64,11 @@ abstract class ModelAction extends DatabaseAction
     {
         $this->before($model, $input);
 
-        $prepared = $this->attributes($model, $input);
+        $attributes = $this->attributes($model, $input);
 
-        $model = $this->act($model, $prepared);
+        $model = $this->act($model, $attributes);
 
-        $this->after($model, $input, $prepared);
+        $this->after($model, $input, $attributes);
 
         return $model;
     }
@@ -79,20 +79,14 @@ abstract class ModelAction extends DatabaseAction
      * @param  TModel  $model
      * @param  TInput  $input
      */
-    public function before(Model $model, $input): void
-    {
-        //
-    }
+    public function before(Model $model, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      * @param  TInput  $input
-     * @param  array<string, mixed>  $prepared
+     * @param  array<string, mixed>  $attributes
      */
-    public function after(Model $model, $input, array $prepared): void
-    {
-        //
-    }
+    public function after(Model $model, $input, array $attributes): void {}
 }

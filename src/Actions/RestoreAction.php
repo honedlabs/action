@@ -30,8 +30,10 @@ class RestoreAction extends DatabaseAction
      * @param  TModel  $model
      * @return TModel
      */
-    protected function execute(Model $model): Model
+    public function execute(Model $model): Model
     {
+        $this->before($model);
+
         $model->restore(); // @phpstan-ignore method.notFound
 
         $this->after($model);
@@ -40,12 +42,16 @@ class RestoreAction extends DatabaseAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     */
+    public function before(Model $model): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      */
-    protected function after(Model $model): void
-    {
-        //
-    }
+    public function after(Model $model): void {}
 }

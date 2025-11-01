@@ -34,8 +34,10 @@ class ForceDeleteAction extends DatabaseAction
      *
      * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
      */
-    protected function execute($model): void
+    public function execute($model): void
     {
+        $this->before($model);
+
         match (true) {
             $model instanceof Collection => $model->each->forceDelete(),
             default => $model->forceDelete()
@@ -45,12 +47,16 @@ class ForceDeleteAction extends DatabaseAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
+     */
+    public function before($model): void {}
+
+    /**
      * Perform additional logic after the model has been deleted.
      *
      * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
      */
-    protected function after($model): void
-    {
-        //
-    }
+    public function after($model): void {}
 }

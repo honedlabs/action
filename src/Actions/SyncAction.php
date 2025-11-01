@@ -25,13 +25,13 @@ abstract class SyncAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $syncs
-     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>  $input
      * @return TModel
      */
-    public function handle(Model $model, $syncs, array $attributes = []): Model
+    public function handle(Model $model, $syncs, array $input = []): Model
     {
         $this->transaction(
-            fn () => $this->execute($model, $syncs, $attributes)
+            fn () => $this->execute($model, $syncs, $input)
         );
 
         return $model;
@@ -43,10 +43,10 @@ abstract class SyncAction extends BelongsToManyAction
      * @template T of int|string|TSync|null
      *
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $syncs
-     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>  $input
      * @return array<int|string, array<string, mixed>>
      */
-    protected function prepare($syncs, array $attributes): array
+    public function attributes($syncs, array $input): array
     {
         /** @var array<int, int|string|TSync> */
         $syncs = $this->arrayable($syncs);
@@ -54,7 +54,7 @@ abstract class SyncAction extends BelongsToManyAction
         return Arr::mapWithKeys(
             $syncs,
             fn ($syncment) => [
-                $this->getKey($syncment) => $attributes,
+                $this->getKey($syncment) => $input,
             ]
         );
     }
@@ -66,11 +66,13 @@ abstract class SyncAction extends BelongsToManyAction
      *
      * @param  TModel  $model
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $syncs
-     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>  $input
      */
-    protected function execute(Model $model, $syncs, array $attributes): void
+    public function execute(Model $model, $syncs, array $input): void
     {
-        $syncing = $this->prepare($syncs, $attributes);
+        $this->before($model, $syncs, $input);
+
+        $syncing = $this->attributes($syncs, $input);
 
         $pivot = $this->pivot();
 
@@ -83,6 +85,17 @@ abstract class SyncAction extends BelongsToManyAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TSync|null
+     *
+     * @param  TModel  $model
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $syncs
+     * @param  array<string, mixed>  $input
+     */
+    public function before(Model $model, $syncs, array $input): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
@@ -91,17 +104,14 @@ abstract class SyncAction extends BelongsToManyAction
      * @param  array<int, int|string>  $updated
      * @return void
      */
-    protected function after(Model $model, array $attached, array $detached, array $updated)
-    {
-        //
-    }
+    public function after(Model $model, array $attached, array $detached, array $updated) {}
 
     /**
      * Get the values to insert into the pivot table.
      *
      * @return array<string, mixed>
      */
-    protected function pivot(): array
+    public function pivot(): array
     {
         return [];
     }
@@ -109,7 +119,7 @@ abstract class SyncAction extends BelongsToManyAction
     /**
      * Indicate whether the relationship sync should detach records.
      */
-    protected function detach(): bool
+    public function detach(): bool
     {
         return true;
     }

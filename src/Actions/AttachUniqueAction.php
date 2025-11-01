@@ -65,8 +65,10 @@ abstract class AttachUniqueAction extends BelongsToManyAction
      * @param  T|array<int, T>|Collection<int, T>  $attachments
      * @param  TInput  $input
      */
-    protected function execute(Model $model, $attachments, $input): void
+    public function execute(Model $model, $attachments, $input): void
     {
+        $this->before($model, $attachments, $input);
+
         $relation = $this->getRelationship($model);
 
         $existing = $this->getExisting($model, $attachments)->all();
@@ -90,7 +92,7 @@ abstract class AttachUniqueAction extends BelongsToManyAction
      * @param  T|array<int, T>|Collection<int, T>  $attachments
      * @return Collection<int, int|string>
      */
-    protected function getExisting(Model $model, $attachments): Collection
+    public function getExisting(Model $model, $attachments): Collection
     {
         $query = $this->getRelationship($model)->getQuery();
 
@@ -99,6 +101,17 @@ abstract class AttachUniqueAction extends BelongsToManyAction
         /** @var Collection<int, int|string> */
         return $query->pluck($column);
     }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|TAttach|null
+     *
+     * @param  TModel  $model
+     * @param  T|array<int, T>|Collection<int, T>  $attachments
+     * @param  TInput  $input
+     */
+    public function before(Model $model, $attachments, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -110,8 +123,5 @@ abstract class AttachUniqueAction extends BelongsToManyAction
      * @param  TInput  $input
      * @param  array<string, mixed>  $attributes
      */
-    protected function after(Model $model, $attachments, $input, array $attributes): void
-    {
-        //
-    }
+    public function after(Model $model, $attachments, $input, array $attributes): void {}
 }

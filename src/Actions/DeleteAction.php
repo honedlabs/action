@@ -33,7 +33,7 @@ class DeleteAction extends DatabaseAction
      *
      * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
      */
-    protected function execute($model): void
+    public function execute($model): void
     {
         $this->before($model);
 
@@ -50,18 +50,12 @@ class DeleteAction extends DatabaseAction
      *
      * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
      */
-    protected function before($model): void
-    {
-        //
-    }
+    public function before($model): void {}
 
     /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
      */
-    protected function after($model): void
-    {
-        //
-    }
+    public function after($model): void {}
 }

@@ -39,11 +39,9 @@ abstract class StoreAction extends EloquentAction
      * @param  TInput  $input
      * @return array<string, mixed>
      */
-    protected function prepare($input): array
+    public function attributes($input): array
     {
-        return $this->only(
-            $this->normalize($input)
-        );
+        return $this->normalize($input);
     }
 
     /**
@@ -52,9 +50,11 @@ abstract class StoreAction extends EloquentAction
      * @param  TInput  $input
      * @return TModel
      */
-    protected function execute($input): Model
+    public function execute($input): Model
     {
-        $prepared = $this->prepare($input);
+        $this->before($input);
+
+        $prepared = $this->attributes($input);
 
         /** @var TModel */
         $model = $this->query()->create($prepared);
@@ -65,14 +65,18 @@ abstract class StoreAction extends EloquentAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TInput  $input
+     */
+    public function before($input): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TModel  $model
      * @param  TInput  $input
      * @param  array<string, mixed>  $prepared
      */
-    protected function after(Model $model, $input, array $prepared): void
-    {
-        //
-    }
+    protected function after(Model $model, $input, array $prepared): void {}
 }

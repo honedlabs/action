@@ -38,8 +38,10 @@ abstract class BulkAssociateAction extends BulkAction
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      * @param  int|string|TParent|null  $parent
      */
-    protected function execute($models, $parent): void
+    public function execute($models, $parent): void
     {
+        $this->before($models, $parent);
+
         $action = $this->getAction();
 
         $this->run(
@@ -51,6 +53,16 @@ abstract class BulkAssociateAction extends BulkAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
+     * @param  int|string|TParent|null  $parent
+     */
+    public function before($models, $parent): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @template T of int|string|null
@@ -58,8 +70,5 @@ abstract class BulkAssociateAction extends BulkAction
      * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
      * @param  int|string|TParent|null  $parent
      */
-    protected function after($models, $parent): void
-    {
-        //
-    }
+    public function after($models, $parent): void {}
 }

@@ -43,8 +43,10 @@ abstract class BulkAttachAction extends BulkAction
      * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
      * @param  TInput  $attributes
      */
-    protected function execute($models, $ids, $attributes): void
+    public function execute($models, $ids, $attributes): void
     {
+        $this->before($models, $ids, $attributes);
+
         $action = $this->getAction();
 
         $this->run(
@@ -56,6 +58,18 @@ abstract class BulkAttachAction extends BulkAction
     }
 
     /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|null
+     * @template U of int|string|TAttach|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>  $models
+     * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
+     * @param  TInput  $attributes
+     */
+    public function before($models, $ids, $attributes): void {}
+
+    /**
      * Perform additional logic after the action has been executed.
      *
      * @template T of int|string|null
@@ -65,8 +79,5 @@ abstract class BulkAttachAction extends BulkAction
      * @param  U|array<int, U>|\Illuminate\Support\Collection<int, U>  $ids
      * @param  TInput  $attributes
      */
-    protected function after($models, $ids, $attributes): void
-    {
-        //
-    }
+    public function after($models, $ids, $attributes): void {}
 }

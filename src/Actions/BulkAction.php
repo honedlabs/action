@@ -37,7 +37,7 @@ abstract class BulkAction extends EloquentAction
      *
      * @return TAction
      */
-    protected function getAction(): Action
+    public function getAction(): Action
     {
         return resolve($this->action());
     }
@@ -50,7 +50,7 @@ abstract class BulkAction extends EloquentAction
      * @param  T|array<int, T>|Collection<int, T>|EloquentCollection<int, TModel>  $models
      * @return \Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>
      */
-    protected function getQuery($models): Builder
+    public function getQuery($models): Builder
     {
         $models = match (true) {
             $models instanceof EloquentCollection => $models->modelKeys(),
@@ -69,7 +69,7 @@ abstract class BulkAction extends EloquentAction
      *
      * @param \Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *> $source
      */
-    protected function getKey($source): string
+    public function getKey($source): string
     {
         return $source->getModel()->getKeyName();
     }
@@ -82,7 +82,7 @@ abstract class BulkAction extends EloquentAction
      * @param  T|array<int, T>|Collection<int, T>  $models
      * @param  (Closure(TModel):mixed)  $callback
      */
-    protected function run($models, Closure $callback): void
+    public function run($models, Closure $callback): void
     {
         $query = $this->getQuery($models);
 

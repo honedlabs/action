@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @template TParent of \Illuminate\Database\Eloquent\Model
  *
  * @implements \Honed\Action\Contracts\FromRelationship<TModel, \Illuminate\Database\Eloquent\Relations\BelongsTo<TParent, TModel>>
- *
- * @internal
  */
 abstract class BelongsToAction extends DatabaseAction implements FromRelationship
 {

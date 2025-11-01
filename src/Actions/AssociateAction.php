@@ -68,10 +68,7 @@ abstract class AssociateAction extends BelongsToAction
      * @param  TModel  $model
      * @param  int|string|TParent|null  $parent
      */
-    public function before(Model $model, $parent): void
-    {
-        //
-    }
+    public function before(Model $model, $parent): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -79,8 +76,5 @@ abstract class AssociateAction extends BelongsToAction
      * @param  TModel  $model
      * @param  int|string|TParent|null  $parent
      */
-    public function after(Model $model, $parent): void
-    {
-        //
-    }
+    public function after(Model $model, $parent): void {}
 }

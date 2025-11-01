@@ -61,12 +61,24 @@ abstract class BulkUpdateAction extends EloquentAction
      */
     public function execute($models, $input): void
     {
+        $this->before($models, $input);
+
         $attributes = $this->attributes($input);
 
         $this->getQuery($models)->update($attributes);
 
         $this->after($models, $input, $attributes);
     }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @template T of int|string|null
+     *
+     * @param  T|array<int, T>|\Illuminate\Support\Collection<int, T>|\Illuminate\Database\Eloquent\Collection<int, TModel>  $models
+     * @param  TInput  $input
+     */
+    public function before($models, $input): void {}
 
     /**
      * Perform additional logic after the action has been executed.
@@ -77,8 +89,5 @@ abstract class BulkUpdateAction extends EloquentAction
      * @param  TInput  $input
      * @param  array<string, mixed>  $attributes
      */
-    public function after($models, $input, array $attributes): void
-    {
-        //
-    }
+    public function after($models, $input, array $attributes): void {}
 }
