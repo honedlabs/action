@@ -56,7 +56,7 @@ it('prompts', function () {
         ->assertSuccessful();
 
     $this->assertFileExists(app_path('Actions/StoreAction.php'));
-})->skip(fn () => app()->version() >= '12.0');
+})->skip(fn () => app()->version() > '12.0');
 
 it('throws error when invalid action is provided', function () {
     $this->artisan('make:action', [
