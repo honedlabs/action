@@ -35,12 +35,24 @@ class DeleteAction extends DatabaseAction
      */
     protected function execute($model): void
     {
+        $this->before($model);
+
         match (true) {
             $model instanceof Collection => $model->each->delete(),
             default => $model->delete()
         };
 
         $this->after($model);
+    }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel|\Illuminate\Support\Collection<int, TModel>|\Illuminate\Database\Eloquent\Builder<TModel>|\Illuminate\Database\Eloquent\Relations\Relation<TModel, *, *>  $model
+     */
+    protected function before($model): void
+    {
+        //
     }
 
     /**

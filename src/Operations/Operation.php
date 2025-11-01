@@ -13,13 +13,13 @@ use Honed\Action\Operations\Concerns\HasAction;
 use Honed\Action\Operations\Concerns\IsInertia;
 use Honed\Action\Unit;
 use Honed\Core\Concerns\Allowable;
-use Honed\Core\Concerns\CanHaveIcon;
-use Honed\Core\Concerns\CanHaveTarget;
-use Honed\Core\Concerns\CanHaveUrl;
+use Honed\Core\Concerns\HasIcon;
 use Honed\Core\Concerns\HasLabel;
 use Honed\Core\Concerns\HasMethod;
 use Honed\Core\Concerns\HasName;
 use Honed\Core\Concerns\HasOrder;
+use Honed\Core\Concerns\HasTarget;
+use Honed\Core\Concerns\HasUrl;
 use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
 use Illuminate\Contracts\Routing\UrlRoutable;
@@ -30,16 +30,16 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
 {
     use Allowable;
     use CanBeRateLimited;
-    use CanHaveIcon;
-    use CanHaveTarget;
-    use CanHaveUrl;
     use CanRedirect;
     use Confirmable;
     use HasAction;
+    use HasIcon;
     use HasLabel;
     use HasMethod;
     use HasName;
     use HasOrder;
+    use HasTarget;
+    use HasUrl;
     use IsInertia;
 
     /**
@@ -204,7 +204,7 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     /**
      * Provide a selection of default dependencies for evaluation by name.
      *
-     * @return array<int, mixed>
+     * @return list<mixed>
      */
     protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
@@ -221,7 +221,7 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
     /**
      * Provide a selection of default dependencies for evaluation by type.
      *
-     * @return array<int, mixed>
+     * @return list<mixed>
      */
     protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {

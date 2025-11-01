@@ -41,7 +41,7 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
      * @param  TInput  $values
      * @return array<int, array<string, mixed>>
      */
-    protected function prepare($values): array
+    public function attributes($values): array
     {
         if (! is_array($values)) {
             return [
@@ -57,9 +57,9 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
      *
      * @param  TInput  $values
      */
-    protected function execute($values): void
+    public function execute($values): void
     {
-        $prepared = $this->prepare($values);
+        $attributes = $this->attributes($values);
 
         $source = $this->from();
 
@@ -67,18 +67,18 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
             $source = $source::query();
         }
 
-        $source->upsert($prepared, $this->uniqueBy(), $this->update());
+        $source->upsert($attributes, $this->uniqueBy(), $this->update());
 
-        $this->after($values, $prepared);
+        $this->after($values, $attributes);
     }
 
     /**
      * Perform additional logic after the action has been executed.
      *
      * @param  TInput  $values
-     * @param  array<int, array<string, mixed>>  $prepared
+     * @param  array<int, array<string, mixed>>  $attributes
      */
-    protected function after($values, array $prepared): void
+    public function after($values, array $attributes): void
     {
         //
     }

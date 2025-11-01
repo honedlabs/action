@@ -44,9 +44,11 @@ class UpdatePivotAction extends DatabaseAction
     {
         $pivot = $this->pivot($model);
 
+        $this->before($model, $pivot, $input);
+
         $attributes = $this->attributes($model, $pivot, $input);
 
-        $pivot->update($attributes);
+        $pivot = $this->act($model, $pivot, $attributes);
 
         $this->after($model, $pivot, $input, $attributes);
 
@@ -76,6 +78,33 @@ class UpdatePivotAction extends DatabaseAction
     {
         /** @var TPivot */
         return $model->pivot; // @phpstan-ignore-line property.notFound
+    }
+
+    /**
+     * Act on the pivot model.
+     *
+     * @param  TModel  $model
+     * @param  TPivot  $pivot
+     * @param  array<string, mixed>  $attributes
+     * @return TPivot
+     */
+    public function act(Model $model, Model $pivot, array $attributes): Model
+    {
+        $pivot->update($attributes);
+
+        return $pivot;
+    }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     * @param  TPivot  $pivot
+     * @param  TInput  $input
+     */
+    public function before(Model $model, Model $pivot, $input): void
+    {
+        //
     }
 
     /**

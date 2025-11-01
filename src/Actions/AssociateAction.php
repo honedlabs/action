@@ -35,15 +35,42 @@ abstract class AssociateAction extends BelongsToAction
      * @param  int|string|TParent|null  $parent
      * @return TModel
      */
-    protected function execute(Model $model, $parent): Model
+    public function execute(Model $model, $parent): Model
+    {
+        $this->before($model, $parent);
+
+        $model = $this->act($model, $parent);
+
+        $this->after($model, $parent);
+
+        return $model;
+    }
+
+    /**
+     * Associate the model to the parent.
+     *
+     * @param  TModel  $model
+     * @param  int|string|TParent|null  $parent
+     * @return TModel
+     */
+    public function act(Model $model, $parent): Model
     {
         $model = $this->getRelationship($model)->associate($parent);
 
         $model->save();
 
-        $this->after($model, $parent);
-
         return $model;
+    }
+
+    /**
+     * Perform additional logic before the action has been executed.
+     *
+     * @param  TModel  $model
+     * @param  int|string|TParent|null  $parent
+     */
+    public function before(Model $model, $parent): void
+    {
+        //
     }
 
     /**
@@ -52,7 +79,7 @@ abstract class AssociateAction extends BelongsToAction
      * @param  TModel  $model
      * @param  int|string|TParent|null  $parent
      */
-    protected function after(Model $model, $parent): void
+    public function after(Model $model, $parent): void
     {
         //
     }

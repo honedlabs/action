@@ -10,9 +10,6 @@ use Honed\Core\Contracts\NullsAsUndefined;
 use Honed\Core\Primitive;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @extends \Honed\Core\Primitive<string, mixed>
- */
 class Confirm extends Primitive implements NullsAsUndefined
 {
     use HasRecord;

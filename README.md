@@ -11,6 +11,7 @@
 
 <p>
     <a href="https://github.com/honedlabs/action/actions"><img src="https://github.com/honedlabs/action/actions/workflows/tests.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/honedlabs/action"><img src="https://raw.githubusercontent.com/honedlabs/action/main/badge-coverage.svg" alt="Code Coverage"></a>
     <a href="https://packagist.org/packages/honed/action"><img src="https://img.shields.io/packagist/dt/honed/action" alt="Total Downloads"></a>
     <a href="https://packagist.org/packages/honed/action"><img src="https://img.shields.io/packagist/v/honed/action" alt="Latest Stable Version"></a>
 </p>
