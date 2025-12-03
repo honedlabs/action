@@ -66,10 +66,7 @@ abstract class Assembler
     /**
      * Create a new operation with a namespace.
      *
-     * @template T of \Honed\Action\Operations\Operation
-     *
-     * @param  class-string<T>  $type
-     * @return T
+     * @param  class-string<Operation>  $type
      */
     protected static function namespace(string $type, ?string $name = null): Operation
     {

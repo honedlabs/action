@@ -84,8 +84,6 @@ trait Transactable
 
     /**
      * Get the form from the Form class attribute.
-     *
-     * @return TForm|null
      */
     protected static function hasTransactionAttribute(): bool
     {
