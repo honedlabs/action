@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use Honed\Action\Contracts\Action;
-use Honed\Action\Jobs\QueuedAction;
-use Workbench\App\Actions\Queue\SynchronousAction;
-use Workbench\App\Actions\Queue\AsynchronousAction;
 use Honed\Action\Exceptions\CannotQueueSynchronousActionException;
+use Honed\Action\Jobs\QueuedAction;
 use Illuminate\Support\Facades\Queue;
+use Workbench\App\Actions\Queue\AsynchronousAction;
+use Workbench\App\Actions\Queue\SynchronousAction;
 
 use function Pest\Laravel\assertDatabaseCount;
 
@@ -17,9 +17,9 @@ beforeEach(function () {
 
 it('handles actions', function (string|Action $action) {
     $job = new QueuedAction($action);
-    
+
     dispatch($job);
-    
+
     Queue::assertPushed(QueuedAction::class);
 
     $job->withFakeQueueInteractions()->handle();

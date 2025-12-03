@@ -5,20 +5,11 @@ declare(strict_types=1);
 namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Illuminate\Database\Console\Factories\FactoryMakeCommand;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
-use function count;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\suggest;
 use function trim;
 
 #[AsCommand(name: 'make:action')]
@@ -137,7 +128,6 @@ class ActionMakeCommand extends GeneratorCommand
         return $this->rootNamespace().'Model';
     }
 
-
     /**
      * Get the default namespace for the class.
      *
@@ -165,7 +155,7 @@ class ActionMakeCommand extends GeneratorCommand
         ];
     }
 
-        /**
+    /**
      * Prompt for missing input arguments using the returned questions.
      *
      * @return array<string,mixed>

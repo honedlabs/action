@@ -45,7 +45,7 @@ trait Transactable
      */
     public function isTransaction(): bool
     {
-        return $this->transact 
+        return $this->transact
             ??= static::hasTransactionAttribute() ?: static::defaultTransact();
     }
 

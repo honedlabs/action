@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Honed\Action;
 
 use Honed\Action\Commands\ActionMakeCommand;
-use Honed\Action\Commands\ActionsMakeCommand;
 use Honed\Action\Commands\AssemblerMakeCommand;
 use Honed\Action\Commands\BatchMakeCommand;
 use Honed\Action\Commands\OperationMakeCommand;

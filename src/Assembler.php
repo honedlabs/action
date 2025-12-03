@@ -67,7 +67,7 @@ abstract class Assembler
      * Create a new operation with a namespace.
      *
      * @template T of \Honed\Action\Operations\Operation
-     * 
+     *
      * @param  class-string<T>  $type
      * @return T
      */
