@@ -34,7 +34,7 @@ trait ForwardsActions
      */
     public function getAction(): Action
     {
-        return $this->action ??= resolve($this->action());
+        return $this->action ??= app($this->action());
     }
 
     /**

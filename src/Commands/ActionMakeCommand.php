@@ -6,8 +6,10 @@ namespace Honed\Action\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Database\Console\Factories\FactoryMakeCommand;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,10 +22,8 @@ use function Laravel\Prompts\suggest;
 use function trim;
 
 #[AsCommand(name: 'make:action')]
-class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInput
+class ActionMakeCommand extends GeneratorCommand
 {
-    use Concerns\SuggestsModels;
-
     /**
      * The console command name.
      *
@@ -36,7 +36,7 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
      *
      * @var string
      */
-    protected $description = 'Create a new actionable class.';
+    protected $description = 'Create a new action class.';
 
     /**
      * The type of class being generated.
@@ -46,20 +46,62 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     protected $type = 'Action';
 
     /**
+     * Get the stub file for the generator.
+     */
+    protected function getStub(): string
+    {
+        $path = match (true) {
+            (bool) $this->option('delete') => '/stubs/honed.action.delete.stub',
+            (bool) $this->option('store') => '/stubs/honed.action.store.stub',
+            (bool) $this->option('update') => '/stubs/honed.action.update.stub',
+            default => '/stubs/honed.action.stub',
+        };
+
+        return $this->resolveStubPath($path);
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     *
+     * @param  string  $stub
+     */
+    protected function resolveStubPath($stub): string
+    {
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__.'/../..'.$stub;
+    }
+
+    /**
      * Build the class with the given name.
      *
      * @param  string  $name
-     * @return string
      */
-    protected function buildClass($name)
+    protected function buildClass($name): string
     {
-        $replace = $this->buildModelReplacements();
+        $factory = class_basename(Str::ucfirst(str_replace('Factory', '', $name)));
 
-        $action = $this->option('action');
+        $namespaceModel = $this->option('model')
+            ? $this->qualifyModel($this->option('model'))
+            : $this->qualifyModel($this->guessModelName($name));
 
-        if ($action && ! in_array($action, array_keys($this->getActions()))) {
-            throw new InvalidArgumentException('You have supplied an invalid action.');
-        }
+        $model = class_basename($namespaceModel);
+
+        $namespace = $this->getNamespace(
+            Str::replaceFirst($this->rootNamespace(), 'Database\\Factories\\', $this->qualifyClass($this->getNameInput()))
+        );
+
+        $replace = [
+            '{{ factoryNamespace }}' => $namespace,
+            'NamespacedDummyModel' => $namespaceModel,
+            '{{ namespacedModel }}' => $namespaceModel,
+            '{{namespacedModel}}' => $namespaceModel,
+            'DummyModel' => $model,
+            '{{ model }}' => $model,
+            '{{model}}' => $model,
+            '{{ factory }}' => $factory,
+            '{{factory}}' => $factory,
+        ];
 
         return str_replace(
             array_keys($replace), array_values($replace), parent::buildClass($name)
@@ -67,61 +109,34 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     }
 
     /**
-     * Build the model replacement values.
-     *
-     * @return array<string, string>
+     * Guess the model name from the Factory name or return a default model name.
      */
-    protected function buildModelReplacements()
+    protected function guessModelName(string $name): string
     {
-        /** @var string|null $model */
-        $model = $this->option('model');
-
-        $modelClass = $model ? $this->parseModel($model) : Model::class;
-
-        $this->promptForModelCreation($modelClass);
-
-        return [
-            'DummyFullModelClass' => $modelClass,
-            '{{ namespacedModel }}' => $modelClass,
-            '{{namespacedModel}}' => $modelClass,
-            'DummyModelClass' => class_basename($modelClass),
-            '{{ model }}' => class_basename($modelClass),
-            '{{model}}' => class_basename($modelClass),
-            'DummyModelVariable' => lcfirst(class_basename($modelClass)),
-            '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
-            '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
-        ];
-    }
-
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-        /** @var string|null */
-        $action = $this->option('action');
-
-        if (! $action) {
-            return $this->resolveStubPath('/stubs/honed.action.stub');
+        if (str_ends_with($name, 'Action')) {
+            $name = substr($name, 0, -6);
         }
 
-        return $this->resolveStubPath("/stubs/honed.action.{$action}.stub");
+        $name = match (true) {
+            str_starts_with($name, 'Delete') => substr($name, 6),
+            str_starts_with($name, 'Store') => substr($name, 5),
+            str_starts_with($name, 'Update') => substr($name, 5),
+            default => $name,
+        };
+
+        $modelName = $this->qualifyModel(Str::after($name, $this->rootNamespace()));
+
+        if (class_exists($modelName)) {
+            return $modelName;
+        }
+
+        if (is_dir(app_path('Models/'))) {
+            return $this->rootNamespace().'Models\Model';
+        }
+
+        return $this->rootNamespace().'Model';
     }
 
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.'/../..'.$stub;
-    }
 
     /**
      * Get the default namespace for the class.
@@ -143,68 +158,25 @@ class ActionMakeCommand extends GeneratorCommand implements PromptsForMissingInp
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Create the class even if the action already exists.'],
-            ['action', 'a', InputOption::VALUE_REQUIRED, 'The action to be used.'],
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that the action is for.'],
+            ['delete', 'd', InputOption::VALUE_NONE, 'Create a delete action.'],
+            ['store', 's', InputOption::VALUE_NONE, 'Create a store action.'],
+            ['update', 'u', InputOption::VALUE_NONE, 'Create an update action.'],
         ];
     }
 
-    /**
-     * Interact further with the user if they were prompted for missing arguments.
+        /**
+     * Prompt for missing input arguments using the returned questions.
      *
-     * @return void
+     * @return array<string,mixed>
      */
-    protected function afterPromptingForMissingArguments(InputInterface $input, OutputInterface $output)
+    protected function promptForMissingArgumentsUsing(): array
     {
-        if ($this->isReservedName($this->getNameInput()) || $this->didReceiveOptions($input)) {
-            return;
-        }
-
-        $actions = [...$this->getActions(), null => 'None'];
-
-        $input->setOption('action', select(
-            'What action should be used? (Optional)',
-            $actions,
-            scroll: count($actions),
-            hint: 'If no action is provided, the default action stub will be used.',
-        ));
-
-        $input->setOption('model', suggest(
-            'What model should this action be for? (Optional)',
-            $this->possibleModels(),
-            required: 'This field is required when an action is selected',
-        ));
-    }
-
-    /**
-     * Get the action to be used.
-     *
-     * @return array<string,string>
-     */
-    protected function getActions()
-    {
-        $actions = config('action.actions');
-
-        if (is_array($actions) && Arr::isAssoc($actions)) {
-            /** @var array<string,string> */
-            return $actions;
-        }
-
         return [
-            'associate' => 'Associate',
-            'attach' => 'Attach',
-            'detach' => 'Detach',
-            'destroy' => 'Destroy',
-            'dispatch' => 'Dispatch',
-            'dissociate' => 'Dissociate',
-            'force-destroy' => 'Force Destroy',
-            'replicate' => 'Replicate',
-            'restore' => 'Restore',
-            'store' => 'Store',
-            'sync' => 'Sync',
-            'toggle' => 'Toggle',
-            'touch' => 'Touch',
-            'update' => 'Update',
-            'upsert' => 'Upsert',
+            'name' => [
+                'What should the '.strtolower($this->type).' be named?',
+                'E.g. StoreUserAction',
+            ],
         ];
     }
 }

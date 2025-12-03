@@ -56,7 +56,7 @@ class Operation extends Primitive implements NullsAsUndefined, UrlRoutable
      */
     public static function make(string $name, string|Closure|null $label = null): static
     {
-        return resolve(static::class)
+        return app(static::class)
             ->name($name)
             ->label($label ?? static::makeLabel($name));
     }

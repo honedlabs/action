@@ -13,6 +13,6 @@ abstract class Action implements ActionContract
      */
     public static function make(): static
     {
-        return resolve(static::class);
+        return app(static::class);
     }
 }

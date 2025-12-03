@@ -73,13 +73,13 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
     {
         $this->before($parent, $input);
 
-        $prepared = $this->attributes($parent, $input);
+        $attributes = $this->attributes($parent, $input);
 
         /** @var TNew */
         $model = $this->getRelationship($parent)
-            ->create($prepared);
+            ->create($attributes);
 
-        $this->after($parent, $model, $input, $prepared);
+        $this->after($parent, $model, $input, $attributes);
 
         return $model;
     }
@@ -98,7 +98,7 @@ abstract class StoreChildAction extends DatabaseAction implements FromRelationsh
      * @param  TParent  $parent
      * @param  TNew  $model
      * @param  TInput  $input
-     * @param  array<string, mixed>  $prepared
+     * @param  array<string, mixed>  $attributes
      */
-    public function after(Model $parent, Model $model, $input, array $prepared): void {}
+    public function after(Model $parent, Model $model, $input, array $attributes): void {}
 }

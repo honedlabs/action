@@ -59,7 +59,7 @@ class Batch extends Unit
      */
     public static function make(Operation|self|array $operations = []): static
     {
-        return resolve(static::class)
+        return app(static::class)
             ->operations($operations);
     }
 

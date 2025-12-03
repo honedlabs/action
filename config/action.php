@@ -3,6 +3,18 @@
 declare(strict_types=1);
 
 return [
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Transactions
+    |--------------------------------------------------------------------------
+    |
+    | You can specify whether to wrap all database actions within a transaction
+    | by default. This can be overridden on a per-action basis.
+    |
+    */
+
+    'transact' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -35,52 +47,4 @@ return [
     */
 
     'handler' => null,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Actions
-    |--------------------------------------------------------------------------
-    |
-    | You can create your own action stubs inside the `stubs` directory with a
-    | name following the format `honed.action.{id}.stub`. The value provided
-    | will be prefixed to the model name. You can supply a {{ model }},
-    | {{ action }} and {{ modelVariable }} placeholders to be replaced. These
-    | can be created when passing the '--action' option to the 'make:action'
-    | command.
-    |
-    */
-    'actions' => [
-        'associate' => 'Associate',
-        'attach' => 'Attach',
-        'detach' => 'Detach',
-        'destroy' => 'Destroy',
-        'dispatch' => 'Dispatch',
-        'dissociate' => 'Dissociate',
-        'force-destroy' => 'Force Destroy',
-        'replicate' => 'Replicate',
-        'restore' => 'Restore',
-        'store' => 'Store',
-        'sync' => 'Sync',
-        'toggle' => 'Toggle',
-        'update' => 'Update',
-        'upsert' => 'Upsert',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Model names
-    |--------------------------------------------------------------------------
-    |
-    | You can create multiple actions for a model with one command via the
-    | 'make:actions' command. You can supply the actions to be created with
-    | the key being the action name and the value being the verb name. These
-    | are generated under a directory of the model name, and a name generated
-    | using the action name and the model name joined.
-    |
-    */
-    'model_actions' => [
-        'store' => 'Store',
-        'update' => 'Update',
-        'destroy' => 'Destroy',
-    ],
 ];

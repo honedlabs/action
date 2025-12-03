@@ -2,16 +2,14 @@
 
 namespace {{ namespace }};
 
-use Honed\Action\Contracts\Action;
+use Honed\Action\Actions\Action;
 
-class {{ class }} implements Action
+class {{ class }} extends Action
 {
     /**
      * Handle the action.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         //
     }

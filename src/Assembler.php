@@ -13,11 +13,6 @@ abstract class Assembler
 {
     /**
      * Define the parameters of the operation.
-     *
-     * @template T of \Honed\Action\Operations\Operation
-     *
-     * @param  T  $operation
-     * @return T
      */
     abstract protected function definition(Operation $operation): Operation;
 
@@ -26,7 +21,7 @@ abstract class Assembler
      */
     public static function make(): static
     {
-        return resolve(static::class);
+        return app(static::class);
     }
 
     /**
@@ -34,6 +29,7 @@ abstract class Assembler
      */
     public static function inline(?string $namespace = null): InlineOperation
     {
+        /** @var InlineOperation */
         return static::namespace(InlineOperation::class, $namespace);
     }
 
@@ -42,6 +38,7 @@ abstract class Assembler
      */
     public static function bulk(?string $namespace = null): BulkOperation
     {
+        /** @var BulkOperation */
         return static::namespace(BulkOperation::class, $namespace ?? 'bulk');
     }
 
@@ -50,21 +47,18 @@ abstract class Assembler
      */
     public static function page(?string $namespace = null): PageOperation
     {
+        /** @var PageOperation */
         return static::namespace(PageOperation::class, $namespace ?? 'page');
     }
 
     /**
      * The type of the action to be generated.
      *
-     * @template T of \Honed\Action\Operations\Operation
-     *
-     * @param  class-string<T>  $type
-     * @return T
+     * @param  class-string<Operation>  $type
      */
     protected static function create(string $type): Operation
     {
-        /** @var T */
-        $operation = resolve($type);
+        $operation = app($type);
 
         return static::make()->definition($operation);
     }
@@ -73,7 +67,7 @@ abstract class Assembler
      * Create a new operation with a namespace.
      *
      * @template T of \Honed\Action\Operations\Operation
-     *
+     * 
      * @param  class-string<T>  $type
      * @return T
      */
@@ -81,9 +75,11 @@ abstract class Assembler
     {
         $operation = static::create($type);
 
-        // @phpstan-ignore-next-line method.unresolvableReturnType
         return $operation
-            ->when($operation->hasName() && $name, static fn (Operation $operation) => $operation->name($operation->getName().'_'.$name)
+            ->when(
+                $operation->hasName() && $name,
+                static fn (Operation $operation) => $operation
+                    ->name($operation->getName().'_'.$name)
             );
     }
 }

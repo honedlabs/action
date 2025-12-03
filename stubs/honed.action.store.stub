@@ -6,14 +6,14 @@ use Honed\Action\Actions\StoreAction;
 use {{ namespacedModel }};
 
 /**
- * @extends \Honed\Action\Actions\StoreAction<\{{ namespacedModel }}>
+ * @extends \Honed\Action\Actions\StoreAction<\{{ namespacedModel }}, \App\Data\{{ model }}\Store{{ model }}Data>
  */
 class {{ class }} extends StoreAction
 {
     /**
      * Get the model to store the input data in.
      */
-    protected function for()
+    public function from(): string
     {
         return {{ model }}::class;
     }

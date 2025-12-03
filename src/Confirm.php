@@ -72,7 +72,7 @@ class Confirm extends Primitive implements NullsAsUndefined
         string|Closure $title = self::TITLE,
         string|Closure $description = self::DESCRIPTION
     ) {
-        return resolve(static::class)
+        return app(static::class)
             ->title($title)
             ->description($description);
     }

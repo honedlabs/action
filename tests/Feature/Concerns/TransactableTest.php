@@ -12,10 +12,10 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    $this->test->outsideTransaction();
+    config()->set('action.transact', false);
 });
 
-it('can be a transaction', function () {
+it('can transact', function () {
     expect($this->test)
         ->isNotTransaction()->toBeTrue()
         ->isTransaction()->toBeFalse()
@@ -25,16 +25,11 @@ it('can be a transaction', function () {
         ->isNotTransaction()->toBeTrue();
 });
 
-it('configures to be a transaction', function () {
-    $this->test->withinTransaction();
-
-    expect($this->test)
-        ->isTransaction()->toBeTrue();
-
-    $this->test->outsideTransaction();
-
+it('calls transaction', function () {
     expect($this->test)
         ->isTransaction()->toBeFalse()
+        ->transaction(fn () => 'test')->toBe('test')
         ->transact()->toBe($this->test)
-        ->isTransaction()->toBeTrue();
+        ->isTransaction()->toBeTrue()
+        ->transaction(fn () => 'test')->toBe('test');
 });

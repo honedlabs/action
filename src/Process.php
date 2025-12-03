@@ -51,7 +51,7 @@ abstract class Process implements Action
      */
     public static function make(): static
     {
-        return resolve(static::class);
+        return app(static::class);
     }
 
     /**
@@ -146,7 +146,7 @@ abstract class Process implements Action
     /**
      * Resolve the process from the container.
      */
-    protected function resolve(): void
+    protected function app(): void
     {
         $this->container(App::make(Container::class));
     }

@@ -1,0 +1,13 @@
+<?php
+
+namespace {{ namespace }};
+
+use Honed\Action\Actions\DeleteAction;
+
+/**
+ * @extends \Honed\Action\Actions\DeleteAction<\{{ namespacedModel }}>
+ */
+class {{ class }} extends DeleteAction
+{
+    //
+}

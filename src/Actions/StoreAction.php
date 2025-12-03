@@ -54,12 +54,12 @@ abstract class StoreAction extends EloquentAction
     {
         $this->before($input);
 
-        $prepared = $this->attributes($input);
+        $attributes = $this->attributes($input);
 
         /** @var TModel */
-        $model = $this->query()->create($prepared);
+        $model = $this->query()->create($attributes);
 
-        $this->after($model, $input, $prepared);
+        $this->after($model, $input, $attributes);
 
         return $model;
     }
@@ -76,7 +76,7 @@ abstract class StoreAction extends EloquentAction
      *
      * @param  TModel  $model
      * @param  TInput  $input
-     * @param  array<string, mixed>  $prepared
+     * @param  array<string, mixed>  $attributes
      */
-    protected function after(Model $model, $input, array $prepared): void {}
+    protected function after(Model $model, $input, array $attributes): void {}
 }

@@ -39,7 +39,7 @@ abstract class BulkAction extends EloquentAction
      */
     public function getAction(): Action
     {
-        return resolve($this->action());
+        return app($this->action());
     }
 
     /**

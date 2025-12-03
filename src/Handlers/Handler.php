@@ -42,7 +42,7 @@ class Handler
      */
     public static function make(Unit $instance): static
     {
-        return resolve(static::class)->instance($instance);
+        return app(static::class)->instance($instance);
     }
 
     /**

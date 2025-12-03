@@ -37,7 +37,6 @@ class ActionServiceProvider extends ServiceProvider
 
             $this->commands([
                 ActionMakeCommand::class,
-                ActionsMakeCommand::class,
                 AssemblerMakeCommand::class,
                 BatchMakeCommand::class,
                 OperationMakeCommand::class,

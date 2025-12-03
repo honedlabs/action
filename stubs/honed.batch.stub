@@ -8,10 +8,7 @@ use Honed\Action\Operations\BulkOperation;
 use Honed\Action\Operations\PageOperation;
 
 /**
- * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TBuilder of \Illuminate\Database\Eloquent\Builder<\TModel>
- *
- * @extends \Honed\Action\Batch<TModel, TBuilder>
+ * @extends \Honed\Action\Batch<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Builder<TModel>>
  */
 class {{ class }} extends Batch
 {
@@ -22,6 +19,6 @@ class {{ class }} extends Batch
      */
     protected function definition(): static
     {
-        return $batch;
+        return $this;
     }
 }
