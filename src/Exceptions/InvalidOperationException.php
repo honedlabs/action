@@ -21,11 +21,9 @@ class InvalidOperationException extends BadRequestHttpException
     /**
      * Throw a new invalid operation exception.
      *
-     * @return never
-     *
-     * @throws InvalidOperationException
+     * @throws self
      */
-    public static function throw()
+    public static function throw(): never
     {
         throw new self();
     }

@@ -8,7 +8,6 @@ use Honed\Action\Commands\ActionMakeCommand;
 use Honed\Action\Commands\AssemblerMakeCommand;
 use Honed\Action\Commands\BatchMakeCommand;
 use Honed\Action\Commands\OperationMakeCommand;
-use Honed\Action\Commands\ProcessMakeCommand;
 use Honed\Action\Http\Controllers\ActionController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -39,7 +38,6 @@ class ActionServiceProvider extends ServiceProvider
                 AssemblerMakeCommand::class,
                 BatchMakeCommand::class,
                 OperationMakeCommand::class,
-                ProcessMakeCommand::class,
             ]);
         }
     }

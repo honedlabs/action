@@ -10,10 +10,8 @@ class OperationForbiddenException extends AccessDeniedHttpException
 {
     /**
      * Create a new action not found exception.
-     *
-     * @param  string  $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         parent::__construct(
             "The operation [{$name}] is not allowed.",
@@ -23,12 +21,9 @@ class OperationForbiddenException extends AccessDeniedHttpException
     /**
      * Throw a new action not found exception.
      *
-     * @param  string  $name
-     * @return never
-     *
      * @throws static
      */
-    public static function throw($name)
+    public static function throw(string $name): never
     {
         throw new self($name);
     }

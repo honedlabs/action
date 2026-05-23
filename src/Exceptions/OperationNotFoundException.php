@@ -10,10 +10,8 @@ class OperationNotFoundException extends NotFoundHttpException
 {
     /**
      * Create a new action not found exception.
-     *
-     * @param  string  $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         parent::__construct(
             "No operation named [{$name}] exists for the provided handler.",
@@ -23,12 +21,9 @@ class OperationNotFoundException extends NotFoundHttpException
     /**
      * Throw a new action not found exception.
      *
-     * @param  string  $name
-     * @return never
-     *
-     * @throws static
+     * @throws self
      */
-    public static function throw($name)
+    public static function throw(string $name): never
     {
         throw new self($name);
     }
