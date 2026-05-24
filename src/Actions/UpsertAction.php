@@ -39,7 +39,7 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
      * Prepare the input for the update method.
      *
      * @param  TInput  $values
-     * @return array<int, array<string, mixed>>
+     * @return list<array<string, mixed>>
      */
     public function attributes($values): array
     {
@@ -49,6 +49,7 @@ abstract class UpsertAction extends DatabaseAction implements Upsertable
             ];
         }
 
+        /** @var list<array<string, mixed>> $values */
         return $values;
     }
 

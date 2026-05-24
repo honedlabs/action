@@ -89,13 +89,18 @@ abstract class BulkAction extends EloquentAction
         match (true) {
             $this->isChunkedById() => $query
                 ->chunkById($this->getChunkSize(),
-                    static fn (Collection $models) => $models->each($callback)
+                    static function (Collection $models) use ($callback): mixed {
+                        /** @var Collection<int, TModel> $models */
+                        return $models->each($callback);
+                    }
                 ),
             $this->isChunked() => $query
                 ->chunk($this->getChunkSize(),
-                    static fn (Collection $models) => $models->each($callback)
+                    static function (Collection $models) use ($callback): mixed {
+                        /** @var Collection<int, TModel> $models */
+                        return $models->each($callback);
+                    }
                 ),
-            // @phpstan-ignore-next-line argument.type
             default => $query->get()->each($callback)
         };
     }

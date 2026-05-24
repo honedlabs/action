@@ -40,16 +40,19 @@ trait InteractsWithBuilder
      * @template T of int|string|null
      *
      * @param  T|array<int, T>|Collection<int, T>|EloquentCollection<int, TModel>  $models
-     * @return array<int, T>
+     * @return list<array-key>
      */
     protected function getPrimaryKeys($models): array
     {
-        return match (true) {
+        $keys = match (true) {
             $models instanceof EloquentCollection => $models->modelKeys(),
             is_array($models) => $models,
             $models instanceof Collection => $models->toArray(),
             default => Arr::wrap($models),
         };
+
+        /** @var list<array-key> */
+        return array_values($keys);
     }
 
     /**

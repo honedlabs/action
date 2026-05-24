@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Honed\Action\Actions\Concerns;
 
 use Closure;
-use Honed\Action\Attributes\Transact;
+use Honed\Action\Contracts\ShouldTransact;
 use Illuminate\Support\Facades\DB;
-use ReflectionClass;
 
 trait Transactable
 {
@@ -46,7 +45,7 @@ trait Transactable
     public function isTransaction(): bool
     {
         return $this->transact
-            ??= static::hasTransactionAttribute() ?: static::defaultTransact();
+            ??= $this instanceof ShouldTransact ?: static::defaultTransact();
     }
 
     /**
@@ -80,15 +79,5 @@ trait Transactable
     protected static function defaultTransact(): bool
     {
         return (bool) config()->boolean('action.transact', false);
-    }
-
-    /**
-     * Get the form from the Form class attribute.
-     */
-    protected static function hasTransactionAttribute(): bool
-    {
-        return filled(
-            (new ReflectionClass(static::class))->getAttributes(Transact::class)
-        );
     }
 }

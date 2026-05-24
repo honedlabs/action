@@ -77,7 +77,7 @@ class UpdatePivotAction extends DatabaseAction
     public function pivot(Model $model): Model
     {
         /** @var TPivot */
-        return $model->pivot; // @phpstan-ignore-line property.notFound
+        return $model->pivot;
     }
 
     /**

@@ -38,11 +38,12 @@ abstract class BelongsToManyAction extends DatabaseAction implements FromRelatio
      * @template T of int|string|TMany|null
      *
      * @param  T|array<int, T>|Collection<int, T>  $ids
-     * @return array<int, int|string>
+     * @return list<array-key>
      */
     public function parseIds($ids)
     {
         if ($ids instanceof EloquentCollection) {
+            /** @var list<array-key> */
             return $ids->modelKeys();
         }
 
@@ -52,6 +53,7 @@ abstract class BelongsToManyAction extends DatabaseAction implements FromRelatio
             default => Arr::wrap($ids),
         };
 
+        /** @var list<array-key> */
         return array_map(
             static fn ($id) => $id instanceof Model ? $id->getKey() : $id,
             $ids,

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Honed\Action\Jobs;
 
-use Honed\Action\Attributes\Synchronous;
 use Honed\Action\Contracts\Action;
+use Honed\Action\Contracts\Synchronous;
 use Honed\Action\Exceptions\CannotQueueSynchronousActionException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use ReflectionClass;
 
 /**
  * @template TAction of \Honed\Action\Contracts\Action
@@ -63,8 +62,6 @@ class QueuedAction implements ShouldQueue
      */
     protected function isSynchronous(Action $action): bool
     {
-        return filled(
-            (new ReflectionClass($action))->getAttributes(Synchronous::class)
-        );
+        return $action instanceof Synchronous;
     }
 }

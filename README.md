@@ -1,5 +1,3 @@
-> **Caution:** This package is currently under development and not ready for production use. Tag v1.0.0 will indicate a stable release.
-
 <a href="https://honed.dev/action">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="art/header-dark.png">
@@ -20,9 +18,9 @@
 
 ## Installation
 
-> **Requires [PHP 8.2+](https://php.net/releases/)**
+> **Requires [PHP 8.3+](https://php.net/releases/)**
 
-> **Requires [Laravel 11+](https://laravel.com/docs/releases).**
+> **Requires [Laravel 12+](https://laravel.com/docs/releases).**
 
 > **Requires [Inertia.js 1.2+](https://inertiajs.com/server-side-setup)**
 

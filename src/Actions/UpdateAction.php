@@ -18,7 +18,7 @@ class UpdateAction extends ModelAction
      * Act on the model.
      *
      * @param  TModel  $model
-     * @param  TInput  $input
+     * @param  array<string, mixed>  $input
      * @return TModel
      */
     public function act(Model $model, $input): Model

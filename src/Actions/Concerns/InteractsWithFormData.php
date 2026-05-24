@@ -21,6 +21,7 @@ trait InteractsWithFormData
      */
     protected function normalize($input): array
     {
+        /** @var array<string, mixed> */
         return match (true) {
             $input instanceof Arrayable => $input->toArray(),
             $input instanceof ValidatedInput => $input->all(), // @phpstan-ignore instanceof.alwaysFalse
