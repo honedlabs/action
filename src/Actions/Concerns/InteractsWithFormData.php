@@ -8,15 +8,12 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\ValidatedInput;
 
-/**
- * @template TInput
- */
 trait InteractsWithFormData
 {
     /**
      * Normalize the input data.
      *
-     * @param  TInput  $input
+     * @param mixed $input
      * @return array<string, mixed>
      */
     protected function normalize($input): array

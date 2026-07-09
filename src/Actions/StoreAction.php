@@ -15,9 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class StoreAction extends EloquentAction
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

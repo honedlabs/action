@@ -11,13 +11,10 @@ use function is_array;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TInput of mixed = array<int, array<string, mixed>>|\Illuminate\Support\ValidatedInput|\Illuminate\Foundation\Http\FormRequest
+ * @template TInput = mixed
  */
 abstract class UpsertAction extends DatabaseAction implements Upsertable
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

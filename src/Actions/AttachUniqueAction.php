@@ -17,9 +17,6 @@ use Illuminate\Support\Collection;
  */
 abstract class AttachUniqueAction extends BelongsToManyAction
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

@@ -19,9 +19,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 abstract class StoreChildAction extends DatabaseAction implements FromRelationship
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

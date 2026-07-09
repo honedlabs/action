@@ -18,11 +18,7 @@ use Illuminate\Support\Arr;
  */
 abstract class AttachAction extends BelongsToManyAction
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
-
     use InteractsWithModels;
 
     /**

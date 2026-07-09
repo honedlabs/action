@@ -21,9 +21,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 abstract class RelatedAction extends DatabaseAction implements FromRelationship
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

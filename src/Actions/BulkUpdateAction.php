@@ -19,10 +19,6 @@ abstract class BulkUpdateAction extends EloquentAction
      * @use \Honed\Action\Actions\Concerns\InteractsWithBuilder<TModel>
      */
     use InteractsWithBuilder;
-
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**

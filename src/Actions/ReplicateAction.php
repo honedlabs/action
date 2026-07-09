@@ -13,9 +13,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ReplicateAction extends DatabaseAction
 {
-    /**
-     * @use \Honed\Action\Actions\Concerns\InteractsWithFormData<TInput>
-     */
     use InteractsWithFormData;
 
     /**
