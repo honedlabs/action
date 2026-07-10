@@ -13,7 +13,7 @@ trait InteractsWithFormData
     /**
      * Normalize the input data.
      *
-     * @param  mixed  $input
+     * @param mixed $input
      * @return array<string, mixed>
      */
     protected function normalize($input): array
